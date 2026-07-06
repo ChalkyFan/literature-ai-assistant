@@ -1,4 +1,4 @@
-"""Flask web app - Paper browser"""
+﻿"""Flask web app - Paper browser"""
 
 import os, sys
 
@@ -6,9 +6,9 @@ from datetime import datetime, timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify, send_from_directory, Response
 
-from arxiv_assistant import config, db
+from arxiv_assistant import config, db, bibtex
 
 import hashlib
 
@@ -794,7 +794,7 @@ def my_papers():
 
         starred = db.get_starred_papers(username=user.get("username", ""))
 
-        all_tagged = db.get_papers_by_tag("组会报告")
+        all_tagged = db.get_papers_by_tag("缁勪細鎶ュ憡")
 
         tagged_report = []
 
@@ -864,7 +864,7 @@ def api_add_keyword():
 
     if not data or not data.get("keyword"):
 
-        return jsonify({"ok": False, "error": "缺少参数"}), 400
+        return jsonify({"ok": False, "error": "缂哄皯鍙傛暟"}), 400
 
     kw = data["keyword"].strip()
 
@@ -872,13 +872,13 @@ def api_add_keyword():
 
     if weight < 0.1 or weight > 1.2:
 
-        return jsonify({"ok": False, "error": "权重必须在 0.1 ~ 1.2 之间"}), 400
+        return jsonify({"ok": False, "error": "鏉冮噸蹇呴』鍦?0.1 ~ 1.2 涔嬮棿"}), 400
 
     created_by = data.get("username", "")
 
     if db.check_keyword_exists(kw):
 
-        return jsonify({"ok": False, "error": "缺少参数"}), 400
+        return jsonify({"ok": False, "error": "缂哄皯鍙傛暟"}), 400
 
     ok = db.add_keyword(kw, weight, created_by)
 
@@ -896,7 +896,7 @@ def api_update_keyword(kw_id: int):
 
     if weight < 0.1 or weight > 1.2:
 
-        return jsonify({"ok": False, "error": "权重必须在 0.1 ~ 1.2 之间"}), 400
+        return jsonify({"ok": False, "error": "鏉冮噸蹇呴』鍦?0.1 ~ 1.2 涔嬮棿"}), 400
 
     ok = db.update_keyword(kw_id, kw or None, weight)
 
@@ -938,13 +938,13 @@ def generate_detailed_analysis(paper_id: int):
 
     if result is None:
 
-        return jsonify({"ok": False, "error": "分析失败"}), 500
+        return jsonify({"ok": False, "error": "鍒嗘瀽澶辫触"}), 500
 
     return jsonify({"ok": True, "analysis": result})
 
 def _run_detailed_analysis_inner(paper_id, paper):
 
-    """内部详细分析函数，返回分析内容或 None"""
+    """鍐呴儴璇︾粏鍒嗘瀽鍑芥暟锛岃繑鍥炲垎鏋愬唴瀹规垨 None"""
 
     if not paper or not paper.get("pdf_path") or not os.path.exists(paper["pdf_path"]):
 
@@ -978,21 +978,21 @@ def _run_detailed_analysis_inner(paper_id, paper):
 
         figure_desc += "Figure " + str(fnum) + ": " + cap + "\n"
 
-    prompt = "你是凝聚态物理领域的AI研究助手。请对这篇论文进行详细分析，输出中文。\n\n"
+    prompt = "浣犳槸鍑濊仛鎬佺墿鐞嗛鍩熺殑AI鐮旂┒鍔╂墜銆傝瀵硅繖绡囪鏂囪繘琛岃缁嗗垎鏋愶紝杈撳嚭涓枃銆俓n\n"
 
-    prompt += "论文文本开头部分：\n" + text_excerpt + "\n\n"
+    prompt += "璁烘枃鏂囨湰寮€澶撮儴鍒嗭細\n" + text_excerpt + "\n\n"
 
-    prompt += "论文包含以下图表（图注）：\n" + figure_desc + "\n\n"
+    prompt += "璁烘枃鍖呭惈浠ヤ笅鍥捐〃锛堝浘娉級锛歕n" + figure_desc + "\n\n"
 
-    prompt += "请按以下格式输出：\n\n"
+    prompt += "璇锋寜浠ヤ笅鏍煎紡杈撳嚭锛歕n\n"
 
-    prompt += "## 1. 摘要翻译\n[将论文摘要翻译为中文]\n\n"
+    prompt += "## 1. 鎽樿缈昏瘧\n[灏嗚鏂囨憳瑕佺炕璇戜负涓枃]\n\n"
 
-    prompt += "## 2. 图表详细解读\n[按从上到下的顺序，结合图注和文章内容，详细解读每个图表的内容和意义]\n\n"
+    prompt += "## 2. 鍥捐〃璇︾粏瑙ｈ\n[鎸変粠涓婂埌涓嬬殑椤哄簭锛岀粨鍚堝浘娉ㄥ拰鏂囩珷鍐呭锛岃缁嗚В璇绘瘡涓浘琛ㄧ殑鍐呭鍜屾剰涔塢\n\n"
 
-    prompt += "## 3. 研究方法总结\n[总结文章的主要研究方法]\n\n"
+    prompt += "## 3. 鐮旂┒鏂规硶鎬荤粨\n[鎬荤粨鏂囩珷鐨勪富瑕佺爺绌舵柟娉昡\n\n"
 
-    prompt += "## 4. 主要结论\n[总结文章的核心结论]"
+    prompt += "## 4. 涓昏缁撹\n[鎬荤粨鏂囩珷鐨勬牳蹇冪粨璁篯"
 
     try:
 
@@ -1013,6 +1013,88 @@ def _run_detailed_analysis_inner(paper_id, paper):
     db.save_detailed_analysis(paper_id, analysis_content)
 
     return analysis_content
+
+# ===== BibTeX / RIS Export =====
+
+@app.route("/api/paper/<int:paper_id>/bibtex", methods=["GET"])
+def export_paper_bibtex(paper_id: int):
+    """Export a single paper as BibTeX (.bib)"""
+    paper = db.get_paper_by_id(paper_id)
+    if not paper:
+        return jsonify({"ok": False, "error": "Paper not found"}), 404
+    bib = bibtex.generate_bibtex(dict(paper))
+    filename = "paper_{0}.bib".format(paper["arxiv_id"] or paper_id)
+    return Response(
+        bib,
+        mimetype="text/plain; charset=utf-8",
+        headers={"Content-Disposition": "attachment; filename={0}".format(filename)}
+    )
+
+
+@app.route("/api/paper/<int:paper_id>/ris", methods=["GET"])
+def export_paper_ris(paper_id: int):
+    """Export a single paper as RIS (Zotero-compatible)"""
+    paper = db.get_paper_by_id(paper_id)
+    if not paper:
+        return jsonify({"ok": False, "error": "Paper not found"}), 404
+    ris = bibtex.generate_ris(dict(paper))
+    filename = "paper_{0}.ris".format(paper["arxiv_id"] or paper_id)
+    return Response(
+        ris,
+        mimetype="text/plain; charset=utf-8",
+        headers={"Content-Disposition": "attachment; filename={0}".format(filename)}
+    )
+
+
+@app.route("/api/papers/bibtex-batch", methods=["POST"])
+def export_batch_bibtex():
+    """Export multiple papers as a combined .bib file"""
+    data = request.get_json(silent=True) or {}
+    paper_ids = data.get("paper_ids", [])
+    if not paper_ids:
+        return jsonify({"ok": False, "error": "No paper IDs provided"}), 400
+
+    papers = []
+    for pid in paper_ids:
+        paper = db.get_paper_by_id(pid)
+        if paper:
+            papers.append(dict(paper))
+
+    if not papers:
+        return jsonify({"ok": False, "error": "No valid papers found"}), 404
+
+    bib = bibtex.generate_batch_bibtex(papers)
+    return Response(
+        bib,
+        mimetype="text/plain; charset=utf-8",
+        headers={"Content-Disposition": "attachment; filename=papers_export.bib"}
+    )
+
+
+@app.route("/api/papers/ris-batch", methods=["POST"])
+def export_batch_ris():
+    """Export multiple papers as a combined .ris file (Zotero-compatible)"""
+    data = request.get_json(silent=True) or {}
+    paper_ids = data.get("paper_ids", [])
+    if not paper_ids:
+        return jsonify({"ok": False, "error": "No paper IDs provided"}), 400
+
+    papers = []
+    for pid in paper_ids:
+        paper = db.get_paper_by_id(pid)
+        if paper:
+            papers.append(dict(paper))
+
+    if not papers:
+        return jsonify({"ok": False, "error": "No valid papers found"}), 404
+
+    ris = "\n".join(bibtex.generate_ris(p) for p in papers)
+    return Response(
+        ris,
+        mimetype="text/plain; charset=utf-8",
+        headers={"Content-Disposition": "attachment; filename=papers_export.ris"}
+    )
+
 
 @app.context_processor
 
@@ -1043,3 +1125,4 @@ if __name__ == "__main__":
     db.init_db()
 
     app.run(host=config.WEB_HOST, port=config.WEB_PORT, debug=False)
+

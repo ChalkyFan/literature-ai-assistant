@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block title %}{{ paper.title[:60] }} - ArXiv文献助手{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}{{ paper.title[:60] }} - ArXiv鏂囩尞鍔╂墜{% endblock %}
 {% block content %}
 
 <style>
@@ -203,7 +203,7 @@
 </style>
 <div class="paper-detail">
     <div class="detail-header">
-        <a href="/" class="back-link">&larr; 返回简报</a>
+        <a href="/" class="back-link">&larr; 杩斿洖绠€鎶?/a>
         <div class="detail-meta">
             <span class="arxiv-id">arXiv:{{ paper.arxiv_id }}</span>
             <span class="status-badge status-{{ paper.status }}">{{ paper.status }}</span>
@@ -212,7 +212,7 @@
 
     <h1 class="detail-title">{{ paper.title }}</h1>
     <div class="detail-authors">{{ paper.authors }}</div>
-        {% if paper.affiliations %}<div class="detail-affiliation">机构: {{ paper.affiliations[:200] }}</div>{% endif %}
+        {% if paper.affiliations %}<div class="detail-affiliation">鏈烘瀯: {{ paper.affiliations[:200] }}</div>{% endif %}
 
     {% if paper.one_line_value %}
     <div class="detail-one-liner">{{ paper.one_line_value }}</div>
@@ -220,11 +220,11 @@
 
     <!-- Tags -->
     <div class="detail-tags">
-        <span class="tag tag-btn-intense" onclick="toggleTag({{ paper.id }}, '待精读')" id="tag-待精读-{{ paper.id }}">
-            {% if '待精读' in paper.tags %}&#9989; 待精读{% else %}&#10060; 待精读{% endif %}
+        <span class="tag tag-btn-intense" onclick="toggleTag({{ paper.id }}, '寰呯簿璇?)" id="tag-寰呯簿璇?{{ paper.id }}">
+            {% if '寰呯簿璇? in paper.tags %}&#9989; 寰呯簿璇粄% else %}&#10060; 寰呯簿璇粄% endif %}
         </span>
-        <span class="tag tag-btn-report" onclick="toggleTag({{ paper.id }}, '组会报告')" id="tag-组会报告-{{ paper.id }}">
-            {% if '组会报告' in paper.tags %}&#9989; 组会报告{% else %}&#10060; 组会报告{% endif %}
+        <span class="tag tag-btn-report" onclick="toggleTag({{ paper.id }}, '缁勪細鎶ュ憡')" id="tag-缁勪細鎶ュ憡-{{ paper.id }}">
+            {% if '缁勪細鎶ュ憡' in paper.tags %}&#9989; 缁勪細鎶ュ憡{% else %}&#10060; 缁勪細鎶ュ憡{% endif %}
         </span>
         <span class="report-dots" id="detail-dots-{{ paper.id }}" style="margin-left:8px;">
             {% for r in paper.reporters %}
@@ -243,67 +243,67 @@
 
     {% if paper.core_problem or paper.method %}
     <div class="detail-analysis">
-        <div style="display:flex;align-items:center;gap:12px;"><h2 style="margin:0;">AI 分析</h2><button id="btn-detailed-analysis" class="btn btn-outline" style="font-size:0.75em;padding:3px 10px;" onclick="generateDetailedAnalysis()">详细AI分析</button></div>
+        <div style="display:flex;align-items:center;gap:12px;"><h2 style="margin:0;">AI 鍒嗘瀽</h2><button id="btn-detailed-analysis" class="btn btn-outline" style="font-size:0.75em;padding:3px 10px;" onclick="generateDetailedAnalysis()">璇︾粏AI鍒嗘瀽</button></div>
 
         {% if paper.value_rating %}
         <div class="analysis-rating">
-            相关度评分：
+            鐩稿叧搴﹁瘎鍒嗭細
             {% for i in range(paper.value_rating) %}&#9733;{% endfor %}{% for i in range(5 - paper.value_rating) %}&#9734;{% endfor %}
             ({{ paper.value_rating }}/5)
         </div>
         {% endif %}
 
         <div class="analysis-section">
-            <h3>核心问题</h3>
+            <h3>鏍稿績闂</h3>
             <p>{{ paper.core_problem }}</p>
         </div>
 
         <div class="analysis-section">
-            <h3>方法</h3>
+            <h3>鏂规硶</h3>
             <p>{{ paper.method }}</p>
         </div>
 
         {% if paper.key_results %}
         <div class="analysis-section">
-            <h3>关键结果</h3>
+            <h3>鍏抽敭缁撴灉</h3>
             <p>{{ paper.key_results }}</p>
         </div>
         {% endif %}
 
         {% if paper.conclusions %}
         <div class="analysis-section">
-            <h3>结论</h3>
+            <h3>缁撹</h3>
             <p>{{ paper.conclusions }}</p>
         </div>
         {% endif %}
 
         {% if paper.limitations %}
         <div class="analysis-section">
-            <h3>局限性</h3>
+            <h3>灞€闄愭€?/h3>
             <p>{{ paper.limitations }}</p>
         </div>
         {% endif %}
     </div>
     {% endif %}
 
-    <div id="detailed-analysis-container" style="display:none;" class="detail-analysis"><h2>详细 AI 分析</h2><div id="detailed-analysis-content"></div></div><div class="detail-actions">
+    <div id="detailed-analysis-container" style="display:none;" class="detail-analysis"><h2>璇︾粏 AI 鍒嗘瀽</h2><div id="detailed-analysis-content"></div></div><div class="detail-actions">
         {% if paper.status == "unread" %}
-        <button class="btn btn-primary" onclick="updateStatus({{ paper.id }}, 'read')">标记为已读</button>
+        <button class="btn btn-primary" onclick="updateStatus({{ paper.id }}, 'read')">鏍囪涓哄凡璇?/button>
         {% else %}
-        <button class="btn btn-secondary" onclick="updateStatus({{ paper.id }}, 'unread')">标记为未读</button>
+        <button class="btn btn-secondary" onclick="updateStatus({{ paper.id }}, 'unread')">鏍囪涓烘湭璇?/button>
         {% endif %}
-        <button class="star-btn" onclick="toggleStar({{ paper.id }})" title="收藏">
+        <button class="star-btn" onclick="toggleStar({{ paper.id }})" title="鏀惰棌">
             <svg class="star-icon{% if paper.is_starred %} active{% endif %}" viewBox="0 0 24 24" width="22" height="22">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
         </button>
-        <a href="https://arxiv.org/abs/{{ paper.arxiv_id }}" target="_blank" class="btn btn-outline">查看 arXiv 原文</a>
+        <a href="https://arxiv.org/abs/{{ paper.arxiv_id }}" target="_blank" class="btn btn-outline">鏌ョ湅 arXiv 鍘熸枃</a>
     </div>
 
     <!-- Figures with Lightbox -->
     {% if paper.figures %}
     <div class="detail-figures">
-        <h2>图表 ({{ paper.figures|length }} 张)</h2>
+        <h2>鍥捐〃 ({{ paper.figures|length }} 寮?</h2>
         <div class="figure-grid" id="figure-grid">
             {% for fig in paper.figures %}
             <div class="figure-item" data-fig-idx="{{ loop.index0 }}">
@@ -338,27 +338,27 @@
         <path d="M12 16v-4"/>
         <path d="M12 8h.01"/>
     </svg>
-    <span>追问 AI</span>
-</button><div class="ask-ai-bubble" id="ask-ai-bubble">有不懂的内容可以问我哦~</div>
+    <span>杩介棶 AI</span>
+</button><div class="ask-ai-bubble" id="ask-ai-bubble">鏈変笉鎳傜殑鍐呭鍙互闂垜鍝</div>
 
 <div id="ask-ai-popup" class="ask-ai-popup">
     <div id="ask-ai-header" class="ask-ai-header">
-        <span>追问 AI - {{ paper.title[:40] }}...</span>
+        <span>杩介棶 AI - {{ paper.title[:40] }}...</span>
         <button class="ask-ai-close" onclick="toggleAskPopup()">&times;</button>
     </div>
     <div id="ask-ai-body" class="ask-ai-body">
         {% for c in conversations %}
         <div class="qa-item">
-            <div class="qa-question">问：{{ c.question }}</div>
-            <div class="qa-answer">答：{{ c.answer }} <button class="btn-delete-conv" onclick="deleteConversation({{ c.id }})" title="删除该对话">✖</button></div>
+            <div class="qa-question">闂細{{ c.question }}</div>
+            <div class="qa-answer">绛旓細{{ c.answer }} <button class="btn-delete-conv" onclick="deleteConversation({{ c.id }})" title="鍒犻櫎璇ュ璇?>鉁?/button></div>
         </div>
         {% endfor %}
         <div id="ask-ai-messages"></div>
-        <div id="ask-ai-loading" class="qa-loading" style="display:none;">AI 思考中...</div>
+        <div id="ask-ai-loading" class="qa-loading" style="display:none;">AI 鎬濊€冧腑...</div>
     </div>
     <div class="ask-ai-input-area">
-        <input type="text" id="ask-ai-input" placeholder="输入你的问题..." onkeydown="if(event.key==='Enter') askQuestion()">
-        <button class="btn btn-primary" onclick="askQuestion()">发送</button>
+        <input type="text" id="ask-ai-input" placeholder="杈撳叆浣犵殑闂..." onkeydown="if(event.key==='Enter') askQuestion()">
+        <button class="btn btn-primary" onclick="askQuestion()">鍙戦€?/button>
     </div>
 </div>
 
@@ -444,7 +444,7 @@ function askQuestion() {
     document.getElementById("ask-ai-loading").style.display = "block";
 
     var msgDiv = document.getElementById("ask-ai-messages");
-    msgDiv.innerHTML += '<div class="qa-item"><div class="qa-question">问：' + escapeHtml(q) + '</div></div>';
+    msgDiv.innerHTML += '<div class="qa-item"><div class="qa-question">闂細' + escapeHtml(q) + '</div></div>';
 
     fetch("/api/paper/{{ paper.id }}/ask", {
         method: "POST",
@@ -455,15 +455,15 @@ function askQuestion() {
     .then(d => {
         document.getElementById("ask-ai-loading").style.display = "none";
         if (d.ok) {
-            msgDiv.innerHTML += '<div class="qa-item"><div class="qa-answer">答：' + escapeHtml(d.answer) + '</div></div>';
+            msgDiv.innerHTML += '<div class="qa-item"><div class="qa-answer">绛旓細' + escapeHtml(d.answer) + '</div></div>';
         } else {
-            msgDiv.innerHTML += '<div class="qa-item"><div class="qa-answer" style="color:#dc2626;">错误：' + escapeHtml(d.error) + '</div></div>';
+            msgDiv.innerHTML += '<div class="qa-item"><div class="qa-answer" style="color:#dc2626;">閿欒锛? + escapeHtml(d.error) + '</div></div>';
         }
         msgDiv.scrollTop = msgDiv.scrollHeight;
     })
     .catch(e => {
         document.getElementById("ask-ai-loading").style.display = "none";
-        msgDiv.innerHTML += '<div class="qa-item"><div class="qa-answer" style="color:#dc2626;">请求失败</div></div>';
+        msgDiv.innerHTML += '<div class="qa-item"><div class="qa-answer" style="color:#dc2626;">璇锋眰澶辫触</div></div>';
     });
 }
 
@@ -475,13 +475,13 @@ function escapeHtml(text) {
 
 // ==== Tags ====
 function toggleTag(paperId, tagName) {
-    // Redirect 组会报告 to the unified report system
-    if (tagName === "组会报告") {
+    // Redirect 缁勪細鎶ュ憡 to the unified report system
+    if (tagName === "缁勪細鎶ュ憡") {
         toggleReport(paperId);
         return;
     }
     var el = document.getElementById("tag-" + tagName + "-" + paperId);
-    var isSet = el.textContent.includes("&#9989;") || el.textContent.includes("✅");
+    var isSet = el.textContent.includes("&#9989;") || el.textContent.includes("鉁?);
 
     if (isSet) {
         fetch("/api/paper/" + paperId + "/tags/" + encodeURIComponent(tagName), { method: "DELETE" })
@@ -504,7 +504,7 @@ function generateDetailedAnalysis() {
     var btn = document.getElementById("btn-detailed-analysis");
     if (!btn) return;
     btn.disabled = true;
-    btn.textContent = "正在生成...";
+    btn.textContent = "姝ｅ湪鐢熸垚...";
     fetch("/api/paper/{{ paper.id }}/detailed-analysis", {method: "GET"})
     .then(function(r) { return r.json(); })
     .then(function(d) {
@@ -513,10 +513,10 @@ function generateDetailedAnalysis() {
         .then(function(r) { return r.json(); })
         .then(function(d2) {
             if (d2.ok && d2.analysis) { showDetailedAnalysis(d2.analysis); }
-            else { alert("生成失败: " + (d2.error || "未知错误")); btn.disabled = false; btn.textContent = "详细AI分析"; }
+            else { alert("鐢熸垚澶辫触: " + (d2.error || "鏈煡閿欒")); btn.disabled = false; btn.textContent = "璇︾粏AI鍒嗘瀽"; }
         });
     })
-    .catch(function(e) { alert("请求失败: " + e.message); btn.disabled = false; btn.textContent = "详细AI分析"; });
+    .catch(function(e) { alert("璇锋眰澶辫触: " + e.message); btn.disabled = false; btn.textContent = "璇︾粏AI鍒嗘瀽"; });
 }
 function showDetailedAnalysis(content) {
     var container = document.getElementById("detailed-analysis-container");
@@ -560,7 +560,7 @@ function embedFiguresInAnalysis() {
     // Create figure gallery at the bottom of the analysis
     var figGallery = document.createElement("div");
     figGallery.className = "detailed-figure-gallery";
-    figGallery.innerHTML = '<h3>图表展示</h3><div style="display:flex;flex-direction:column;gap:16px;">';
+    figGallery.innerHTML = '<h3>鍥捐〃灞曠ず</h3><div style="display:flex;flex-direction:column;gap:16px;">';
     
     figures.forEach(function(fig) {
         var img = fig.querySelector("img");
@@ -592,11 +592,11 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 // ==== Delete Conversation ====
 function deleteConversation(convId) {
-    if (!confirm("确定删除该对话记录？")) return;
+    if (!confirm("纭畾鍒犻櫎璇ュ璇濊褰曪紵")) return;
     fetch("/api/conversation/" + convId, {method: "DELETE"})
     .then(function(r) { return r.json(); })
     .then(function(d) { if (d.ok) { var el = document.getElementById("conv-" + convId); if (el) el.remove(); } })
-    .catch(function(e) { alert("删除失败"); });
+    .catch(function(e) { alert("鍒犻櫎澶辫触"); });
 }
 // ==== Hide bubble on first click ====
 
@@ -627,3 +627,4 @@ function toggleStar(id) {
 }
 </script>
 {% endblock %}
+

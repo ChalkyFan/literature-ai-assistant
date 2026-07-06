@@ -1985,3 +1985,23 @@ body {
     color: #1a56db;
 
 }
+/* Batch export styles */
+.batch-export {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.batch-export label {
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+.batch-export input[type='checkbox'],
+.paper-select {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}

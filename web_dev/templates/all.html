@@ -1,6 +1,6 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
-{% block title %}全部论文 - ArXiv文献助手<script>
+{% block title %}鍏ㄩ儴璁烘枃 - ArXiv鏂囩尞鍔╂墜<script>
 function toggleStar(id) {
     fetch("/api/paper/" + id + "/star", {
         method: "POST",
@@ -27,31 +27,99 @@ function toggleStar(id) {
 
 </script>
 
+
+<script>
+function toggleSelectAll(master) {
+    document.querySelectorAll(".paper-select").forEach(function(cb) {
+        cb.checked = master.checked;
+    });
+}
+
+function getSelectedIds() {
+    var ids = [];
+    document.querySelectorAll(".paper-select:checked").forEach(function(cb) {
+        ids.push(parseInt(cb.value));
+    });
+    return ids;
+}
+
+function downloadFile(content, filename, mimeType) {
+    var blob = new Blob([content], {type: mimeType});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function batchExportBibtex() {
+    var ids = getSelectedIds();
+    if (ids.length === 0) { alert("请先选择要导出的论文"); return; }
+    fetch("/api/papers/bibtex-batch", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({paper_ids: ids})
+    })
+    .then(function(r) {
+        if (!r.ok) throw new Error("导出失败");
+        return r.text();
+    })
+    .then(function(bib) {
+        downloadFile(bib, "papers_export.bib", "text/plain;charset=utf-8");
+    })
+    .catch(function(e) {
+        alert("导出失败: " + e.message);
+    });
+}
+
+function batchExportRIS() {
+    var ids = getSelectedIds();
+    if (ids.length === 0) { alert("请先选择要导出的论文"); return; }
+    fetch("/api/papers/ris-batch", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({paper_ids: ids})
+    })
+    .then(function(r) {
+        if (!r.ok) throw new Error("导出失败");
+        return r.text();
+    })
+    .then(function(ris) {
+        downloadFile(ris, "papers_export.ris", "text/plain;charset=utf-8");
+    })
+    .catch(function(e) {
+        alert("导出失败: " + e.message);
+    });
+}
+</script>
 {% endblock %}
 
 {% block content %}
 
 <div class="page-header">
 
-    <h1>全部论文</h1>
+    <h1>鍏ㄩ儴璁烘枃</h1>
 
     <div class="toolbar">
 
         <div class="sort-bar">
 
-            <label>排序：</label>
+            <label>鎺掑簭锛?/label>
 
-            <a href="?sort=rating&page=1" class="sort-btn {% if sort_by == 'rating' %}active{% endif %}">相关度</a>
+            <a href="?sort=rating&page=1" class="sort-btn {% if sort_by == 'rating' %}active{% endif %}">鐩稿叧搴?/a>
 
-            <a href="?sort=date&page=1" class="sort-btn {% if sort_by == 'date' %}active{% endif %}">日期</a>
+            <a href="?sort=date&page=1" class="sort-btn {% if sort_by == 'date' %}active{% endif %}">鏃ユ湡</a>
 
-            <a href="?sort=keywords&page=1" class="sort-btn {% if sort_by == 'keywords' %}active{% endif %}">关键词数</a>
+            <a href="?sort=keywords&page=1" class="sort-btn {% if sort_by == 'keywords' %}active{% endif %}">鍏抽敭璇嶆暟</a>
 
         </div>
 
     </div>
 
-    <span class="paper-count">第 {{ page }} 页</span>
+    <span class="paper-count">绗?{{ page }} 椤?/span>
 
 </div>
 
@@ -83,7 +151,7 @@ function toggleStar(id) {
 
             {% if current_user and current_user.role == "admin" %}
 
-            <button class="btn-delete" onclick="confirmDelete({{ p.id }})">删除该条目</button>
+            <button class="btn-delete" onclick="confirmDelete({{ p.id }})">鍒犻櫎璇ユ潯鐩?/button>
 
             {% endif %}
 
@@ -93,7 +161,7 @@ function toggleStar(id) {
 
             <span class="status-badge status-{{ p.status }}">{{ p.status }}</span>
 
-            <label class="star-btn" onclick="toggleStar({{ p.id }})" title="收藏">
+            <label class="star-btn" onclick="toggleStar({{ p.id }})" title="鏀惰棌">
 
                 {% if p.is_starred %}&#11088;{% else %}&#9734;{% endif %}
 
@@ -109,9 +177,9 @@ function toggleStar(id) {
 
             </span>
 
-            <a href="javascript:void(0)" class="btn-tag" onclick="toggleReport({{ p.id }})" title="加入组会报告">&#128202;</a>
+            <a href="javascript:void(0)" class="btn-tag" onclick="toggleReport({{ p.id }})" title="鍔犲叆缁勪細鎶ュ憡">&#128202;</a>
 
-            <a href="/paper/{{ p.id }}" class="btn-detail">查看详情 &#8594;</a>
+            <a href="/paper/{{ p.id }}" class="btn-detail">鏌ョ湅璇︽儏 &#8594;</a>
 
         </div>
 
@@ -127,11 +195,11 @@ function toggleStar(id) {
 
     {% if page > 1 %}
 
-    <a href="/all?page={{ page - 1 }}" class="btn btn-outline">&larr; 上一页</a>
+    <a href="/all?page={{ page - 1 }}" class="btn btn-outline">&larr; 涓婁竴椤?/a>
 
     {% endif %}
 
-    <a href="/all?page={{ page + 1 }}" class="btn btn-outline">下一页 &rarr;</a>
+    <a href="/all?page={{ page + 1 }}" class="btn btn-outline">涓嬩竴椤?&rarr;</a>
 
 </div>
 
@@ -162,7 +230,77 @@ function toggleStar(id) {
 
 </script>
 
+
+<script>
+function toggleSelectAll(master) {
+    document.querySelectorAll(".paper-select").forEach(function(cb) {
+        cb.checked = master.checked;
+    });
+}
+
+function getSelectedIds() {
+    var ids = [];
+    document.querySelectorAll(".paper-select:checked").forEach(function(cb) {
+        ids.push(parseInt(cb.value));
+    });
+    return ids;
+}
+
+function downloadFile(content, filename, mimeType) {
+    var blob = new Blob([content], {type: mimeType});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function batchExportBibtex() {
+    var ids = getSelectedIds();
+    if (ids.length === 0) { alert("请先选择要导出的论文"); return; }
+    fetch("/api/papers/bibtex-batch", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({paper_ids: ids})
+    })
+    .then(function(r) {
+        if (!r.ok) throw new Error("导出失败");
+        return r.text();
+    })
+    .then(function(bib) {
+        downloadFile(bib, "papers_export.bib", "text/plain;charset=utf-8");
+    })
+    .catch(function(e) {
+        alert("导出失败: " + e.message);
+    });
+}
+
+function batchExportRIS() {
+    var ids = getSelectedIds();
+    if (ids.length === 0) { alert("请先选择要导出的论文"); return; }
+    fetch("/api/papers/ris-batch", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({paper_ids: ids})
+    })
+    .then(function(r) {
+        if (!r.ok) throw new Error("导出失败");
+        return r.text();
+    })
+    .then(function(ris) {
+        downloadFile(ris, "papers_export.ris", "text/plain;charset=utf-8");
+    })
+    .catch(function(e) {
+        alert("导出失败: " + e.message);
+    });
+}
+</script>
 {% endblock %}
+
+
 
 
 
