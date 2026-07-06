@@ -599,6 +599,15 @@ def auth_register():
 
     key = (data.get("key", "") if data else "").strip()
 
+    # Load registration keys from config_local (out of git)
+    try:
+        import config_local as _cfg
+        _cfg_register_key = getattr(_cfg, "REGISTER_KEY", "")
+        _cfg_admin_key = getattr(_cfg, "ADMIN_REGISTER_KEY", "")
+    except ImportError:
+        _cfg_register_key = ""
+        _cfg_admin_key = ""
+
     color = (data.get("color", "#3b82f6") if data else "").strip()
 
     if not username:
@@ -615,7 +624,7 @@ def auth_register():
 
     if username == "ADMIN":
 
-        if key != "administrator":
+        if key != _cfg_admin_key:
 
             return jsonify({"ok": False, "error": "\u5bc6\u94a5\u9519\u8bef"}), 403
 
@@ -625,7 +634,7 @@ def auth_register():
 
     else:
 
-        if key != "CCMARPES":
+        if key != _cfg_register_key:
 
             return jsonify({"ok": False, "error": "\u5bc6\u94a5\u9519\u8bef"}), 403
 
