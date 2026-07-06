@@ -24,4 +24,4 @@ if __name__ == "__main__":
     db.init_db()
     print("Dev server starting at http://127.0.0.1:8081")
     print("(Only accessible from this machine - safe for development)")
-    app.run(host="127.0.0.1", port=8081, debug=True)
+    app.run(host="127.0.0.1", port=8081, debug=True, use_reloader=False)
