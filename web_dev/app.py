@@ -1,4 +1,4 @@
-﻿"""Flask web app - Paper browser"""
+"""Flask web app - Paper browser"""
 
 import os, sys
 
