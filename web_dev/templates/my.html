@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}我的 - ArXiv文献助手{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>我的</h1>
+</div>
+
+<div class="my-tabs">
+    <button class="my-tab active" onclick="switchMyTab('starred')" id="tab-starred">
+        &#11088; 收藏 {% if starred|length > 0 %}<span class="tab-count">{{ starred|length }}</span>{% endif %}
+    </button>
+    <button class="my-tab" onclick="switchMyTab('report')" id="tab-report">
+        &#128203; 组会报告 {% if tagged_report|length > 0 %}<span class="tab-count">{{ tagged_report|length }}</span>{% endif %}
+    </button>
+    <button class="my-tab" onclick="switchMyTab('custom')" id="tab-custom">
+        &#128196; 自行添加 {% if custom|length > 0 %}<span class="tab-count">{{ custom|length }}</span>{% endif %}
+    </button>
+    <button class="my-tab" onclick="switchMyTab('history')" id="tab-history">
+        &#128337; 浏览历史 {% if history|length > 0 %}<span class="tab-count">{{ history|length }}</span>{% endif %}
+    </button>
+</div>
+
+<div class="my-tab-content" id="content-starred">
+    <div class="paper-list">
+        {% for p in starred %}
+        <div class="paper-card">
+            <div class="paper-header">
+                <span class="rating">
+                    {% for i in range(p.value_rating or 0) %}&#9733;{% endfor %}{% for i in range(5 - (p.value_rating or 0)) %}&#9734;{% endfor %}
+                </span>
+                <span class="arxiv-id">{{ p.published_date }}</span>
+            </div>
+            <h3 class="paper-title"><a href="/paper/{{ p.id }}">{{ p.title }}</a></h3>
+            <div class="paper-authors">{{ p.authors[:180] if p.authors else "" }}</div>
+            {% if p.one_line_value %}
+            <div class="paper-one-liner">{{ p.one_line_value }}</div>
+            {% endif %}
+            <div class="paper-footer">
+                <span class="status-badge status-{{ p.status }}">{{ p.status }}</span>
+                <a href="/paper/{{ p.id }}" class="btn-detail">查看详情 &#8594;</a>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state"><p>暂无收藏的论文</p></div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="my-tab-content" id="content-report" style="display:none">
+    <div class="paper-list">
+        {% for p in tagged_report %}
+        <div class="paper-card">
+            <div class="paper-header">
+                <span class="rating">
+                    {% for i in range(p.value_rating or 0) %}&#9733;{% endfor %}{% for i in range(5 - (p.value_rating or 0)) %}&#9734;{% endfor %}
+                </span>
+                <span class="arxiv-id">{{ p.published_date }}</span>
+            </div>
+            <h3 class="paper-title"><a href="/paper/{{ p.id }}">{{ p.title }}</a></h3>
+            <div class="paper-authors">{{ p.authors[:180] if p.authors else "" }}</div>
+            {% if p.one_line_value %}
+            <div class="paper-one-liner">{{ p.one_line_value }}</div>
+            {% endif %}
+            <div class="paper-footer">
+                <span class="status-badge status-{{ p.status }}">{{ p.status }}</span>
+                <span class="report-dots" id="my-dots-{{ p.id }}">
+                    {% for r in p.reporters %}
+                    <span class="report-dot" style="background:{{ r.color }};" title="{{ r.username }}"></span>
+                    {% endfor %}
+                </span>
+                <a href="/paper/{{ p.id }}" class="btn-detail">查看详情 &#8594;</a>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state"><p>暂无组会报告标签论文</p></div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="my-tab-content" id="content-custom" style="display:none">
+    <div class="paper-list">
+        {% for p in custom %}
+        <div class="paper-card">
+            <div class="paper-header">
+                <span class="arxiv-id">{{ p.published_date }}</span>
+            </div>
+            <h3 class="paper-title"><a href="/paper/{{ p.id }}">{{ p.title }}</a></h3>
+            <div class="paper-authors">{{ p.authors[:180] if p.authors else "" }}</div>
+            <div class="paper-footer">
+                <span class="status-badge status-{{ p.status }}">{{ p.status }}</span>
+                <a href="/paper/{{ p.id }}" class="btn-detail">查看详情 &#8594;</a>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state"><p>暂无自行添加的文献</p></div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="my-tab-content" id="content-history" style="display:none">
+    <div class="paper-list">
+        {% for p in history %}
+        <div class="paper-card">
+            <div class="paper-header">
+                <span class="rating">
+                    {% for i in range(p.value_rating or 0) %}&#9733;{% endfor %}{% for i in range(5 - (p.value_rating or 0)) %}&#9734;{% endfor %}
+                </span>
+                <span class="arxiv-id">{{ p.published_date }}</span>
+            </div>
+            <h3 class="paper-title"><a href="/paper/{{ p.id }}">{{ p.title }}</a></h3>
+            <div class="paper-authors">{{ p.authors[:180] if p.authors else "" }}</div>
+            {% if p.one_line_value %}
+            <div class="paper-one-liner">{{ p.one_line_value }}</div>
+            {% endif %}
+            <div class="paper-footer">
+                <span class="status-badge status-{{ p.status }}">{{ p.status }}</span>
+                <span class="viewed-time" style="color:#999;font-size:0.8em;">{{ p.viewed_at }}</span>
+                <a href="/paper/{{ p.id }}" class="btn-detail">查看详情 &#8594;</a>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state"><p>暂无浏览历史</p></div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function switchMyTab(tab) {
+    var tabs = document.querySelectorAll(".my-tab");
+    var contents = document.querySelectorAll(".my-tab-content");
+    tabs.forEach(function(t) { t.classList.remove("active"); });
+    contents.forEach(function(c) { c.style.display = "none"; });
+    document.getElementById("tab-" + tab).classList.add("active");
+    document.getElementById("content-" + tab).style.display = "block";
+}
+</script>
+{% endblock %}

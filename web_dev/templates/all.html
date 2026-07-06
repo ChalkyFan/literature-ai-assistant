@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}全部论文 - ArXiv文献助手<script>
+function toggleStar(id) {
+    fetch("/api/paper/" + id + "/star", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username: CURRENT_USER ? CURRENT_USER.username : ""})
+    }).then(r => r.json()).then(d => { if(d.ok) location.reload(); });
+}
+</script>
+<script>
+
+function toggleStar(id) {
+
+    fetch("/api/paper/" + id + "/star", {
+
+        method: "POST",
+
+        headers: {"Content-Type": "application/json"},
+
+        body: JSON.stringify({username: CURRENT_USER ? CURRENT_USER.username : ""})
+
+    }).then(r => r.json()).then(d => { if(d.ok) location.reload(); });
+
+}
+
+</script>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>全部论文</h1>
+
+    <div class="toolbar">
+
+        <div class="sort-bar">
+
+            <label>排序：</label>
+
+            <a href="?sort=rating&page=1" class="sort-btn {% if sort_by == 'rating' %}active{% endif %}">相关度</a>
+
+            <a href="?sort=date&page=1" class="sort-btn {% if sort_by == 'date' %}active{% endif %}">日期</a>
+
+            <a href="?sort=keywords&page=1" class="sort-btn {% if sort_by == 'keywords' %}active{% endif %}">关键词数</a>
+
+        </div>
+
+    </div>
+
+    <span class="paper-count">第 {{ page }} 页</span>
+
+</div>
+
+
+
+<div class="paper-list">
+
+    {% for p in papers %}
+
+    <div class="paper-card">
+
+        <div class="paper-header">
+
+            <span class="rating">
+
+                {% for i in range(p.value_rating or 0) %}&#9733;{% endfor %}{% for i in range(5 - (p.value_rating or 0)) %}&#9734;{% endfor %}
+
+            </span>
+
+            <span class="arxiv-id">{{ p.published_date }}</span>
+
+        </div>
+
+        <h3 class="paper-title"><a href="/paper/{{ p.id }}">{{ p.title }}</a></h3>
+
+        <div class="paper-authors-row">
+
+            <span class="paper-authors-text">{{ p.authors[:180] if p.authors else "" }}</span>
+
+            {% if current_user and current_user.role == "admin" %}
+
+            <button class="btn-delete" onclick="confirmDelete({{ p.id }})">删除该条目</button>
+
+            {% endif %}
+
+        </div>
+
+        <div class="paper-footer">
+
+            <span class="status-badge status-{{ p.status }}">{{ p.status }}</span>
+
+            <label class="star-btn" onclick="toggleStar({{ p.id }})" title="收藏">
+
+                {% if p.is_starred %}&#11088;{% else %}&#9734;{% endif %}
+
+            </label>
+
+            <span class="report-dots" id="dots-{{ p.id }}">
+
+                {% for r in p.reporters %}
+
+                <span class="report-dot" style="background:{{ r.color }};" title="{{ r.username }}"></span>
+
+                {% endfor %}
+
+            </span>
+
+            <a href="javascript:void(0)" class="btn-tag" onclick="toggleReport({{ p.id }})" title="加入组会报告">&#128202;</a>
+
+            <a href="/paper/{{ p.id }}" class="btn-detail">查看详情 &#8594;</a>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+
+
+<div class="pagination">
+
+    {% if page > 1 %}
+
+    <a href="/all?page={{ page - 1 }}" class="btn btn-outline">&larr; 上一页</a>
+
+    {% endif %}
+
+    <a href="/all?page={{ page + 1 }}" class="btn btn-outline">下一页 &rarr;</a>
+
+</div>
+
+<script>
+function toggleStar(id) {
+    fetch("/api/paper/" + id + "/star", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username: CURRENT_USER ? CURRENT_USER.username : ""})
+    }).then(r => r.json()).then(d => { if(d.ok) location.reload(); });
+}
+</script>
+<script>
+
+function toggleStar(id) {
+
+    fetch("/api/paper/" + id + "/star", {
+
+        method: "POST",
+
+        headers: {"Content-Type": "application/json"},
+
+        body: JSON.stringify({username: CURRENT_USER ? CURRENT_USER.username : ""})
+
+    }).then(r => r.json()).then(d => { if(d.ok) location.reload(); });
+
+}
+
+</script>
+
+{% endblock %}
+
+
+
