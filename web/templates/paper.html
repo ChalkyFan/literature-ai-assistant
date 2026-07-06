@@ -1,0 +1,629 @@
+{% extends "base.html" %}
+{% block title %}{{ paper.title[:60] }} - ArXiv文献助手{% endblock %}
+{% block content %}
+
+<style>
+/* Ask AI floating button */
+.ask-ai-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+    z-index: 1000;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+}
+.ask-ai-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102,126,234,0.5);
+}
+
+/* Star button - clean golden star */
+.star-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+    vertical-align: middle;
+    line-height: 1;
+}
+.star-btn:hover {
+    background: rgba(255, 215, 0, 0.1);
+}
+.star-icon {
+    fill: none;
+    stroke: #d4a017;
+    stroke-width: 1.5;
+    transition: fill 0.2s, transform 0.2s;
+    vertical-align: middle;
+}
+.star-icon.active {
+    fill: #ffc107;
+    stroke: #ffc107;
+}
+.star-btn:hover .star-icon {
+    transform: scale(1.15);
+}
+.star-btn:hover .star-icon:not(.active) {
+    fill: rgba(255, 193, 7, 0.3);
+}
+
+/* Bubble next to the button */
+.ask-ai-bubble {
+    position: fixed;
+    bottom: 95px;
+    right: 30px;
+    background: #1e293b;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    max-width: 200px;
+    z-index: 999;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+}
+.ask-ai-bubble::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    right: 20px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #1e293b;
+}
+.ask-ai-bubble.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Ask AI popup */
+.ask-ai-popup {
+    display: none;
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    width: 380px;
+    max-height: 500px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    z-index: 1001;
+    flex-direction: column;
+    overflow: hidden;
+}
+.ask-ai-popup.active {
+    display: flex;
+}
+
+.ask-ai-header {
+    background: #2563eb;
+    color: white;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+    user-select: none;
+}
+.ask-ai-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+.ask-ai-close:hover {
+    opacity: 0.8;
+}
+
+.ask-ai-body {
+    padding: 12px;
+    overflow-y: auto;
+    flex: 1;
+    max-height: 350px;
+}
+.qa-item {
+    margin-bottom: 12px;
+}
+.qa-question {
+    background: #eff6ff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #1e293b;
+    margin-bottom: 6px;
+}
+.qa-answer {
+    background: #f8fafc;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #334155;
+    line-height: 1.5;
+}
+.btn-delete-conv {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 8px;
+    padding: 2px 4px;
+}
+.btn-delete-conv:hover {
+    color: #ef4444;
+}
+.qa-loading {
+    text-align: center;
+    color: #94a3b8;
+    padding: 12px;
+    font-size: 13px;
+}
+
+.ask-ai-input-area {
+    display: flex;
+    padding: 10px 12px;
+    border-top: 1px solid #e2e8f0;
+    gap: 8px;
+}
+.ask-ai-input-area input {
+    flex: 1;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    outline: none;
+}
+.ask-ai-input-area input:focus {
+    border-color: #2563eb;
+}
+.ask-ai-input-area button {
+    white-space: nowrap;
+}
+</style>
+<div class="paper-detail">
+    <div class="detail-header">
+        <a href="/" class="back-link">&larr; 返回简报</a>
+        <div class="detail-meta">
+            <span class="arxiv-id">arXiv:{{ paper.arxiv_id }}</span>
+            <span class="status-badge status-{{ paper.status }}">{{ paper.status }}</span>
+        </div>
+    </div>
+
+    <h1 class="detail-title">{{ paper.title }}</h1>
+    <div class="detail-authors">{{ paper.authors }}</div>
+        {% if paper.affiliations %}<div class="detail-affiliation">机构: {{ paper.affiliations[:200] }}</div>{% endif %}
+
+    {% if paper.one_line_value %}
+    <div class="detail-one-liner">{{ paper.one_line_value }}</div>
+    {% endif %}
+
+    <!-- Tags -->
+    <div class="detail-tags">
+        <span class="tag tag-btn-intense" onclick="toggleTag({{ paper.id }}, '待精读')" id="tag-待精读-{{ paper.id }}">
+            {% if '待精读' in paper.tags %}&#9989; 待精读{% else %}&#10060; 待精读{% endif %}
+        </span>
+        <span class="tag tag-btn-report" onclick="toggleTag({{ paper.id }}, '组会报告')" id="tag-组会报告-{{ paper.id }}">
+            {% if '组会报告' in paper.tags %}&#9989; 组会报告{% else %}&#10060; 组会报告{% endif %}
+        </span>
+        <span class="report-dots" id="detail-dots-{{ paper.id }}" style="margin-left:8px;">
+            {% for r in paper.reporters %}
+            <span class="report-dot" style="background:{{ r.color }};" title="{{ r.username }}"></span>
+            {% endfor %}
+        </span>
+    </div>
+
+    {% if paper.keywords %}
+    <div class="detail-keywords">
+        {% for kw in paper.keywords %}
+        <span class="tag">{{ kw }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if paper.core_problem or paper.method %}
+    <div class="detail-analysis">
+        <div style="display:flex;align-items:center;gap:12px;"><h2 style="margin:0;">AI 分析</h2><button id="btn-detailed-analysis" class="btn btn-outline" style="font-size:0.75em;padding:3px 10px;" onclick="generateDetailedAnalysis()">详细AI分析</button></div>
+
+        {% if paper.value_rating %}
+        <div class="analysis-rating">
+            相关度评分：
+            {% for i in range(paper.value_rating) %}&#9733;{% endfor %}{% for i in range(5 - paper.value_rating) %}&#9734;{% endfor %}
+            ({{ paper.value_rating }}/5)
+        </div>
+        {% endif %}
+
+        <div class="analysis-section">
+            <h3>核心问题</h3>
+            <p>{{ paper.core_problem }}</p>
+        </div>
+
+        <div class="analysis-section">
+            <h3>方法</h3>
+            <p>{{ paper.method }}</p>
+        </div>
+
+        {% if paper.key_results %}
+        <div class="analysis-section">
+            <h3>关键结果</h3>
+            <p>{{ paper.key_results }}</p>
+        </div>
+        {% endif %}
+
+        {% if paper.conclusions %}
+        <div class="analysis-section">
+            <h3>结论</h3>
+            <p>{{ paper.conclusions }}</p>
+        </div>
+        {% endif %}
+
+        {% if paper.limitations %}
+        <div class="analysis-section">
+            <h3>局限性</h3>
+            <p>{{ paper.limitations }}</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div id="detailed-analysis-container" style="display:none;" class="detail-analysis"><h2>详细 AI 分析</h2><div id="detailed-analysis-content"></div></div><div class="detail-actions">
+        {% if paper.status == "unread" %}
+        <button class="btn btn-primary" onclick="updateStatus({{ paper.id }}, 'read')">标记为已读</button>
+        {% else %}
+        <button class="btn btn-secondary" onclick="updateStatus({{ paper.id }}, 'unread')">标记为未读</button>
+        {% endif %}
+        <button class="star-btn" onclick="toggleStar({{ paper.id }})" title="收藏">
+            <svg class="star-icon{% if paper.is_starred %} active{% endif %}" viewBox="0 0 24 24" width="22" height="22">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+        </button>
+        <a href="https://arxiv.org/abs/{{ paper.arxiv_id }}" target="_blank" class="btn btn-outline">查看 arXiv 原文</a>
+    </div>
+
+    <!-- Figures with Lightbox -->
+    {% if paper.figures %}
+    <div class="detail-figures">
+        <h2>图表 ({{ paper.figures|length }} 张)</h2>
+        <div class="figure-grid" id="figure-grid">
+            {% for fig in paper.figures %}
+            <div class="figure-item" data-fig-idx="{{ loop.index0 }}">
+                <img src="/papers/{{ (fig.file_path.split('papers\\')[1] if 'papers\\' in fig.file_path else fig.file_path.split('papers/')[1]).replace('\\', '/') }}"
+                     alt="{{ fig.caption }}"
+                     class="fig-thumb"
+                     onclick="openLightbox({{ loop.index0 }})">
+                <div class="figure-caption">{{ fig.caption }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Lightbox overlay -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <button class="lightbox-prev" onclick="changeFigure(-1)">&#10094;</button>
+        <button class="lightbox-next" onclick="changeFigure(1)">&#10095;</button>
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="">
+            <div id="lightbox-caption" class="lightbox-caption"></div>
+            <div id="lightbox-counter" class="lightbox-counter"></div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Ask AI floating button + draggable popup -->
+<button id="ask-ai-btn" class="ask-ai-btn" onclick="toggleAskPopup()">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 16v-4"/>
+        <path d="M12 8h.01"/>
+    </svg>
+    <span>追问 AI</span>
+</button><div class="ask-ai-bubble" id="ask-ai-bubble">有不懂的内容可以问我哦~</div>
+
+<div id="ask-ai-popup" class="ask-ai-popup">
+    <div id="ask-ai-header" class="ask-ai-header">
+        <span>追问 AI - {{ paper.title[:40] }}...</span>
+        <button class="ask-ai-close" onclick="toggleAskPopup()">&times;</button>
+    </div>
+    <div id="ask-ai-body" class="ask-ai-body">
+        {% for c in conversations %}
+        <div class="qa-item">
+            <div class="qa-question">问：{{ c.question }}</div>
+            <div class="qa-answer">答：{{ c.answer }} <button class="btn-delete-conv" onclick="deleteConversation({{ c.id }})" title="删除该对话">✖</button></div>
+        </div>
+        {% endfor %}
+        <div id="ask-ai-messages"></div>
+        <div id="ask-ai-loading" class="qa-loading" style="display:none;">AI 思考中...</div>
+    </div>
+    <div class="ask-ai-input-area">
+        <input type="text" id="ask-ai-input" placeholder="输入你的问题..." onkeydown="if(event.key==='Enter') askQuestion()">
+        <button class="btn btn-primary" onclick="askQuestion()">发送</button>
+    </div>
+</div>
+
+<script>
+// ==== Figure lightbox ====
+var figures = [
+    {% for fig in paper.figures %}
+    {
+        src: "/papers/{{ (fig.file_path.split('papers\\')[1] if 'papers\\' in fig.file_path else fig.file_path.split('papers/')[1]).replace('\\', '/') }}",
+        caption: "{{ fig.caption }}"
+    },
+    {% endfor %}
+];
+var currentFig = 0;
+
+function openLightbox(idx) {
+    currentFig = idx;
+    document.getElementById("lightbox").classList.add("active");
+    updateLightbox();
+    document.body.style.overflow = "hidden";
+}
+
+function closeLightbox(e) {
+    if (e && e.target !== e.currentTarget) return;
+    document.getElementById("lightbox").classList.remove("active");
+    document.body.style.overflow = "";
+}
+
+function changeFigure(delta) {
+    currentFig = (currentFig + delta + figures.length) % figures.length;
+    updateLightbox();
+}
+
+function updateLightbox() {
+    var fig = figures[currentFig];
+    document.getElementById("lightbox-img").src = fig.src;
+    document.getElementById("lightbox-caption").textContent = fig.caption;
+    document.getElementById("lightbox-counter").textContent = (currentFig + 1) + " / " + figures.length;
+}
+
+document.addEventListener("keydown", function(e) {
+    if (!document.getElementById("lightbox").classList.contains("active")) return;
+    if (e.key === "Escape") closeLightbox();
+    if (e.key === "ArrowLeft") changeFigure(-1);
+    if (e.key === "ArrowRight") changeFigure(1);
+});
+
+// ==== Ask AI draggable popup ====
+var popup = document.getElementById("ask-ai-popup");
+var header = document.getElementById("ask-ai-header");
+var isDragging = false, startX, startY, origX, origY;
+
+header.onmousedown = function(e) {
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    origX = popup.offsetLeft;
+    origY = popup.offsetTop;
+    document.onmousemove = function(e) {
+        if (!isDragging) return;
+        popup.style.left = (origX + e.clientX - startX) + "px";
+        popup.style.top = (origY + e.clientY - startY) + "px";
+    };
+    document.onmouseup = function() {
+        isDragging = false;
+        document.onmousemove = null;
+        document.onmouseup = null;
+    };
+};
+
+window.toggleAskPopup = function toggleAskPopup() {
+    var popupEl = document.getElementById("ask-ai-popup");
+    if (popupEl) popupEl.classList.toggle("active");
+    var bubbleEl = document.getElementById("ask-ai-bubble");
+    if (bubbleEl) bubbleEl.classList.remove("show");
+}
+
+function askQuestion() {
+    var input = document.getElementById("ask-ai-input");
+    var q = input.value.trim();
+    if (!q) return;
+    input.value = "";
+    document.getElementById("ask-ai-loading").style.display = "block";
+
+    var msgDiv = document.getElementById("ask-ai-messages");
+    msgDiv.innerHTML += '<div class="qa-item"><div class="qa-question">问：' + escapeHtml(q) + '</div></div>';
+
+    fetch("/api/paper/{{ paper.id }}/ask", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({question: q})
+    })
+    .then(r => r.json())
+    .then(d => {
+        document.getElementById("ask-ai-loading").style.display = "none";
+        if (d.ok) {
+            msgDiv.innerHTML += '<div class="qa-item"><div class="qa-answer">答：' + escapeHtml(d.answer) + '</div></div>';
+        } else {
+            msgDiv.innerHTML += '<div class="qa-item"><div class="qa-answer" style="color:#dc2626;">错误：' + escapeHtml(d.error) + '</div></div>';
+        }
+        msgDiv.scrollTop = msgDiv.scrollHeight;
+    })
+    .catch(e => {
+        document.getElementById("ask-ai-loading").style.display = "none";
+        msgDiv.innerHTML += '<div class="qa-item"><div class="qa-answer" style="color:#dc2626;">请求失败</div></div>';
+    });
+}
+
+function escapeHtml(text) {
+    var d = document.createElement("div");
+    d.textContent = text;
+    return d.innerHTML;
+}
+
+// ==== Tags ====
+function toggleTag(paperId, tagName) {
+    // Redirect 组会报告 to the unified report system
+    if (tagName === "组会报告") {
+        toggleReport(paperId);
+        return;
+    }
+    var el = document.getElementById("tag-" + tagName + "-" + paperId);
+    var isSet = el.textContent.includes("&#9989;") || el.textContent.includes("✅");
+
+    if (isSet) {
+        fetch("/api/paper/" + paperId + "/tags/" + encodeURIComponent(tagName), { method: "DELETE" })
+            .then(r => r.json()).then(d => {
+                if (d.ok) el.innerHTML = "&#10060; " + tagName;
+            });
+    } else {
+        fetch("/api/paper/" + paperId + "/tags", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({tag_name: tagName})
+        }).then(r => r.json()).then(d => {
+            if (d.ok) el.innerHTML = "&#9989; " + tagName;
+        });
+    }
+}
+
+// ==== Detailed Analysis ====
+function generateDetailedAnalysis() {
+    var btn = document.getElementById("btn-detailed-analysis");
+    if (!btn) return;
+    btn.disabled = true;
+    btn.textContent = "正在生成...";
+    fetch("/api/paper/{{ paper.id }}/detailed-analysis", {method: "GET"})
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+        if (d.ok && d.analysis) { showDetailedAnalysis(d.analysis); return; }
+        return fetch("/api/paper/{{ paper.id }}/detailed-analysis", {method: "POST"})
+        .then(function(r) { return r.json(); })
+        .then(function(d2) {
+            if (d2.ok && d2.analysis) { showDetailedAnalysis(d2.analysis); }
+            else { alert("生成失败: " + (d2.error || "未知错误")); btn.disabled = false; btn.textContent = "详细AI分析"; }
+        });
+    })
+    .catch(function(e) { alert("请求失败: " + e.message); btn.disabled = false; btn.textContent = "详细AI分析"; });
+}
+function showDetailedAnalysis(content) {
+    var container = document.getElementById("detailed-analysis-container");
+    var contentDiv = document.getElementById("detailed-analysis-content");
+    if (container && contentDiv) {
+        // Convert markdown-style headers to HTML
+        var html = content
+            .replace(/##\s*(\d+\.\s*)?([^#]+)/g, "<h3>$2</h3>")
+            .replace(/\n{2,}/g, "</p><p>")
+            .replace(/\n/g, "<br>");
+        html = "<p>" + html + "</p>";
+        // Fix nested paragraph issues
+        html = html.replace("<p></p>", "").replace("<p><br></p>", "");
+        html = html.replace(/<br><\/h3>/g, "</h3>");
+        html = html.replace(/<\/h3><br>/g, "</h3>");
+        html = html.replace(/<h3><br>/g, "<h3>");
+        html = html.replace(/<p><h3>/g, "<h3>");
+        html = html.replace(/<\/h3><\/p>/g, "</h3>");
+        html = html.replace(/<p><\/h3>/g, "</h3>");
+
+        contentDiv.innerHTML = html;
+        container.style.display = "block";
+        
+        // Embed figures after detailed analysis
+        embedFiguresInAnalysis();
+        
+        // Hide the separate figures section
+        var oldFigures = document.querySelector(".detail-figures");
+        if (oldFigures) { oldFigures.style.display = "none"; }
+        
+        var btn = document.getElementById("btn-detailed-analysis");
+        if (btn) { btn.style.display = "none"; }
+    }
+}
+
+function embedFiguresInAnalysis() {
+    var figures = document.querySelectorAll(".figure-item");
+    var container = document.getElementById("detailed-analysis-content");
+    if (!container || figures.length === 0) return;
+    
+    // Create figure gallery at the bottom of the analysis
+    var figGallery = document.createElement("div");
+    figGallery.className = "detailed-figure-gallery";
+    figGallery.innerHTML = '<h3>图表展示</h3><div style="display:flex;flex-direction:column;gap:16px;">';
+    
+    figures.forEach(function(fig) {
+        var img = fig.querySelector("img");
+        var cap = fig.querySelector(".figure-caption");
+        if (img) {
+            var wrapper = document.createElement("div");
+            wrapper.style.cssText = "margin-bottom:12px;";
+            var newImg = document.createElement("img");
+            newImg.src = img.src;
+            newImg.style.cssText = "max-width:100%;border-radius:8px;border:1px solid #eee;cursor:pointer;";
+            newImg.onclick = function() { img.onclick(); };
+            wrapper.appendChild(newImg);
+            if (cap) {
+                var newCap = document.createElement("div");
+                newCap.style.cssText = "color:#666;font-size:0.85em;margin-top:4px;padding:0 4px;";
+                newCap.textContent = cap.textContent;
+                wrapper.appendChild(newCap);
+            }
+            figGallery.querySelector("div").appendChild(wrapper);
+        }
+    });
+    figGallery.querySelector("div").innerHTML += "</div>";
+    container.appendChild(figGallery);
+}
+document.addEventListener("DOMContentLoaded", function() {
+    fetch("/api/paper/{{ paper.id }}/detailed-analysis", {method: "GET"})
+    .then(function(r) { return r.json(); })
+    .then(function(d) { if (d.ok && d.analysis) { showDetailedAnalysis(d.analysis); } }).catch(function() {});
+});
+// ==== Delete Conversation ====
+function deleteConversation(convId) {
+    if (!confirm("确定删除该对话记录？")) return;
+    fetch("/api/conversation/" + convId, {method: "DELETE"})
+    .then(function(r) { return r.json(); })
+    .then(function(d) { if (d.ok) { var el = document.getElementById("conv-" + convId); if (el) el.remove(); } })
+    .catch(function(e) { alert("删除失败"); });
+}
+// ==== Hide bubble on first click ====
+
+
+
+
+
+// ==== Bubble show ====
+(function() {
+    var bubbleEl = document.getElementById("ask-ai-bubble");
+    if (bubbleEl) {
+        setTimeout(function() { bubbleEl.classList.add("show"); }, 500);
+    }
+})();// ==== Status & Star ====
+function updateStatus(id, status) {
+    fetch("/api/paper/" + id + "/status", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({status: status})
+    }).then(r => r.json()).then(d => { if(d.ok) location.reload(); });
+}
+function toggleStar(id) {
+    fetch("/api/paper/" + id + "/star", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username: CURRENT_USER ? CURRENT_USER.username : ""})
+    }).then(r => r.json()).then(d => { if(d.ok) location.reload(); });
+}
+</script>
+{% endblock %}

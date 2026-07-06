@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}搜索 - ArXiv文献助手{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>搜索论文</h1>
+</div>
+
+<form class="search-form" method="get" action="/search">
+    <input type="text" name="q" value="{{ query }}" placeholder="输入标题、作者或关键词..." class="search-input-large">
+    <button type="submit" class="btn btn-primary">搜索</button>
+</form>
+
+{% if query and papers %}
+<div class="search-results">
+    <p class="result-count">找到 {{ papers|length }} 篇相关论文</p>
+    <div class="paper-list">
+        {% for p in papers %}
+        <div class="paper-card">
+            <div class="paper-header">
+                <span class="rating">
+                    {% for i in range(p.value_rating or 0) %}&#9733;{% endfor %}{% for i in range(5 - (p.value_rating or 0)) %}&#9734;{% endfor %}
+                </span>
+                <span class="arxiv-id">{{ p.published_date }}</span>
+            </div>
+            <h3 class="paper-title"><a href="/paper/{{ p.id }}">{{ p.title }}</a></h3>
+            <div class="paper-authors">{{ p.authors[:180] if p.authors else "" }}</div>
+            {% if p.one_line_value %}
+            <div class="paper-one-liner">{{ p.one_line_value }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% elif query %}
+<div class="empty-state">
+    <p>未找到与 "{{ query }}" 相关的论文</p>
+</div>
+{% endif %}
+{% endblock %}

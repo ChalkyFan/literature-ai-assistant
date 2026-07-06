@@ -1,0 +1,12 @@
+config_local.py
+__pycache__/
+*.pyc
+papers/*
+!papers/.gitkeep
+reports/*
+!reports/.gitkeep
+data/*.db
+venv/
+.env
+
+*.bak

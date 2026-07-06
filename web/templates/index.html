@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}今日简报 - ArXiv文献助手{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>每日文献简报</h1>
+    <div class="date-nav">
+        <span class="date-label">{{ date }}</span>
+        <span class="paper-count">{{ papers|length }} 篇论文</span>
+    </div>
+    <div class="toolbar">
+        <div class="sort-bar">
+            <label>排序：</label>
+            <a href="?sort=rating{% if tag %}&tag={{ tag }}{% endif %}{% if source == 'custom' %}&source=custom{% endif %}" class="sort-btn {% if sort_by == 'rating' %}active{% endif %}">相关度</a>
+            
+            <a href="?sort=keywords{% if tag %}&tag={{ tag }}{% endif %}{% if source == 'custom' %}&source=custom{% endif %}" class="sort-btn {% if sort_by == 'keywords' %}active{% endif %}">关键词数</a>
+        </div>
+        <div class="tag-bar">
+            <label>筛选：</label>
+            <a href="/" class="sort-btn {% if not tag and source != 'custom' %}active{% endif %}">全部</a>
+            <a href="?tag=待精读" class="sort-btn tag-btn-intense {% if tag == '待精读' %}active{% endif %}">待精读</a>
+            <a href="?tag=组会报告" class="sort-btn tag-btn-report {% if tag == '组会报告' %}active{% endif %}">组会报告</a>
+            <a href="?source=custom" class="sort-btn tag-btn-upload {% if source == 'custom' %}active{% endif %}">我的自行添加</a>
+        </div>
+    </div>
+</div>
+
+{% if papers %}
+<div class="paper-list">
+    {% for p in papers %}
+    <div class="paper-card" data-id="{{ p.id }}">
+        <div class="paper-header">
+            <span class="rating">
+                {% for i in range(p.value_rating or 0) %}&#9733;{% endfor %}{% for i in range(5 - (p.value_rating or 0)) %}&#9734;{% endfor %}
+            </span>
+            <span class="arxiv-id">arXiv:{{ p.arxiv_id }}</span>
+        </div>
+        <h3 class="paper-title">
+            <a href="/paper/{{ p.id }}">{{ p.title }}</a>
+        </h3>
+        <div class="paper-authors-row">
+            <span class="paper-authors-text">{{ p.authors[:180] if p.authors else "" }}</span>
+            {% if current_user and current_user.role == "admin" %}
+            <button class="btn-delete" onclick="confirmDelete({{ p.id }})">删除该条目</button>
+            {% endif %}
+        </div>
+        {% if p.affiliations %}<div class="paper-affiliation">{{ p.affiliations[:100] }}</div>{% endif %}
+        {% if p.one_line_value %}
+        <div class="paper-one-liner">{{ p.one_line_value }}</div>
+        {% endif %}
+        <div class="paper-footer">
+            <span class="status-badge status-{{ p.status }}">{{ p.status }}</span>
+            <label class="star-btn" onclick="toggleStar({{ p.id }})" title="收藏">
+                {% if p.is_starred %}&#11088;{% else %}&#9734;{% endif %}
+            </label>
+            <span class="report-dots" id="dots-{{ p.id }}">
+                {% for r in p.reporters %}
+                <span class="report-dot" style="background:{{ r.color }};" title="{{ r.username }}"></span>
+                {% endfor %}
+            </span>
+            <a href="javascript:void(0)" class="btn-tag" onclick="toggleReport({{ p.id }})" title="加入组会报告">&#128202;</a>
+            <a href="/paper/{{ p.id }}" class="btn-detail">查看详情 &#8594;</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <p>今天还没有新增论文</p>
+    <p class="hint">自动化任务会在每天早上抓取 arXiv 最新文章</p>
+</div>
+{% endif %}
+
+<script>
+function toggleStar(id) {
+    fetch("/api/paper/" + id + "/star", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username: CURRENT_USER ? CURRENT_USER.username : ""})
+    }).then(r => r.json()).then(d => { if(d.ok) location.reload(); });
+}
+</script>
+{% endblock %}

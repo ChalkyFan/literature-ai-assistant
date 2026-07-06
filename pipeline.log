@@ -1,0 +1,892 @@
+2026-06-27 13:32:18,306 [INFO] pipeline: ==================================================
+2026-06-27 13:32:18,308 [INFO] pipeline: Arxiv Assistant - Daily Pipeline Started
+2026-06-27 13:32:18,308 [INFO] pipeline: ==================================================
+2026-06-27 13:32:18,309 [INFO] arxiv_assistant.db: Database initialized
+2026-06-27 13:32:18,310 [INFO] pipeline: [1/4] Fetching new papers from arXiv...
+2026-06-27 13:32:18,310 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.str-el from arXiv...
+2026-06-27 13:32:18,310 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-06-27 13:32:20,190 [INFO] arxiv: Got first page: 100 of 83336 total results
+2026-06-27 13:32:20,191 [INFO] arxiv_assistant.fetcher:   cond-mat.str-el: got 0 new papers
+2026-06-27 13:32:20,191 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.mtrl-sci from arXiv...
+2026-06-27 13:32:20,193 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.mtrl-sci&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-06-27 13:32:21,984 [INFO] arxiv: Got first page: 100 of 110095 total results
+2026-06-27 13:32:21,984 [INFO] arxiv_assistant.fetcher:   cond-mat.mtrl-sci: got 0 new papers
+2026-06-27 13:32:21,985 [INFO] pipeline:   Filtered to 0 papers
+2026-06-27 13:32:21,985 [INFO] pipeline: No new papers today. Pipeline done.
+2026-06-28 09:00:03,150 [INFO] pipeline: ==================================================
+2026-06-28 09:00:03,150 [INFO] pipeline: Arxiv Assistant - Daily Pipeline Started
+2026-06-28 09:00:03,150 [INFO] pipeline: ==================================================
+2026-06-28 09:00:03,182 [INFO] arxiv_assistant.db: Database initialized
+2026-06-28 09:00:03,182 [INFO] pipeline: [1/4] Fetching new papers from arXiv...
+2026-06-28 09:00:03,182 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.str-el from arXiv...
+2026-06-28 09:00:03,183 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-06-28 09:00:12,348 [INFO] arxiv: Got first page: 100 of 83336 total results
+2026-06-28 09:00:12,349 [INFO] arxiv_assistant.fetcher:   cond-mat.str-el: got 0 new papers
+2026-06-28 09:00:12,349 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.mtrl-sci from arXiv...
+2026-06-28 09:00:12,350 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.mtrl-sci&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-06-28 09:00:18,696 [INFO] arxiv: Got first page: 100 of 110095 total results
+2026-06-28 09:00:18,697 [INFO] arxiv_assistant.fetcher:   cond-mat.mtrl-sci: got 0 new papers
+2026-06-28 09:00:18,698 [INFO] pipeline:   Filtered to 0 papers
+2026-06-28 09:00:18,698 [INFO] pipeline: No new papers today. Pipeline done.
+2026-06-29 09:00:05,261 [INFO] pipeline: ==================================================
+2026-06-29 09:00:05,267 [INFO] pipeline: Arxiv Assistant - Daily Pipeline Started
+2026-06-29 09:00:05,267 [INFO] pipeline: ==================================================
+2026-06-29 09:00:05,276 [INFO] arxiv_assistant.db: Database initialized
+2026-06-29 09:00:05,276 [INFO] pipeline: [1/4] Fetching new papers from arXiv...
+2026-06-29 09:00:05,276 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.str-el from arXiv...
+2026-06-29 09:00:05,276 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-06-29 09:00:17,352 [INFO] arxiv: Got first page: 100 of 83336 total results
+2026-06-29 09:00:17,352 [INFO] arxiv_assistant.fetcher:   cond-mat.str-el: got 0 new papers
+2026-06-29 09:00:17,352 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.mtrl-sci from arXiv...
+2026-06-29 09:00:17,355 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.mtrl-sci&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-06-29 09:01:15,134 [INFO] arxiv: Sleeping: 3.000000 seconds
+2026-06-29 09:01:18,136 [INFO] arxiv: Requesting page (first: True, try: 1): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.mtrl-sci&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-06-29 09:01:29,236 [INFO] arxiv: Sleeping: 3.000000 seconds
+2026-06-29 09:01:32,238 [INFO] arxiv: Requesting page (first: True, try: 2): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.mtrl-sci&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-06-29 09:01:47,860 [INFO] arxiv: Sleeping: 3.000000 seconds
+2026-06-29 09:01:50,861 [INFO] arxiv: Requesting page (first: True, try: 3): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.mtrl-sci&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-06-30 09:00:09,262 [INFO] pipeline: ==================================================
+2026-06-30 09:00:09,269 [INFO] pipeline: Arxiv Assistant - Daily Pipeline Started
+2026-06-30 09:00:09,269 [INFO] pipeline: ==================================================
+2026-06-30 09:00:09,277 [INFO] arxiv_assistant.db: Database initialized
+2026-06-30 09:00:09,278 [INFO] pipeline: [1/4] Fetching new papers from arXiv...
+2026-06-30 09:00:09,278 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.str-el from arXiv...
+2026-06-30 09:00:09,278 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-06-30 09:00:30,364 [INFO] arxiv: Requesting page (first: True, try: 1): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-06-30 09:00:51,408 [INFO] arxiv: Requesting page (first: True, try: 2): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-06-30 09:01:12,457 [INFO] arxiv: Requesting page (first: True, try: 3): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-01 09:00:06,166 [INFO] pipeline: ==================================================
+2026-07-01 09:00:06,173 [INFO] pipeline: Arxiv Assistant - Daily Pipeline Started
+2026-07-01 09:00:06,173 [INFO] pipeline: ==================================================
+2026-07-01 09:00:06,198 [INFO] arxiv_assistant.db: Database initialized
+2026-07-01 09:00:06,199 [INFO] pipeline: [1/4] Fetching new papers from arXiv...
+2026-07-01 09:00:06,199 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.str-el from arXiv...
+2026-07-01 09:00:06,199 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-01 09:00:16,261 [INFO] arxiv: Got first page: 100 of 83380 total results
+2026-07-01 09:00:16,262 [INFO] arxiv_assistant.fetcher:   cond-mat.str-el: got 0 new papers
+2026-07-01 09:00:16,262 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.mtrl-sci from arXiv...
+2026-07-01 09:00:16,263 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.mtrl-sci&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-01 09:00:19,157 [INFO] arxiv: Got first page: 100 of 110187 total results
+2026-07-01 09:00:19,159 [INFO] arxiv_assistant.fetcher:   cond-mat.mtrl-sci: got 11 new papers
+2026-07-01 09:00:19,170 [INFO] pipeline:   Filtered to 4 papers
+2026-07-01 09:00:19,170 [INFO] pipeline: [2/4] Downloading PDFs...
+2026-07-01 09:00:19,273 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2606.31660v1
+2026-07-01 09:00:20,842 [ERROR] arxiv_assistant.downloader: Download failed https://arxiv.org/pdf/2606.31660v1: 404 Client Error: Not Found for url: https://arxiv.org/pdf/2606.31660v1
+2026-07-01 09:00:20,928 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2606.31655v1
+2026-07-01 09:00:22,605 [ERROR] arxiv_assistant.downloader: Download failed https://arxiv.org/pdf/2606.31655v1: 404 Client Error: Not Found for url: https://arxiv.org/pdf/2606.31655v1
+2026-07-01 09:00:22,718 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2606.31563v1
+2026-07-01 09:00:24,183 [ERROR] arxiv_assistant.downloader: Download failed https://arxiv.org/pdf/2606.31563v1: 404 Client Error: Not Found for url: https://arxiv.org/pdf/2606.31563v1
+2026-07-01 09:00:24,263 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2606.31558v1
+2026-07-01 09:00:25,875 [ERROR] arxiv_assistant.downloader: Download failed https://arxiv.org/pdf/2606.31558v1: 404 Client Error: Not Found for url: https://arxiv.org/pdf/2606.31558v1
+2026-07-01 09:00:25,877 [INFO] pipeline:   Downloaded 0 papers
+2026-07-01 09:00:25,878 [INFO] pipeline: [3/4] AI deep reading...
+2026-07-01 09:00:25,878 [INFO] pipeline: [4/4] Generating daily report...
+2026-07-01 09:00:25,887 [INFO] arxiv_assistant.report: Report generated: D:\文献AI助手\reports\daily-2026-07-01.html
+2026-07-01 09:00:25,899 [INFO] pipeline:   Report: D:\文献AI助手\reports\daily-2026-07-01.html
+2026-07-01 09:00:25,899 [INFO] pipeline: ==================================================
+2026-07-01 09:00:25,899 [INFO] pipeline: Pipeline completed
+2026-07-01 09:00:25,899 [INFO] pipeline: ==================================================
+2026-07-02 09:00:05,647 [INFO] pipeline: ==================================================
+2026-07-02 09:00:05,661 [INFO] pipeline: Arxiv Assistant - Daily Pipeline Started
+2026-07-02 09:00:05,661 [INFO] pipeline: ==================================================
+2026-07-02 09:00:05,726 [INFO] arxiv_assistant.db: Database initialized
+2026-07-02 09:00:05,728 [INFO] pipeline: [1/4] Fetching new papers from arXiv...
+2026-07-02 09:00:05,729 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.str-el from arXiv...
+2026-07-02 09:00:05,730 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-02 09:00:10,453 [INFO] arxiv: Got first page: 100 of 83397 total results
+2026-07-02 09:00:10,453 [INFO] arxiv_assistant.fetcher:   cond-mat.str-el: got 0 new papers
+2026-07-02 09:00:10,453 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.mtrl-sci from arXiv...
+2026-07-02 09:00:10,455 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.mtrl-sci&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-02 09:00:15,027 [INFO] arxiv: Got first page: 100 of 110218 total results
+2026-07-02 09:00:15,027 [INFO] arxiv_assistant.fetcher:   cond-mat.mtrl-sci: got 0 new papers
+2026-07-02 09:00:15,029 [INFO] pipeline:   Filtered to 0 papers
+2026-07-02 09:00:15,029 [INFO] pipeline: No new papers today. Pipeline done.
+2026-07-03 09:00:05,854 [INFO] pipeline: ==================================================
+2026-07-03 09:00:05,859 [INFO] pipeline: Arxiv Assistant - Daily Pipeline Started
+2026-07-03 09:00:05,860 [INFO] pipeline: ==================================================
+2026-07-03 09:00:05,924 [INFO] arxiv_assistant.db: Database initialized
+2026-07-03 09:00:05,925 [INFO] pipeline: [1/4] Fetching new papers from arXiv...
+2026-07-03 09:00:05,934 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.str-el from arXiv...
+2026-07-03 09:00:05,935 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-03 09:00:15,918 [INFO] arxiv: Got first page: 100 of 83425 total results
+2026-07-03 09:00:15,919 [INFO] arxiv_assistant.fetcher:   cond-mat.str-el: got 8 new papers
+2026-07-03 09:00:15,919 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.mtrl-sci from arXiv...
+2026-07-03 09:00:15,921 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.mtrl-sci&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-03 09:00:18,951 [INFO] arxiv: Got first page: 100 of 110265 total results
+2026-07-03 09:00:18,953 [INFO] arxiv_assistant.fetcher:   cond-mat.mtrl-sci: got 11 new papers
+2026-07-03 09:00:18,965 [INFO] pipeline:   Filtered to 5 papers
+2026-07-03 09:00:18,965 [INFO] pipeline: [2/4] Downloading PDFs...
+2026-07-03 09:00:19,047 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.02238v1
+2026-07-03 09:00:20,645 [ERROR] arxiv_assistant.downloader: Download failed https://arxiv.org/pdf/2607.02238v1: 404 Client Error: Not Found for url: https://arxiv.org/pdf/2607.02238v1
+2026-07-03 09:00:20,755 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.02224v1
+2026-07-03 09:00:22,288 [ERROR] arxiv_assistant.downloader: Download failed https://arxiv.org/pdf/2607.02224v1: 404 Client Error: Not Found for url: https://arxiv.org/pdf/2607.02224v1
+2026-07-03 09:00:22,380 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.02183v1
+2026-07-03 09:00:23,934 [ERROR] arxiv_assistant.downloader: Download failed https://arxiv.org/pdf/2607.02183v1: 404 Client Error: Not Found for url: https://arxiv.org/pdf/2607.02183v1
+2026-07-03 09:00:24,030 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.02120v1
+2026-07-03 09:00:25,451 [ERROR] arxiv_assistant.downloader: Download failed https://arxiv.org/pdf/2607.02120v1: 404 Client Error: Not Found for url: https://arxiv.org/pdf/2607.02120v1
+2026-07-03 09:00:25,544 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.02114v1
+2026-07-03 09:00:26,937 [ERROR] arxiv_assistant.downloader: Download failed https://arxiv.org/pdf/2607.02114v1: 404 Client Error: Not Found for url: https://arxiv.org/pdf/2607.02114v1
+2026-07-03 09:00:26,942 [INFO] pipeline:   Downloaded 0 papers
+2026-07-03 09:00:26,943 [INFO] pipeline: [3/4] AI deep reading...
+2026-07-03 09:00:26,943 [INFO] pipeline: [4/4] Generating daily report...
+2026-07-03 09:00:26,955 [INFO] arxiv_assistant.report: Report generated: D:\文献AI助手\reports\daily-2026-07-03.html
+2026-07-03 09:00:26,991 [INFO] pipeline:   Report: D:\文献AI助手\reports\daily-2026-07-03.html
+2026-07-03 09:00:26,991 [INFO] pipeline: ==================================================
+2026-07-03 09:00:26,992 [INFO] pipeline: Pipeline completed
+2026-07-03 09:00:26,992 [INFO] pipeline: ==================================================
+2026-07-03 16:04:38,488 [INFO] pipeline: ==================================================
+2026-07-03 16:04:38,504 [INFO] pipeline: Arxiv Assistant - Daily Pipeline Started
+2026-07-03 16:04:38,504 [INFO] pipeline: ==================================================
+2026-07-03 16:04:38,505 [INFO] arxiv_assistant.db: Database initialized
+2026-07-03 16:04:38,507 [INFO] pipeline: [1/4] Fetching new papers from arXiv...
+2026-07-03 16:04:38,507 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.str-el from arXiv...
+2026-07-03 16:04:38,507 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-03 16:04:40,620 [INFO] arxiv: Got first page: 100 of 83440 total results
+2026-07-03 16:04:40,621 [INFO] arxiv_assistant.fetcher:   cond-mat.str-el: got 16 new papers
+2026-07-03 16:04:40,621 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.mtrl-sci from arXiv...
+2026-07-03 16:04:40,623 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.mtrl-sci&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-03 16:04:42,598 [INFO] arxiv: Got first page: 100 of 110280 total results
+2026-07-03 16:04:42,599 [INFO] arxiv_assistant.fetcher:   cond-mat.mtrl-sci: got 23 new papers
+2026-07-03 16:04:42,607 [INFO] pipeline:   Filtered to 14 papers
+2026-07-03 16:04:42,607 [INFO] pipeline: [2/4] Downloading PDFs...
+2026-07-03 16:04:42,705 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.02449v1
+2026-07-03 16:04:44,613 [INFO] arxiv_assistant.downloader: Downloaded: D:\文献AI助手\papers\2026-07\arxiv-2607.02449.pdf (479384 bytes)
+2026-07-03 16:04:44,772 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.02418v1
+2026-07-03 16:04:47,345 [INFO] arxiv_assistant.downloader: Downloaded: D:\文献AI助手\papers\2026-07\arxiv-2607.02418.pdf (1012827 bytes)
+2026-07-03 16:04:47,506 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.02238v1
+2026-07-03 16:04:53,669 [INFO] arxiv_assistant.downloader: Downloaded: D:\文献AI助手\papers\2026-07\arxiv-2607.02238.pdf (7819410 bytes)
+2026-07-03 16:04:53,829 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.02224v1
+2026-07-03 16:04:56,275 [INFO] arxiv_assistant.downloader: Downloaded: D:\文献AI助手\papers\2026-07\arxiv-2607.02224.pdf (815261 bytes)
+2026-07-03 16:04:56,425 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.02183v1
+2026-07-03 16:04:58,761 [INFO] arxiv_assistant.downloader: Downloaded: D:\文献AI助手\papers\2026-07\arxiv-2607.02183.pdf (1246454 bytes)
+2026-07-03 16:04:58,901 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.02120v1
+2026-07-03 16:05:01,690 [INFO] arxiv_assistant.downloader: Downloaded: D:\文献AI助手\papers\2026-07\arxiv-2607.02120.pdf (5427180 bytes)
+2026-07-03 16:05:01,873 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.02114v1
+2026-07-03 16:05:04,603 [INFO] arxiv_assistant.downloader: Downloaded: D:\文献AI助手\papers\2026-07\arxiv-2607.02114.pdf (4045530 bytes)
+2026-07-03 16:05:04,745 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.01997v1
+2026-07-03 16:05:07,821 [INFO] arxiv_assistant.downloader: Downloaded: D:\文献AI助手\papers\2026-07\arxiv-2607.01997.pdf (3294571 bytes)
+2026-07-03 16:05:07,954 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.01947v1
+2026-07-03 16:05:10,796 [INFO] arxiv_assistant.downloader: Downloaded: D:\文献AI助手\papers\2026-07\arxiv-2607.01947.pdf (4455273 bytes)
+2026-07-03 16:05:10,912 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.01841v1
+2026-07-03 16:05:13,623 [INFO] arxiv_assistant.downloader: Downloaded: D:\文献AI助手\papers\2026-07\arxiv-2607.01841.pdf (3708297 bytes)
+2026-07-03 16:05:13,786 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.01815v1
+2026-07-03 16:05:17,009 [INFO] arxiv_assistant.downloader: Downloaded: D:\文献AI助手\papers\2026-07\arxiv-2607.01815.pdf (4200845 bytes)
+2026-07-03 16:05:17,131 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.01720v1
+2026-07-03 16:05:19,840 [INFO] arxiv_assistant.downloader: Downloaded: D:\文献AI助手\papers\2026-07\arxiv-2607.01720.pdf (4556283 bytes)
+2026-07-03 16:05:19,990 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.01673v1
+2026-07-03 16:05:24,973 [INFO] arxiv_assistant.downloader: Downloaded: D:\文献AI助手\papers\2026-07\arxiv-2607.01673.pdf (14986889 bytes)
+2026-07-03 16:05:25,109 [INFO] arxiv_assistant.downloader: Downloading: https://arxiv.org/pdf/2607.01623v1
+2026-07-03 16:05:27,593 [INFO] arxiv_assistant.downloader: Downloaded: D:\文献AI助手\papers\2026-07\arxiv-2607.01623.pdf (909639 bytes)
+2026-07-03 16:05:27,658 [INFO] pipeline:   Downloaded 14 papers
+2026-07-03 16:05:27,658 [INFO] pipeline: [3/4] AI deep reading...
+2026-07-03 16:05:27,662 [INFO] pipeline:   Analyzing: Anomalous thermopower from the drag of overdamped collective...
+2026-07-03 16:05:27,816 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02449_fig1.png (1258x816)
+2026-07-03 16:05:27,851 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 11 pages, 1 figures extracted
+2026-07-03 16:05:27,854 [WARNING] arxiv_assistant.ai_reader: DeepSeek API not configured, returning mock analysis
+2026-07-03 16:05:27,976 [INFO] pipeline:   Done: Anomalous thermopower from the drag of overdamped collective
+2026-07-03 16:05:27,980 [INFO] pipeline:   Analyzing: Intrinsic orbital Hall effect in a nonuniform electric field...
+2026-07-03 16:05:28,049 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig1.png (593x442)
+2026-07-03 16:05:28,050 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig2.png (102x182)
+2026-07-03 16:05:28,051 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig3.jpeg (1362x853)
+2026-07-03 16:05:28,052 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig4.png (177x141)
+2026-07-03 16:05:28,054 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig5.png (294x128)
+2026-07-03 16:05:28,055 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig6.png (290x114)
+2026-07-03 16:05:28,073 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig7.png (223x205)
+2026-07-03 16:05:28,074 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig8.jpeg (1675x795)
+2026-07-03 16:05:28,075 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig9.png (341x166)
+2026-07-03 16:05:28,077 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig10.png (341x166)
+2026-07-03 16:05:28,113 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig11.png (798x634)
+2026-07-03 16:05:28,129 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 9 pages, 11 figures extracted
+2026-07-03 16:05:28,130 [WARNING] arxiv_assistant.ai_reader: DeepSeek API not configured, returning mock analysis
+2026-07-03 16:05:29,034 [INFO] pipeline:   Done: Intrinsic orbital Hall effect in a nonuniform electric field
+2026-07-03 16:05:29,038 [INFO] pipeline:   Analyzing: Interfacial Strain and Structural Defects Govern the Perform...
+2026-07-03 16:05:29,086 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig1.png (749x826)
+2026-07-03 16:05:29,104 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig2.png (784x636)
+2026-07-03 16:05:29,118 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig3.png (994x405)
+2026-07-03 16:05:29,190 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig4.png (1561x650)
+2026-07-03 16:05:29,223 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig5.png (1056x851)
+2026-07-03 16:05:29,308 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig6.png (1205x779)
+2026-07-03 16:05:29,453 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig7.png (1305x881)
+2026-07-03 16:05:29,478 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig8.png (969x784)
+2026-07-03 16:05:29,492 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig9.png (529x401)
+2026-07-03 16:05:29,519 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig10.png (1296x549)
+2026-07-03 16:05:29,545 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig11.png (969x854)
+2026-07-03 16:05:29,571 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig12.png (1113x803)
+2026-07-03 16:05:29,688 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig13.png (1051x704)
+2026-07-03 16:05:29,823 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig14.png (1318x741)
+2026-07-03 16:05:29,863 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig15.png (1317x400)
+2026-07-03 16:05:29,892 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig16.png (1146x749)
+2026-07-03 16:05:29,894 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 27 pages, 16 figures extracted
+2026-07-03 16:05:29,896 [WARNING] arxiv_assistant.ai_reader: DeepSeek API not configured, returning mock analysis
+2026-07-03 16:05:31,219 [INFO] pipeline:   Done: Interfacial Strain and Structural Defects Govern the Perform
+2026-07-03 16:05:31,223 [INFO] pipeline:   Analyzing: Ultrafast Demagnetization Governed by Spin Fluctuations in C...
+2026-07-03 16:05:31,388 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02224_fig1.jpeg (319x179)
+2026-07-03 16:05:31,395 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02224_fig2.png (148x204)
+2026-07-03 16:05:31,413 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 19 pages, 2 figures extracted
+2026-07-03 16:05:31,415 [WARNING] arxiv_assistant.ai_reader: DeepSeek API not configured, returning mock analysis
+2026-07-03 16:05:31,627 [INFO] pipeline:   Done: Ultrafast Demagnetization Governed by Spin Fluctuations in C
+2026-07-03 16:05:31,629 [INFO] pipeline:   Analyzing: A density matrix renormalization group approach to quantum p...
+2026-07-03 16:05:31,751 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02183_fig1.png (1477x797)
+2026-07-03 16:05:31,793 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02183_fig2.png (1476x819)
+2026-07-03 16:05:31,803 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 8 pages, 2 figures extracted
+2026-07-03 16:05:31,804 [WARNING] arxiv_assistant.ai_reader: DeepSeek API not configured, returning mock analysis
+2026-07-03 16:05:32,019 [INFO] pipeline:   Done: A density matrix renormalization group approach to quantum p
+2026-07-03 16:05:32,022 [INFO] pipeline:   Analyzing: Electrical transport in ultra-thin films: from Fuchs-Sondhei...
+2026-07-03 16:05:32,379 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02120_fig1.png (1368x1149)
+2026-07-03 16:05:32,383 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02120_fig2.jpeg (3480x2149)
+2026-07-03 16:05:32,390 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02120_fig3.jpeg (4092x2193)
+2026-07-03 16:05:32,415 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02120_fig4.jpeg (1191x519)
+2026-07-03 16:05:33,127 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02120_fig5.png (3212x2475)
+2026-07-03 16:05:33,138 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 23 pages, 5 figures extracted
+2026-07-03 16:05:33,139 [WARNING] arxiv_assistant.ai_reader: DeepSeek API not configured, returning mock analysis
+2026-07-03 16:05:33,515 [INFO] pipeline:   Done: Electrical transport in ultra-thin films: from Fuchs-Sondhei
+2026-07-03 16:05:33,518 [INFO] pipeline:   Analyzing: Plaid-Like Spin Splitting and Chirality of Magnon Bands in A...
+2026-07-03 16:05:33,671 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig1.png (1985x649)
+2026-07-03 16:05:33,716 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig2.png (1985x649)
+2026-07-03 16:05:33,748 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig3.png (1489x605)
+2026-07-03 16:05:33,791 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig4.png (825x811)
+2026-07-03 16:05:33,882 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig5.png (2232x754)
+2026-07-03 16:05:33,950 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig6.png (2232x756)
+2026-07-03 16:05:34,022 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig7.png (2233x756)
+2026-07-03 16:05:34,086 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig8.png (2234x756)
+2026-07-03 16:05:34,104 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig9.png (176x138)
+2026-07-03 16:05:34,115 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig10.png (701x638)
+2026-07-03 16:05:34,116 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig11.png (177x140)
+2026-07-03 16:05:34,128 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig12.png (701x638)
+2026-07-03 16:05:34,129 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig13.png (179x138)
+2026-07-03 16:05:34,130 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig14.png (171x167)
+2026-07-03 16:05:34,131 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig15.png (146x114)
+2026-07-03 16:05:34,132 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig16.png (267x103)
+2026-07-03 16:05:34,144 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig17.png (702x638)
+2026-07-03 16:05:34,145 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig18.png (272x167)
+2026-07-03 16:05:34,147 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig19.png (189x167)
+2026-07-03 16:05:34,149 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig20.png (146x114)
+2026-07-03 16:05:34,150 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig21.png (267x103)
+2026-07-03 16:05:34,155 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig22.png (172x138)
+2026-07-03 16:05:34,183 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig23.png (1658x638)
+2026-07-03 16:05:34,185 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig24.png (189x167)
+2026-07-03 16:05:34,186 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig25.png (133x105)
+2026-07-03 16:05:34,187 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig26.png (132x105)
+2026-07-03 16:05:34,187 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig27.png (133x105)
+2026-07-03 16:05:34,189 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig28.png (279x167)
+2026-07-03 16:05:34,190 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig29.png (275x174)
+2026-07-03 16:05:34,192 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig30.png (272x167)
+2026-07-03 16:05:34,192 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig31.png (133x105)
+2026-07-03 16:05:34,193 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig32.png (133x105)
+2026-07-03 16:05:34,194 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig33.png (145x100)
+2026-07-03 16:05:34,196 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig34.png (205x167)
+2026-07-03 16:05:34,197 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig35.png (180x167)
+2026-07-03 16:05:34,200 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig36.png (311x138)
+2026-07-03 16:05:34,211 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig37.png (643x643)
+2026-07-03 16:05:34,222 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig38.png (643x643)
+2026-07-03 16:05:34,233 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig39.png (701x638)
+2026-07-03 16:05:34,245 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig40.png (643x643)
+2026-07-03 16:05:34,256 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig41.png (643x643)
+2026-07-03 16:05:34,267 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig42.png (643x643)
+2026-07-03 16:05:34,278 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig43.png (643x643)
+2026-07-03 16:05:34,287 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 9 pages, 43 figures extracted
+2026-07-03 16:05:34,287 [WARNING] arxiv_assistant.ai_reader: DeepSeek API not configured, returning mock analysis
+2026-07-03 16:05:38,343 [INFO] pipeline:   Done: Plaid-Like Spin Splitting and Chirality of Magnon Bands in A
+2026-07-03 16:05:38,353 [INFO] pipeline:   Analyzing: HVAF Spraying of NiTi Coatings: Microstructure, Phase Transf...
+2026-07-03 16:05:38,415 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig1.jpeg (1215x630)
+2026-07-03 16:05:38,428 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig2.jpeg (1007x698)
+2026-07-03 16:05:38,431 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig3.jpeg (964x825)
+2026-07-03 16:05:38,434 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig4.jpeg (1511x859)
+2026-07-03 16:05:38,437 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig5.jpeg (1490x761)
+2026-07-03 16:05:38,437 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig6.jpeg (1503x737)
+2026-07-03 16:05:38,501 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig7.png (1251x1062)
+2026-07-03 16:05:38,552 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig8.png (1032x898)
+2026-07-03 16:05:38,605 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig9.png (1386x552)
+2026-07-03 16:05:38,687 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig10.png (1355x1127)
+2026-07-03 16:05:38,703 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig11.png (811x621)
+2026-07-03 16:05:38,707 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig12.jpeg (1445x927)
+2026-07-03 16:05:38,766 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig13.png (1353x964)
+2026-07-03 16:05:38,770 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig14.jpeg (1040x857)
+2026-07-03 16:05:38,822 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig15.png (1084x891)
+2026-07-03 16:05:38,844 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 27 pages, 15 figures extracted
+2026-07-03 16:05:38,845 [WARNING] arxiv_assistant.ai_reader: DeepSeek API not configured, returning mock analysis
+2026-07-03 16:05:40,417 [INFO] pipeline:   Done: HVAF Spraying of NiTi Coatings: Microstructure, Phase Transf
+2026-07-03 16:05:40,420 [INFO] pipeline:   Analyzing: Fermiology and spin polarization of topological surface stat...
+2026-07-03 16:05:40,734 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01947_fig1.png (1818x2428)
+2026-07-03 16:05:40,971 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01947_fig2.png (1811x2222)
+2026-07-03 16:05:41,073 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01947_fig3.png (1324x1476)
+2026-07-03 16:05:41,481 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01947_fig4.png (3267x2202)
+2026-07-03 16:05:41,489 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 8 pages, 4 figures extracted
+2026-07-03 16:05:41,491 [WARNING] arxiv_assistant.ai_reader: DeepSeek API not configured, returning mock analysis
+2026-07-03 16:05:41,918 [INFO] pipeline:   Done: Fermiology and spin polarization of topological surface stat
+2026-07-03 16:05:41,921 [INFO] pipeline:   Analyzing: Quantifying angular momentum of coherently driven circular p...
+2026-07-03 16:05:41,974 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig1.png (973x602)
+2026-07-03 16:05:42,034 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig2.png (939x1130)
+2026-07-03 16:05:42,073 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig3.png (1146x639)
+2026-07-03 16:05:42,112 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig4.png (854x610)
+2026-07-03 16:05:42,140 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig5.png (1074x384)
+2026-07-03 16:05:42,167 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig6.png (906x388)
+2026-07-03 16:05:42,183 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig7.png (808x288)
+2026-07-03 16:05:42,203 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig8.png (680x453)
+2026-07-03 16:05:42,212 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig9.png (694x463)
+2026-07-03 16:05:42,220 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig10.png (683x455)
+2026-07-03 16:05:42,259 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig11.png (1404x726)
+2026-07-03 16:05:42,289 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig12.png (719x957)
+2026-07-03 16:05:42,306 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig13.png (705x627)
+2026-07-03 16:05:42,319 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig14.png (708x315)
+2026-07-03 16:05:42,350 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig15.png (582x647)
+2026-07-03 16:05:42,350 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 23 pages, 15 figures extracted
+2026-07-03 16:05:42,351 [WARNING] arxiv_assistant.ai_reader: DeepSeek API not configured, returning mock analysis
+2026-07-03 16:05:43,818 [INFO] pipeline:   Done: Quantifying angular momentum of coherently driven circular p
+2026-07-03 16:05:43,821 [INFO] pipeline:   Analyzing: Evidence for Deconfined Magnetic Order in the Kitaev-$J_3$ M...
+2026-07-03 16:05:43,961 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01815_fig1.png (1055x1042)
+2026-07-03 16:05:43,989 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01815_fig2.png (1055x1042)
+2026-07-03 16:05:44,017 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01815_fig3.png (1055x1042)
+2026-07-03 16:05:44,046 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01815_fig4.png (1055x1042)
+2026-07-03 16:05:44,199 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01815_fig5.png (1120x840)
+2026-07-03 16:05:44,270 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01815_fig6.png (1120x840)
+2026-07-03 16:05:44,315 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 14 pages, 6 figures extracted
+2026-07-03 16:05:44,316 [WARNING] arxiv_assistant.ai_reader: DeepSeek API not configured, returning mock analysis
+2026-07-03 16:05:44,995 [INFO] pipeline:   Done: Evidence for Deconfined Magnetic Order in the Kitaev-$J_3$ M
+2026-07-03 16:05:44,998 [INFO] pipeline:   Analyzing: Ultrasonic Observation of Slowing Down of Multipole Fluctuat...
+2026-07-03 16:05:45,437 [INFO] arxiv_assistant.pdf_parser: No embedded images found, using page screenshot fallback...
+2026-07-03 16:05:45,485 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.01720_page1.png
+2026-07-03 16:05:45,674 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.01720_page2.png
+2026-07-03 16:05:46,589 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.01720_page3.png
+2026-07-03 16:05:46,640 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.01720_page4.png
+2026-07-03 16:05:46,708 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.01720_page5.png
+2026-07-03 16:05:46,750 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.01720_page6.png
+2026-07-03 16:05:46,752 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 6 pages, 6 figures extracted
+2026-07-03 16:05:46,755 [WARNING] arxiv_assistant.ai_reader: DeepSeek API not configured, returning mock analysis
+2026-07-03 16:05:47,324 [INFO] pipeline:   Done: Ultrasonic Observation of Slowing Down of Multipole Fluctuat
+2026-07-03 16:05:47,326 [INFO] pipeline:   Analyzing: Intrinsically low thermal conductivity of stoichiometric lit...
+2026-07-03 16:05:47,589 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig1.png (2339x2348)
+2026-07-03 16:05:47,883 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig2.png (3330x2587)
+2026-07-03 16:05:48,459 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig3.png (6955x2707)
+2026-07-03 16:05:48,679 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig4.png (4379x1443)
+2026-07-03 16:05:50,907 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig5.png (1914x2746)
+2026-07-03 16:05:51,197 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig6.png (3359x2544)
+2026-07-03 16:05:51,953 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig7.png (8368x2657)
+2026-07-03 16:05:52,217 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig8.png (3377x2445)
+2026-07-03 16:05:52,487 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig9.png (3363x2756)
+2026-07-03 16:05:53,097 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig10.png (6793x2711)
+2026-07-03 16:05:54,154 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 20 pages, 10 figures extracted
+2026-07-03 16:05:54,156 [WARNING] arxiv_assistant.ai_reader: DeepSeek API not configured, returning mock analysis
+2026-07-03 16:05:55,069 [INFO] pipeline:   Done: Intrinsically low thermal conductivity of stoichiometric lit
+2026-07-03 16:05:55,072 [INFO] pipeline:   Analyzing: Phase-selective orbital-charge conversion in $\mathrm{MoTe_2...
+2026-07-03 16:05:55,110 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01623_fig1.jpeg (1267x738)
+2026-07-03 16:05:55,113 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01623_fig2.jpeg (1243x704)
+2026-07-03 16:05:55,120 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01623_fig3.jpeg (1246x1003)
+2026-07-03 16:05:55,157 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01623_fig4.png (1170x884)
+2026-07-03 16:05:55,170 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 15 pages, 4 figures extracted
+2026-07-03 16:05:55,171 [WARNING] arxiv_assistant.ai_reader: DeepSeek API not configured, returning mock analysis
+2026-07-03 16:05:55,586 [INFO] pipeline:   Done: Phase-selective orbital-charge conversion in $\mathrm{MoTe_2
+2026-07-03 16:05:55,586 [INFO] pipeline: [4/4] Generating daily report...
+2026-07-03 16:05:55,595 [INFO] arxiv_assistant.report: Report generated: D:\文献AI助手\reports\daily-2026-07-02.html
+2026-07-03 16:05:55,595 [INFO] pipeline:   Report: D:\文献AI助手\reports\daily-2026-07-02.html
+2026-07-03 16:05:55,595 [INFO] pipeline: ==================================================
+2026-07-03 16:05:55,595 [INFO] pipeline: Pipeline completed
+2026-07-03 16:05:55,595 [INFO] pipeline: ==================================================
+2026-07-03 16:06:52,118 [INFO] pipeline: ==================================================
+2026-07-03 16:06:52,119 [INFO] pipeline: Arxiv Assistant - Daily Pipeline Started
+2026-07-03 16:06:52,119 [INFO] pipeline: ==================================================
+2026-07-03 16:06:52,121 [INFO] arxiv_assistant.db: Database initialized
+2026-07-03 16:06:52,122 [INFO] pipeline: [1/4] Fetching new papers from arXiv...
+2026-07-03 16:06:52,122 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.str-el from arXiv...
+2026-07-03 16:06:52,122 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-03 16:06:53,762 [INFO] arxiv: Got first page: 100 of 83440 total results
+2026-07-03 16:06:53,762 [INFO] arxiv_assistant.fetcher:   cond-mat.str-el: got 16 new papers
+2026-07-03 16:06:53,762 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.mtrl-sci from arXiv...
+2026-07-03 16:06:53,764 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.mtrl-sci&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-03 16:06:55,488 [INFO] arxiv: Got first page: 100 of 110280 total results
+2026-07-03 16:06:55,488 [INFO] arxiv_assistant.fetcher:   cond-mat.mtrl-sci: got 23 new papers
+2026-07-03 16:06:55,496 [INFO] pipeline:   Filtered to 14 papers
+2026-07-03 16:06:55,496 [INFO] pipeline: [2/4] Downloading PDFs...
+2026-07-03 16:06:55,573 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.02449.pdf
+2026-07-03 16:06:55,666 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.02418.pdf
+2026-07-03 16:06:55,749 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.02238.pdf
+2026-07-03 16:06:55,848 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.02224.pdf
+2026-07-03 16:06:55,932 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.02183.pdf
+2026-07-03 16:06:56,023 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.02120.pdf
+2026-07-03 16:06:56,102 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.02114.pdf
+2026-07-03 16:06:56,183 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.01997.pdf
+2026-07-03 16:06:56,266 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.01947.pdf
+2026-07-03 16:06:56,349 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.01841.pdf
+2026-07-03 16:06:56,432 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.01815.pdf
+2026-07-03 16:06:56,515 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.01720.pdf
+2026-07-03 16:06:56,599 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.01673.pdf
+2026-07-03 16:06:56,682 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.01623.pdf
+2026-07-03 16:06:56,685 [INFO] pipeline:   Downloaded 14 papers
+2026-07-03 16:06:56,685 [INFO] pipeline: [3/4] AI deep reading...
+2026-07-03 16:06:56,687 [INFO] pipeline:   Analyzing: Anomalous thermopower from the drag of overdamped collective...
+2026-07-03 16:06:56,744 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02449_fig1.png (1258x816)
+2026-07-03 16:06:56,763 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 11 pages, 1 figures extracted
+2026-07-03 16:06:56,764 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:07:14,328 [INFO] pipeline:   Done: Anomalous thermopower from the drag of overdamped collective
+2026-07-03 16:07:14,332 [INFO] pipeline:   Analyzing: Intrinsic orbital Hall effect in a nonuniform electric field...
+2026-07-03 16:07:14,423 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig1.png (593x442)
+2026-07-03 16:07:14,425 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig2.png (102x182)
+2026-07-03 16:07:14,425 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig3.jpeg (1362x853)
+2026-07-03 16:07:14,428 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig4.png (177x141)
+2026-07-03 16:07:14,431 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig5.png (294x128)
+2026-07-03 16:07:14,433 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig6.png (290x114)
+2026-07-03 16:07:14,435 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig7.png (223x205)
+2026-07-03 16:07:14,436 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig8.jpeg (1675x795)
+2026-07-03 16:07:14,437 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig9.png (341x166)
+2026-07-03 16:07:14,440 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig10.png (341x166)
+2026-07-03 16:07:14,478 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig11.png (798x634)
+2026-07-03 16:07:14,493 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 9 pages, 11 figures extracted
+2026-07-03 16:07:14,493 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:07:27,796 [INFO] pipeline:   Done: Intrinsic orbital Hall effect in a nonuniform electric field
+2026-07-03 16:07:27,801 [INFO] pipeline:   Analyzing: Interfacial Strain and Structural Defects Govern the Perform...
+2026-07-03 16:07:27,848 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig1.png (749x826)
+2026-07-03 16:07:27,871 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig2.png (784x636)
+2026-07-03 16:07:27,887 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig3.png (994x405)
+2026-07-03 16:07:27,956 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig4.png (1561x650)
+2026-07-03 16:07:27,990 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig5.png (1056x851)
+2026-07-03 16:07:28,101 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig6.png (1205x779)
+2026-07-03 16:07:28,280 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig7.png (1305x881)
+2026-07-03 16:07:28,308 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig8.png (969x784)
+2026-07-03 16:07:28,323 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig9.png (529x401)
+2026-07-03 16:07:28,353 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig10.png (1296x549)
+2026-07-03 16:07:28,380 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig11.png (969x854)
+2026-07-03 16:07:28,407 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig12.png (1113x803)
+2026-07-03 16:07:28,534 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig13.png (1051x704)
+2026-07-03 16:07:28,678 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig14.png (1318x741)
+2026-07-03 16:07:28,725 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig15.png (1317x400)
+2026-07-03 16:07:28,758 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig16.png (1146x749)
+2026-07-03 16:07:28,760 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 27 pages, 16 figures extracted
+2026-07-03 16:07:28,761 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:07:47,578 [INFO] pipeline:   Done: Interfacial Strain and Structural Defects Govern the Perform
+2026-07-03 16:07:47,581 [INFO] pipeline:   Analyzing: Ultrafast Demagnetization Governed by Spin Fluctuations in C...
+2026-07-03 16:07:47,676 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02224_fig1.jpeg (319x179)
+2026-07-03 16:07:47,680 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02224_fig2.png (148x204)
+2026-07-03 16:07:47,695 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 19 pages, 2 figures extracted
+2026-07-03 16:07:47,696 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:08:04,191 [INFO] pipeline:   Done: Ultrafast Demagnetization Governed by Spin Fluctuations in C
+2026-07-03 16:08:04,194 [INFO] pipeline:   Analyzing: A density matrix renormalization group approach to quantum p...
+2026-07-03 16:08:04,316 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02183_fig1.png (1477x797)
+2026-07-03 16:08:04,354 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02183_fig2.png (1476x819)
+2026-07-03 16:08:04,362 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 8 pages, 2 figures extracted
+2026-07-03 16:08:04,363 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:08:21,939 [INFO] pipeline:   Done: A density matrix renormalization group approach to quantum p
+2026-07-03 16:08:21,942 [INFO] pipeline:   Analyzing: Electrical transport in ultra-thin films: from Fuchs-Sondhei...
+2026-07-03 16:08:22,316 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02120_fig1.png (1368x1149)
+2026-07-03 16:08:22,319 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02120_fig2.jpeg (3480x2149)
+2026-07-03 16:08:22,326 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02120_fig3.jpeg (4092x2193)
+2026-07-03 16:08:22,340 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02120_fig4.jpeg (1191x519)
+2026-07-03 16:08:23,052 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02120_fig5.png (3212x2475)
+2026-07-03 16:08:23,063 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 23 pages, 5 figures extracted
+2026-07-03 16:08:23,063 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:08:33,774 [INFO] pipeline:   Done: Electrical transport in ultra-thin films: from Fuchs-Sondhei
+2026-07-03 16:08:33,777 [INFO] pipeline:   Analyzing: Plaid-Like Spin Splitting and Chirality of Magnon Bands in A...
+2026-07-03 16:08:33,916 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig1.png (1985x649)
+2026-07-03 16:08:33,961 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig2.png (1985x649)
+2026-07-03 16:08:33,988 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig3.png (1489x605)
+2026-07-03 16:08:34,033 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig4.png (825x811)
+2026-07-03 16:08:34,137 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig5.png (2232x754)
+2026-07-03 16:08:34,206 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig6.png (2232x756)
+2026-07-03 16:08:34,276 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig7.png (2233x756)
+2026-07-03 16:08:34,341 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig8.png (2234x756)
+2026-07-03 16:08:34,369 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig9.png (176x138)
+2026-07-03 16:08:34,381 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig10.png (701x638)
+2026-07-03 16:08:34,382 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig11.png (177x140)
+2026-07-03 16:08:34,394 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig12.png (701x638)
+2026-07-03 16:08:34,395 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig13.png (179x138)
+2026-07-03 16:08:34,396 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig14.png (171x167)
+2026-07-03 16:08:34,397 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig15.png (146x114)
+2026-07-03 16:08:34,400 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig16.png (267x103)
+2026-07-03 16:08:34,410 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig17.png (702x638)
+2026-07-03 16:08:34,411 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig18.png (272x167)
+2026-07-03 16:08:34,415 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig19.png (189x167)
+2026-07-03 16:08:34,415 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig20.png (146x114)
+2026-07-03 16:08:34,417 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig21.png (267x103)
+2026-07-03 16:08:34,418 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig22.png (172x138)
+2026-07-03 16:08:34,451 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig23.png (1658x638)
+2026-07-03 16:08:34,452 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig24.png (189x167)
+2026-07-03 16:08:34,453 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig25.png (133x105)
+2026-07-03 16:08:34,455 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig26.png (132x105)
+2026-07-03 16:08:34,455 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig27.png (133x105)
+2026-07-03 16:08:34,458 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig28.png (279x167)
+2026-07-03 16:08:34,459 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig29.png (275x174)
+2026-07-03 16:08:34,461 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig30.png (272x167)
+2026-07-03 16:08:34,461 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig31.png (133x105)
+2026-07-03 16:08:34,462 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig32.png (133x105)
+2026-07-03 16:08:34,464 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig33.png (145x100)
+2026-07-03 16:08:34,466 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig34.png (205x167)
+2026-07-03 16:08:34,468 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig35.png (180x167)
+2026-07-03 16:08:34,470 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig36.png (311x138)
+2026-07-03 16:08:34,484 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig37.png (643x643)
+2026-07-03 16:08:34,497 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig38.png (643x643)
+2026-07-03 16:08:34,508 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig39.png (701x638)
+2026-07-03 16:08:34,522 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig40.png (643x643)
+2026-07-03 16:08:34,533 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig41.png (643x643)
+2026-07-03 16:08:34,544 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig42.png (643x643)
+2026-07-03 16:08:34,556 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig43.png (643x643)
+2026-07-03 16:08:34,566 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 9 pages, 43 figures extracted
+2026-07-03 16:08:34,566 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:08:53,689 [INFO] pipeline:   Done: Plaid-Like Spin Splitting and Chirality of Magnon Bands in A
+2026-07-03 16:08:53,692 [INFO] pipeline:   Analyzing: HVAF Spraying of NiTi Coatings: Microstructure, Phase Transf...
+2026-07-03 16:08:53,736 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig1.jpeg (1215x630)
+2026-07-03 16:08:53,750 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig2.jpeg (1007x698)
+2026-07-03 16:08:53,753 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig3.jpeg (964x825)
+2026-07-03 16:08:53,756 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig4.jpeg (1511x859)
+2026-07-03 16:08:53,759 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig5.jpeg (1490x761)
+2026-07-03 16:08:53,760 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig6.jpeg (1503x737)
+2026-07-03 16:08:53,824 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig7.png (1251x1062)
+2026-07-03 16:08:53,890 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig8.png (1032x898)
+2026-07-03 16:08:53,948 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig9.png (1386x552)
+2026-07-03 16:08:54,022 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig10.png (1355x1127)
+2026-07-03 16:08:54,037 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig11.png (811x621)
+2026-07-03 16:08:54,040 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig12.jpeg (1445x927)
+2026-07-03 16:08:54,097 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig13.png (1353x964)
+2026-07-03 16:08:54,100 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig14.jpeg (1040x857)
+2026-07-03 16:08:54,154 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig15.png (1084x891)
+2026-07-03 16:08:54,180 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 27 pages, 15 figures extracted
+2026-07-03 16:08:54,180 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:09:09,101 [INFO] pipeline:   Done: HVAF Spraying of NiTi Coatings: Microstructure, Phase Transf
+2026-07-03 16:09:09,103 [INFO] pipeline:   Analyzing: Fermiology and spin polarization of topological surface stat...
+2026-07-03 16:09:09,404 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01947_fig1.png (1818x2428)
+2026-07-03 16:09:09,633 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01947_fig2.png (1811x2222)
+2026-07-03 16:09:09,740 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01947_fig3.png (1324x1476)
+2026-07-03 16:09:10,090 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01947_fig4.png (3267x2202)
+2026-07-03 16:09:10,097 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 8 pages, 4 figures extracted
+2026-07-03 16:09:10,097 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:09:27,815 [INFO] pipeline:   Done: Fermiology and spin polarization of topological surface stat
+2026-07-03 16:09:27,821 [INFO] pipeline:   Analyzing: Quantifying angular momentum of coherently driven circular p...
+2026-07-03 16:09:27,875 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig1.png (973x602)
+2026-07-03 16:09:27,936 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig2.png (939x1130)
+2026-07-03 16:09:27,974 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig3.png (1146x639)
+2026-07-03 16:09:28,010 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig4.png (854x610)
+2026-07-03 16:09:28,039 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig5.png (1074x384)
+2026-07-03 16:09:28,068 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig6.png (906x388)
+2026-07-03 16:09:28,081 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig7.png (808x288)
+2026-07-03 16:09:28,097 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig8.png (680x453)
+2026-07-03 16:09:28,105 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig9.png (694x463)
+2026-07-03 16:09:28,113 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig10.png (683x455)
+2026-07-03 16:09:28,150 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig11.png (1404x726)
+2026-07-03 16:09:28,178 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig12.png (719x957)
+2026-07-03 16:09:28,195 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig13.png (705x627)
+2026-07-03 16:09:28,208 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig14.png (708x315)
+2026-07-03 16:09:28,239 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig15.png (582x647)
+2026-07-03 16:09:28,239 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 23 pages, 15 figures extracted
+2026-07-03 16:09:28,239 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:09:43,119 [INFO] pipeline:   Done: Quantifying angular momentum of coherently driven circular p
+2026-07-03 16:09:43,122 [INFO] pipeline:   Analyzing: Evidence for Deconfined Magnetic Order in the Kitaev-$J_3$ M...
+2026-07-03 16:09:43,218 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01815_fig1.png (1055x1042)
+2026-07-03 16:09:43,241 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01815_fig2.png (1055x1042)
+2026-07-03 16:09:43,269 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01815_fig3.png (1055x1042)
+2026-07-03 16:09:43,296 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01815_fig4.png (1055x1042)
+2026-07-03 16:09:43,446 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01815_fig5.png (1120x840)
+2026-07-03 16:09:43,516 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01815_fig6.png (1120x840)
+2026-07-03 16:09:43,558 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 14 pages, 6 figures extracted
+2026-07-03 16:09:43,558 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:10:04,167 [INFO] pipeline:   Done: Evidence for Deconfined Magnetic Order in the Kitaev-$J_3$ M
+2026-07-03 16:10:04,171 [INFO] pipeline:   Analyzing: Ultrasonic Observation of Slowing Down of Multipole Fluctuat...
+2026-07-03 16:10:04,637 [INFO] arxiv_assistant.pdf_parser: No embedded images found, using page screenshot fallback...
+2026-07-03 16:10:04,683 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.01720_page1.png
+2026-07-03 16:10:04,873 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.01720_page2.png
+2026-07-03 16:10:05,826 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.01720_page3.png
+2026-07-03 16:10:05,876 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.01720_page4.png
+2026-07-03 16:10:05,928 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.01720_page5.png
+2026-07-03 16:10:05,975 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.01720_page6.png
+2026-07-03 16:10:05,978 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 6 pages, 6 figures extracted
+2026-07-03 16:10:05,979 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:10:18,764 [INFO] pipeline:   Done: Ultrasonic Observation of Slowing Down of Multipole Fluctuat
+2026-07-03 16:10:18,767 [INFO] pipeline:   Analyzing: Intrinsically low thermal conductivity of stoichiometric lit...
+2026-07-03 16:10:19,034 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig1.png (2339x2348)
+2026-07-03 16:10:19,314 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig2.png (3330x2587)
+2026-07-03 16:10:19,900 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig3.png (6955x2707)
+2026-07-03 16:10:20,123 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig4.png (4379x1443)
+2026-07-03 16:10:22,418 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig5.png (1914x2746)
+2026-07-03 16:10:22,737 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig6.png (3359x2544)
+2026-07-03 16:10:23,436 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig7.png (8368x2657)
+2026-07-03 16:10:23,703 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig8.png (3377x2445)
+2026-07-03 16:10:23,976 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig9.png (3363x2756)
+2026-07-03 16:10:24,560 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig10.png (6793x2711)
+2026-07-03 16:10:25,692 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 20 pages, 10 figures extracted
+2026-07-03 16:10:25,692 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:10:46,855 [INFO] pipeline:   Done: Intrinsically low thermal conductivity of stoichiometric lit
+2026-07-03 16:10:46,859 [INFO] pipeline:   Analyzing: Phase-selective orbital-charge conversion in $\mathrm{MoTe_2...
+2026-07-03 16:10:46,891 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01623_fig1.jpeg (1267x738)
+2026-07-03 16:10:46,894 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01623_fig2.jpeg (1243x704)
+2026-07-03 16:10:46,900 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01623_fig3.jpeg (1246x1003)
+2026-07-03 16:10:46,940 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01623_fig4.png (1170x884)
+2026-07-03 16:10:46,952 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 15 pages, 4 figures extracted
+2026-07-03 16:10:46,952 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:11:07,295 [INFO] pipeline:   Done: Phase-selective orbital-charge conversion in $\mathrm{MoTe_2
+2026-07-03 16:11:07,295 [INFO] pipeline: [4/4] Generating daily report...
+2026-07-03 16:11:07,301 [INFO] arxiv_assistant.report: Report generated: D:\文献AI助手\reports\daily-2026-07-02.html
+2026-07-03 16:11:07,301 [INFO] pipeline:   Report: D:\文献AI助手\reports\daily-2026-07-02.html
+2026-07-03 16:11:07,301 [INFO] pipeline: ==================================================
+2026-07-03 16:11:07,301 [INFO] pipeline: Pipeline completed
+2026-07-03 16:11:07,301 [INFO] pipeline: ==================================================
+2026-07-03 16:21:28,743 [INFO] pipeline: ==================================================
+2026-07-03 16:21:28,743 [INFO] pipeline: Arxiv Assistant - Daily Pipeline Started
+2026-07-03 16:21:28,743 [INFO] pipeline: ==================================================
+2026-07-03 16:21:28,746 [INFO] arxiv_assistant.db: Database initialized
+2026-07-03 16:21:28,746 [INFO] pipeline: [1/4] Fetching new papers from arXiv...
+2026-07-03 16:21:28,746 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.str-el from arXiv...
+2026-07-03 16:21:28,747 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-03 16:21:30,461 [INFO] arxiv: Got first page: 100 of 83440 total results
+2026-07-03 16:21:30,462 [INFO] arxiv_assistant.fetcher:   cond-mat.str-el: got 16 new papers
+2026-07-03 16:21:30,462 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.mtrl-sci from arXiv...
+2026-07-03 16:21:30,463 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.mtrl-sci&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-03 16:21:32,233 [INFO] arxiv: Got first page: 100 of 110280 total results
+2026-07-03 16:21:32,233 [INFO] arxiv_assistant.fetcher:   cond-mat.mtrl-sci: got 23 new papers
+2026-07-03 16:21:32,241 [INFO] pipeline:   Filtered to 14 papers
+2026-07-03 16:21:32,241 [INFO] pipeline: [2/4] Downloading PDFs...
+2026-07-03 16:21:32,319 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.02449.pdf
+2026-07-03 16:21:32,382 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.02418.pdf
+2026-07-03 16:21:32,444 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.02238.pdf
+2026-07-03 16:21:32,524 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.02224.pdf
+2026-07-03 16:21:32,587 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.02183.pdf
+2026-07-03 16:21:32,666 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.02120.pdf
+2026-07-03 16:21:32,733 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.02114.pdf
+2026-07-03 16:21:32,808 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.01997.pdf
+2026-07-03 16:21:32,866 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.01947.pdf
+2026-07-03 16:21:32,933 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.01841.pdf
+2026-07-03 16:21:32,983 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.01815.pdf
+2026-07-03 16:21:33,041 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.01720.pdf
+2026-07-03 16:21:33,103 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.01673.pdf
+2026-07-03 16:21:33,178 [INFO] arxiv_assistant.downloader: PDF exists: D:\文献AI助手\papers\2026-07\arxiv-2607.01623.pdf
+2026-07-03 16:21:33,180 [INFO] pipeline:   Downloaded 14 papers
+2026-07-03 16:21:33,180 [INFO] pipeline: [3/4] AI deep reading...
+2026-07-03 16:21:33,183 [INFO] pipeline:   Analyzing: Anomalous thermopower from the drag of overdamped collective...
+2026-07-03 16:21:33,263 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02449_fig1.png (1258x816)
+2026-07-03 16:21:33,284 [INFO] arxiv_assistant.pdf_parser: Only 1 embedded images, supplementing with page screenshots...
+2026-07-03 16:21:33,338 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.02449_page4.png
+2026-07-03 16:21:33,338 [INFO] arxiv_assistant.pdf_parser: Still fewer than 3 figures, screenshotting early pages...
+2026-07-03 16:21:33,380 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.02449_page1.png
+2026-07-03 16:21:33,416 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.02449_page2.png
+2026-07-03 16:21:33,456 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.02449_page3.png
+2026-07-03 16:21:33,492 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.02449_page5.png
+2026-07-03 16:21:33,494 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 11 pages, 6 figures extracted
+2026-07-03 16:21:33,494 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:21:55,087 [INFO] pipeline:   Done: Anomalous thermopower from the drag of overdamped collective
+2026-07-03 16:21:55,098 [INFO] pipeline:   Analyzing: Intrinsic orbital Hall effect in a nonuniform electric field...
+2026-07-03 16:21:55,183 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig1.png (593x442)
+2026-07-03 16:21:55,185 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig2.png (102x182)
+2026-07-03 16:21:55,185 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig3.jpeg (1362x853)
+2026-07-03 16:21:55,188 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig4.png (177x141)
+2026-07-03 16:21:55,189 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig5.png (275x85)
+2026-07-03 16:21:55,190 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig6.png (294x128)
+2026-07-03 16:21:55,191 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig7.png (290x114)
+2026-07-03 16:21:55,193 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig8.png (223x205)
+2026-07-03 16:21:55,193 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig9.jpeg (1675x795)
+2026-07-03 16:21:55,195 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig10.png (341x166)
+2026-07-03 16:21:55,197 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig11.png (341x166)
+2026-07-03 16:21:55,237 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02418_fig12.png (798x634)
+2026-07-03 16:21:55,247 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 9 pages, 12 figures extracted
+2026-07-03 16:21:55,247 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:22:16,532 [INFO] pipeline:   Done: Intrinsic orbital Hall effect in a nonuniform electric field
+2026-07-03 16:22:16,535 [INFO] pipeline:   Analyzing: Interfacial Strain and Structural Defects Govern the Perform...
+2026-07-03 16:22:16,569 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig1.png (749x826)
+2026-07-03 16:22:16,587 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig2.png (784x636)
+2026-07-03 16:22:16,603 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig3.png (994x405)
+2026-07-03 16:22:16,667 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig4.png (1561x650)
+2026-07-03 16:22:16,702 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig5.png (1056x851)
+2026-07-03 16:22:16,791 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig6.png (1205x779)
+2026-07-03 16:22:16,940 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig7.png (1305x881)
+2026-07-03 16:22:16,965 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig8.png (969x784)
+2026-07-03 16:22:16,980 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig9.png (529x401)
+2026-07-03 16:22:17,008 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig10.png (1296x549)
+2026-07-03 16:22:17,035 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig11.png (969x854)
+2026-07-03 16:22:17,061 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig12.png (1113x803)
+2026-07-03 16:22:17,186 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig13.png (1051x704)
+2026-07-03 16:22:17,325 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig14.png (1318x741)
+2026-07-03 16:22:17,369 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig15.png (1317x400)
+2026-07-03 16:22:17,408 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02238_fig16.png (1146x749)
+2026-07-03 16:22:17,410 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 27 pages, 16 figures extracted
+2026-07-03 16:22:17,410 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:22:47,635 [INFO] pipeline:   Done: Interfacial Strain and Structural Defects Govern the Perform
+2026-07-03 16:22:47,638 [INFO] pipeline:   Analyzing: Ultrafast Demagnetization Governed by Spin Fluctuations in C...
+2026-07-03 16:22:47,698 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02224_fig1.jpeg (319x179)
+2026-07-03 16:22:47,701 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02224_fig2.png (83x102)
+2026-07-03 16:22:47,705 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02224_fig3.png (148x204)
+2026-07-03 16:22:47,730 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 19 pages, 3 figures extracted
+2026-07-03 16:22:47,730 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:23:08,587 [INFO] pipeline:   Done: Ultrafast Demagnetization Governed by Spin Fluctuations in C
+2026-07-03 16:23:08,594 [INFO] pipeline:   Analyzing: A density matrix renormalization group approach to quantum p...
+2026-07-03 16:23:08,703 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02183_fig1.png (1477x797)
+2026-07-03 16:23:08,742 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02183_fig2.png (1476x819)
+2026-07-03 16:23:08,749 [INFO] arxiv_assistant.pdf_parser: Only 2 embedded images, supplementing with page screenshots...
+2026-07-03 16:23:08,749 [INFO] arxiv_assistant.pdf_parser: Still fewer than 3 figures, screenshotting early pages...
+2026-07-03 16:23:08,792 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.02183_page1.png
+2026-07-03 16:23:08,829 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.02183_page2.png
+2026-07-03 16:23:08,872 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.02183_page3.png
+2026-07-03 16:23:08,912 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.02183_page4.png
+2026-07-03 16:23:08,914 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 8 pages, 6 figures extracted
+2026-07-03 16:23:08,914 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:23:33,441 [INFO] pipeline:   Done: A density matrix renormalization group approach to quantum p
+2026-07-03 16:23:33,448 [INFO] pipeline:   Analyzing: Electrical transport in ultra-thin films: from Fuchs-Sondhei...
+2026-07-03 16:23:33,798 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02120_fig1.png (1368x1149)
+2026-07-03 16:23:33,804 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02120_fig2.jpeg (3480x2149)
+2026-07-03 16:23:33,810 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02120_fig3.jpeg (4092x2193)
+2026-07-03 16:23:33,824 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02120_fig4.jpeg (1191x519)
+2026-07-03 16:23:34,551 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02120_fig5.png (3212x2475)
+2026-07-03 16:23:34,563 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 23 pages, 5 figures extracted
+2026-07-03 16:23:34,563 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:23:48,494 [INFO] pipeline:   Done: Electrical transport in ultra-thin films: from Fuchs-Sondhei
+2026-07-03 16:23:48,498 [INFO] pipeline:   Analyzing: Plaid-Like Spin Splitting and Chirality of Magnon Bands in A...
+2026-07-03 16:23:48,565 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig1.png (1985x649)
+2026-07-03 16:23:48,610 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig2.png (1985x649)
+2026-07-03 16:23:48,636 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig3.png (1489x605)
+2026-07-03 16:23:48,679 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig4.png (825x811)
+2026-07-03 16:23:48,769 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig5.png (2232x754)
+2026-07-03 16:23:48,837 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig6.png (2232x756)
+2026-07-03 16:23:48,903 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig7.png (2233x756)
+2026-07-03 16:23:48,967 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig8.png (2234x756)
+2026-07-03 16:23:48,984 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig9.png (176x138)
+2026-07-03 16:23:48,995 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig10.png (701x638)
+2026-07-03 16:23:48,997 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig11.png (177x140)
+2026-07-03 16:23:49,009 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig12.png (701x638)
+2026-07-03 16:23:49,009 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig13.png (179x138)
+2026-07-03 16:23:49,011 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig14.png (171x167)
+2026-07-03 16:23:49,012 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig15.png (146x114)
+2026-07-03 16:23:49,013 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig16.png (267x103)
+2026-07-03 16:23:49,024 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig17.png (702x638)
+2026-07-03 16:23:49,026 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig18.png (272x167)
+2026-07-03 16:23:49,028 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig19.png (189x167)
+2026-07-03 16:23:49,029 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig20.png (146x114)
+2026-07-03 16:23:49,030 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig21.png (267x103)
+2026-07-03 16:23:49,030 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig22.png (172x138)
+2026-07-03 16:23:49,059 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig23.png (1658x638)
+2026-07-03 16:23:49,060 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig24.png (189x167)
+2026-07-03 16:23:49,061 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig25.png (133x105)
+2026-07-03 16:23:49,062 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig26.png (148x86)
+2026-07-03 16:23:49,062 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig27.png (132x105)
+2026-07-03 16:23:49,063 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig28.png (148x86)
+2026-07-03 16:23:49,064 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig29.png (133x105)
+2026-07-03 16:23:49,065 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig30.png (148x86)
+2026-07-03 16:23:49,067 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig31.png (279x167)
+2026-07-03 16:23:49,069 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig32.png (275x174)
+2026-07-03 16:23:49,070 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig33.png (272x167)
+2026-07-03 16:23:49,070 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig34.png (133x105)
+2026-07-03 16:23:49,071 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig35.png (145x99)
+2026-07-03 16:23:49,072 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig36.png (133x105)
+2026-07-03 16:23:49,072 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig37.png (145x100)
+2026-07-03 16:23:49,075 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig38.png (205x167)
+2026-07-03 16:23:49,077 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig39.png (180x167)
+2026-07-03 16:23:49,079 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig40.png (311x138)
+2026-07-03 16:23:49,090 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig41.png (643x643)
+2026-07-03 16:23:49,102 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig42.png (643x643)
+2026-07-03 16:23:49,112 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig43.png (701x638)
+2026-07-03 16:23:49,125 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig44.png (643x643)
+2026-07-03 16:23:49,138 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig45.png (643x643)
+2026-07-03 16:23:49,151 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig46.png (643x643)
+2026-07-03 16:23:49,167 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.02114_fig47.png (643x643)
+2026-07-03 16:23:49,183 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 9 pages, 47 figures extracted
+2026-07-03 16:23:49,184 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:24:18,993 [INFO] pipeline:   Done: Plaid-Like Spin Splitting and Chirality of Magnon Bands in A
+2026-07-03 16:24:19,000 [INFO] pipeline:   Analyzing: HVAF Spraying of NiTi Coatings: Microstructure, Phase Transf...
+2026-07-03 16:24:19,035 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig1.jpeg (1215x630)
+2026-07-03 16:24:19,047 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig2.jpeg (1007x698)
+2026-07-03 16:24:19,050 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig3.jpeg (964x825)
+2026-07-03 16:24:19,052 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig4.jpeg (1511x859)
+2026-07-03 16:24:19,055 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig5.jpeg (1490x761)
+2026-07-03 16:24:19,057 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig6.jpeg (1503x737)
+2026-07-03 16:24:19,121 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig7.png (1251x1062)
+2026-07-03 16:24:19,171 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig8.png (1032x898)
+2026-07-03 16:24:19,225 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig9.png (1386x552)
+2026-07-03 16:24:19,302 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig10.png (1355x1127)
+2026-07-03 16:24:19,318 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig11.png (811x621)
+2026-07-03 16:24:19,321 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig12.jpeg (1445x927)
+2026-07-03 16:24:19,380 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig13.png (1353x964)
+2026-07-03 16:24:19,384 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig14.jpeg (1040x857)
+2026-07-03 16:24:19,434 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01997_fig15.png (1084x891)
+2026-07-03 16:24:19,454 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 27 pages, 15 figures extracted
+2026-07-03 16:24:19,454 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:24:33,721 [INFO] pipeline:   Done: HVAF Spraying of NiTi Coatings: Microstructure, Phase Transf
+2026-07-03 16:24:33,724 [INFO] pipeline:   Analyzing: Fermiology and spin polarization of topological surface stat...
+2026-07-03 16:24:33,997 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01947_fig1.png (1818x2428)
+2026-07-03 16:24:34,216 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01947_fig2.png (1811x2222)
+2026-07-03 16:24:34,311 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01947_fig3.png (1324x1476)
+2026-07-03 16:24:34,661 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01947_fig4.png (3267x2202)
+2026-07-03 16:24:34,669 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 8 pages, 4 figures extracted
+2026-07-03 16:24:34,670 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:24:54,402 [INFO] pipeline:   Done: Fermiology and spin polarization of topological surface stat
+2026-07-03 16:24:54,405 [INFO] pipeline:   Analyzing: Quantifying angular momentum of coherently driven circular p...
+2026-07-03 16:24:54,453 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig1.png (973x602)
+2026-07-03 16:24:54,516 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig2.png (939x1130)
+2026-07-03 16:24:54,557 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig3.png (1146x639)
+2026-07-03 16:24:54,595 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig4.png (854x610)
+2026-07-03 16:24:54,624 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig5.png (1074x384)
+2026-07-03 16:24:54,649 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig6.png (906x388)
+2026-07-03 16:24:54,663 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig7.png (808x288)
+2026-07-03 16:24:54,681 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig8.png (680x453)
+2026-07-03 16:24:54,690 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig9.png (694x463)
+2026-07-03 16:24:54,699 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig10.png (683x455)
+2026-07-03 16:24:54,736 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig11.png (1404x726)
+2026-07-03 16:24:54,767 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig12.png (719x957)
+2026-07-03 16:24:54,783 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig13.png (705x627)
+2026-07-03 16:24:54,797 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig14.png (708x315)
+2026-07-03 16:24:54,829 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01841_fig15.png (582x647)
+2026-07-03 16:24:54,830 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 23 pages, 15 figures extracted
+2026-07-03 16:24:54,830 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:25:32,965 [INFO] pipeline:   Done: Quantifying angular momentum of coherently driven circular p
+2026-07-03 16:25:32,969 [INFO] pipeline:   Analyzing: Evidence for Deconfined Magnetic Order in the Kitaev-$J_3$ M...
+2026-07-03 16:25:33,057 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01815_fig1.png (1055x1042)
+2026-07-03 16:25:33,082 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01815_fig2.png (1055x1042)
+2026-07-03 16:25:33,109 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01815_fig3.png (1055x1042)
+2026-07-03 16:25:33,136 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01815_fig4.png (1055x1042)
+2026-07-03 16:25:33,285 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01815_fig5.png (1120x840)
+2026-07-03 16:25:33,371 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01815_fig6.png (1120x840)
+2026-07-03 16:25:33,416 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 14 pages, 6 figures extracted
+2026-07-03 16:25:33,416 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:25:52,694 [INFO] pipeline:   Done: Evidence for Deconfined Magnetic Order in the Kitaev-$J_3$ M
+2026-07-03 16:25:52,698 [INFO] pipeline:   Analyzing: Ultrasonic Observation of Slowing Down of Multipole Fluctuat...
+2026-07-03 16:25:53,118 [INFO] arxiv_assistant.pdf_parser: Still fewer than 3 figures, screenshotting early pages...
+2026-07-03 16:25:53,162 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.01720_page1.png
+2026-07-03 16:25:53,374 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.01720_page2.png
+2026-07-03 16:25:54,277 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.01720_page3.png
+2026-07-03 16:25:54,321 [INFO] arxiv_assistant.pdf_parser:   Page screenshot: D:\文献AI助手\papers\2026-07\arxiv-2607.01720_page4.png
+2026-07-03 16:25:54,322 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 6 pages, 4 figures extracted
+2026-07-03 16:25:54,322 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:26:21,688 [INFO] pipeline:   Done: Ultrasonic Observation of Slowing Down of Multipole Fluctuat
+2026-07-03 16:26:21,690 [INFO] pipeline:   Analyzing: Intrinsically low thermal conductivity of stoichiometric lit...
+2026-07-03 16:26:21,942 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig1.png (2339x2348)
+2026-07-03 16:26:22,213 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig2.png (3330x2587)
+2026-07-03 16:26:22,810 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig3.png (6955x2707)
+2026-07-03 16:26:23,097 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig4.png (4379x1443)
+2026-07-03 16:26:25,319 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig5.png (1914x2746)
+2026-07-03 16:26:25,582 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig6.png (3359x2544)
+2026-07-03 16:26:26,317 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig7.png (8368x2657)
+2026-07-03 16:26:26,588 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig8.png (3377x2445)
+2026-07-03 16:26:26,865 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig9.png (3363x2756)
+2026-07-03 16:26:27,504 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01673_fig10.png (6793x2711)
+2026-07-03 16:26:28,552 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 20 pages, 10 figures extracted
+2026-07-03 16:26:28,552 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:26:59,248 [INFO] pipeline:   Done: Intrinsically low thermal conductivity of stoichiometric lit
+2026-07-03 16:26:59,252 [INFO] pipeline:   Analyzing: Phase-selective orbital-charge conversion in $\mathrm{MoTe_2...
+2026-07-03 16:26:59,276 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01623_fig1.jpeg (1267x738)
+2026-07-03 16:26:59,280 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01623_fig2.jpeg (1243x704)
+2026-07-03 16:26:59,288 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01623_fig3.jpeg (1246x1003)
+2026-07-03 16:26:59,328 [INFO] arxiv_assistant.pdf_parser:   Extracted figure: D:\文献AI助手\papers\2026-07\arxiv-2607.01623_fig4.png (1170x884)
+2026-07-03 16:26:59,354 [INFO] arxiv_assistant.pdf_parser: PDF parsed: 15 pages, 4 figures extracted
+2026-07-03 16:26:59,355 [INFO] arxiv_assistant.ai_reader: Calling deepseek-v4-pro for paper analysis...
+2026-07-03 16:27:37,218 [INFO] pipeline:   Done: Phase-selective orbital-charge conversion in $\mathrm{MoTe_2
+2026-07-03 16:27:37,218 [INFO] pipeline: [4/4] Generating daily report...
+2026-07-03 16:27:37,229 [INFO] arxiv_assistant.report: Report generated: D:\文献AI助手\reports\daily-2026-07-02.html
+2026-07-03 16:27:37,229 [INFO] pipeline:   Report: D:\文献AI助手\reports\daily-2026-07-02.html
+2026-07-03 16:27:37,229 [INFO] pipeline: ==================================================
+2026-07-03 16:27:37,229 [INFO] pipeline: Pipeline completed
+2026-07-03 16:27:37,230 [INFO] pipeline: ==================================================
+2026-07-04 09:00:08,532 [INFO] pipeline: ==================================================
+2026-07-04 09:00:08,542 [INFO] pipeline: Arxiv Assistant - Daily Pipeline Started
+2026-07-04 09:00:08,542 [INFO] pipeline: ==================================================
+2026-07-04 09:00:08,568 [INFO] arxiv_assistant.db: Database initialized
+2026-07-04 09:00:08,569 [INFO] pipeline: [1/4] Fetching new papers from arXiv...
+2026-07-04 09:00:08,569 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.str-el from arXiv...
+2026-07-04 09:00:08,570 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-04 09:00:29,675 [INFO] arxiv: Requesting page (first: True, try: 1): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-04 09:00:50,731 [INFO] arxiv: Requesting page (first: True, try: 2): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-04 09:01:11,790 [INFO] arxiv: Requesting page (first: True, try: 3): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-04 14:33:39,610 [INFO] pipeline: ==================================================
+2026-07-04 14:33:39,621 [INFO] pipeline: Arxiv Assistant - Daily Pipeline Started
+2026-07-04 14:33:39,622 [INFO] pipeline: ==================================================
+2026-07-04 14:33:39,628 [INFO] arxiv_assistant.db: Database initialized
+2026-07-04 14:33:39,629 [INFO] pipeline: [1/4] Fetching new papers from arXiv...
+2026-07-04 14:33:39,630 [INFO] arxiv_assistant.fetcher: Fetching cond-mat.str-el from arXiv...
+2026-07-04 14:33:39,631 [INFO] arxiv: Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-04 14:34:11,221 [INFO] arxiv: Sleeping: 3.000000 seconds
+2026-07-04 14:34:14,222 [INFO] arxiv: Requesting page (first: True, try: 1): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-04 14:34:14,641 [INFO] arxiv: Sleeping: 3.000000 seconds
+2026-07-04 14:34:17,642 [INFO] arxiv: Requesting page (first: True, try: 2): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2026-07-04 14:34:28,456 [INFO] arxiv: Sleeping: 3.000000 seconds
+2026-07-04 14:34:31,458 [INFO] arxiv: Requesting page (first: True, try: 3): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat.str-el&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
