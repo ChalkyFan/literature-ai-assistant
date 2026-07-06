@@ -337,11 +337,11 @@ def init_db():
         pass
     try:
         conn.execute("ALTER TABLE papers ADD COLUMN uploaded_by TEXT DEFAULT ''")
-
-
     except sqlite3.OperationalError:
-
-
+        pass
+    try:
+        conn.execute("ALTER TABLE users ADD COLUMN password_hash TEXT DEFAULT ''")
+    except sqlite3.OperationalError:
         pass
 
 
