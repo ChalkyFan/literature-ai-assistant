@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 
-DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), config.DB_PATH)
+DB_PATH = os.environ.get('LITERATURE_DB_PATH') or os.path.join(os.path.dirname(os.path.dirname(__file__)), config.DB_PATH)
 
 
 

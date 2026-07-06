@@ -11,6 +11,12 @@ except _sock.error:
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+# Use development database (separate from production)
+os.environ['LITERATURE_DB_PATH'] = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    'data', 'literature_dev.db'
+)
+
 from web_dev.app import app
 from arxiv_assistant import db
 
