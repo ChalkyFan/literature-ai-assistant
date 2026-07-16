@@ -33,7 +33,7 @@ class ParsedPDF:
 
 
 def parse_pdf(pdf_path: str) -> ParsedPDF:
-    """Parse PDF: extract text + figures (embedded images + page screenshots)"""
+    """Parse PDF: extract text + figures (complete figure extraction for pages with captions)"""
     result = ParsedPDF()
     try:
         doc = fitz.open(pdf_path)
@@ -44,19 +44,19 @@ def parse_pdf(pdf_path: str) -> ParsedPDF:
     pdf_dir = os.path.dirname(pdf_path)
     pdf_basename = os.path.splitext(os.path.basename(pdf_path))[0]
 
-    pages_with_images = set()
+    caption_pages = set()
     embedded_count = 0
 
-    # --- Pass 1: Extract embedded images + text ---
+    # --- Phase 1: Text extraction + caption classification (no embedded images) ---
     for page_num, page in enumerate(doc):
         page_text = page.get_text()
         result.pages.append(page_text)
         result.text += "\n--- Page {0} ---\n{1}".format(page_num + 1, page_text)
 
-        # Find figure caption candidates from text
         candidates = _find_fig_candidates(page_text)
         if candidates:
             classified = _filter_fig_candidates(page, candidates, page_num, pdf_path)
+            page_has_caption = False
             for c in classified:
                 if c.get("type") == "caption":
                     result.captions.append({
@@ -64,10 +64,34 @@ def parse_pdf(pdf_path: str) -> ParsedPDF:
                         "text": c["text"],
                         "page_num": page_num,
                     })
+                    page_has_caption = True
+            if page_has_caption:
+                caption_pages.add(page_num)
+
+    # --- Phase 2: Complete figure extraction for pages with captions ---
+    for page_num in sorted(caption_pages):
+        page_captions = [c for c in result.captions if c["page_num"] == page_num]
+        if page_captions:
+            start_num = len(result.figures) + 1
+            figures = _extract_complete_figures(doc, page_num, pdf_dir, pdf_basename,
+                                                 page_captions, start_num)
+            if figures:
+                result.figures.extend(figures)
+                logger.info("  Page {0}: extracted {1} complete figure(s)".format(
+                    page_num + 1, len(figures)))
+
+    # --- Phase 3: Embedded image extraction for pages without complete figures ---
+    # Track which pages already got complete figures in Phase 2
+    pages_with_complete_figs = set(f["page_num"] for f in result.figures)
+    for page_num, page in enumerate(doc):
+        if page_num in caption_pages:
+            continue
+        if page_num in pages_with_complete_figs:
+            continue
 
         image_list = page.get_images(full=True)
-        if image_list:
-            pages_with_images.add(page_num)
+        if not image_list:
+            continue
 
         for img in image_list:
             xref = img[0]
@@ -91,7 +115,6 @@ def parse_pdf(pdf_path: str) -> ParsedPDF:
                 with open(fig_path, "wb") as f:
                     f.write(image_bytes)
 
-                # Try to find caption for this figure
                 caption_text = "Figure {0} (Page {1})".format(embedded_count, page_num + 1)
                 page_capts = [c for c in result.captions if c["page_num"] == page_num]
                 if page_capts:
@@ -108,11 +131,12 @@ def parse_pdf(pdf_path: str) -> ParsedPDF:
                     "height": height,
                     "file_size": len(image_bytes),
                 })
-                logger.info("  Extracted figure: {0} ({1}x{2}, {3} bytes)".format(fig_path, width, height, len(image_bytes)))
+                logger.info("  Extracted embedded image: {0} ({1}x{2}, {3} bytes)".format(
+                    fig_path, width, height, len(image_bytes)))
             except Exception as e:
-                logger.warning("  Figure extract failed (xref={0}): {1}".format(xref, e))
+                logger.warning("  Embedded image extract failed (xref={0}): {1}".format(xref, e))
 
-    # Trim to MAX_EMBEDDED_FIGURES, keeping the largest ones
+    # --- Phase 4: Trim to MAX_EMBEDDED_FIGURES, keeping the largest ---
     if len(result.figures) > MAX_EMBEDDED_FIGURES:
         result.figures.sort(key=lambda f: f.get("file_size", 0), reverse=True)
         kept = result.figures[:MAX_EMBEDDED_FIGURES]
@@ -121,7 +145,7 @@ def parse_pdf(pdf_path: str) -> ParsedPDF:
         for f in removed:
             try:
                 os.remove(f["file_path"])
-                logger.info("  Removed small figure: {0}".format(f["file_path"]))
+                logger.info("  Removed oversized figure: {0}".format(f["file_path"]))
             except Exception:
                 pass
         for i, f in enumerate(result.figures):
@@ -137,18 +161,9 @@ def parse_pdf(pdf_path: str) -> ParsedPDF:
                     pass
         logger.info("  Trimmed to {0} largest figures".format(len(result.figures)))
 
-    # --- Pass 2: Supplement with cropped figures for pages with few embedded images ---
-    if embedded_count < 3 and pages_with_images:
-        logger.info("Only {0} embedded images, supplementing with page screenshots...".format(embedded_count))
-        for page_num in sorted(pages_with_images):
-            figs_on_page = [f for f in result.figures if f["page_num"] == page_num]
-            if len(figs_on_page) >= 2:
-                continue
-            _crop_page_figures(doc, page_num, pdf_dir, pdf_basename, result, min_dim=150)
-
-    # --- Pass 3: Fallback - screenshot early pages ---
+    # --- Phase 5: Fallback screenshots for early pages ---
     if len(result.figures) < 3 and len(doc) > 0:
-        logger.info("Still fewer than 3 figures, screenshotting early pages...")
+        logger.info("Fewer than 3 figures, fallback screenshots...")
         pages_to_screenshot = set(range(min(5, len(doc)))) - {f["page_num"] for f in result.figures}
         for page_num in sorted(pages_to_screenshot)[:4]:
             _screenshot_page(doc, page_num, pdf_dir, pdf_basename, result)
@@ -158,8 +173,6 @@ def parse_pdf(pdf_path: str) -> ParsedPDF:
     logger.info("PDF parsed: {0} pages, {1} figures, {2} text captions".format(
         page_count, len(result.figures), len(result.captions)))
     return result
-
-
 def _find_fig_candidates(page_text: str) -> List[Dict]:
     """Find figure caption candidates from page text using regex.
     Collects multi-line captions when figure label is at line start.
@@ -206,6 +219,7 @@ def _find_fig_candidates(page_text: str) -> List[Dict]:
                 candidates.append({
                     "fig_num": fig_num,
                     "text": full_text[:600],
+                    "at_line_start": True,
                 })
             i = j  # Skip consumed lines
             continue
@@ -221,19 +235,32 @@ def _find_fig_candidates(page_text: str) -> List[Dict]:
                 candidates.append({
                     "fig_num": fig_num,
                     "text": line_stripped[:300],
+                    "at_line_start": False,
                 })
         i += 1
     return candidates
 
 def _filter_fig_candidates(page, candidates: List[Dict], page_num: int, pdf_path: str) -> List[Dict]:
     """Classify figure caption candidates using Gemini 3 Flash, with heuristic fallback."""
+    # Line-start figure labels are always standalone captions
+    need_filter = [c for c in candidates if not c.get("at_line_start", False)]
+    if len(need_filter) != len(candidates):
+        results = [c for c in candidates if c.get("at_line_start", False)]
+        for c in results:
+            c["type"] = "caption"
+        if not need_filter:
+            return results
+        candidates = need_filter
+    else:
+        results = []
+
     if not GEMINI_FILTER_ENABLED:
-        return _heuristic_filter(candidates, page.get_text() if page else "")
+        return results + _heuristic_filter(candidates, page.get_text() if page else "")
 
     gemini_config = _load_gemini_config()
     if not gemini_config:
         logger.debug("Gemini not configured, using heuristic fallback")
-        return _heuristic_filter(candidates, page.get_text() if page else "")
+        return results + _heuristic_filter(candidates, page.get_text() if page else "")
 
     # Check cache
     pdf_md5 = hashlib.md5(pdf_path.encode()).hexdigest()[:12]
@@ -271,7 +298,6 @@ def _filter_fig_candidates(page, candidates: List[Dict], page_num: int, pdf_path
         gemini_result = gemini_classify_captions(b64, candidate_lines, gemini_config)
         if gemini_result and "results" in gemini_result:
             result_map = {r["fig"]: r["type"] for r in gemini_result["results"]}
-            results = []
             for c in candidates:
                 fig_type = result_map.get(c["fig_num"], "reference")
                 results.append({**c, "type": fig_type})
@@ -298,6 +324,10 @@ def _heuristic_filter(candidates: List[Dict], page_text: str) -> List[Dict]:
     ]
     results = []
     for c in candidates:
+        # Line-start figure labels are always standalone captions
+        if c.get("at_line_start", False):
+            results.append({**c, "type": "caption"})
+            continue
         text = c.get("text", "")
         is_ref = False
         for v in reference_verbs:
@@ -359,79 +389,152 @@ def _screenshot_page(doc, page_num: int, pdf_dir: str, pdf_basename: str, result
         logger.warning("  Page screenshot failed (page {0}): {1}".format(page_num + 1, e))
 
 
-def _crop_page_figures(doc, page_num: int, pdf_dir: str, pdf_basename: str, result, min_dim=100):
-    """Extract individual figure images from a page by cropping render to image bounding boxes.
+def _extract_complete_figures(doc, page_num: int, pdf_dir: str, pdf_basename: str,
+                               page_captions: list, start_num: int = 1) -> list:
+    """Extract complete figures from a page by grouping nearby image bboxes and cropping.
 
-    Uses PyMuPDF's image_info to find large image regions on the page,
-    renders the page, and crops to each region. Falls back to _screenshot_page
-    if image_info is empty.
+    Groups image bboxes (sub-panels like a,b,c,d) into complete figure regions,
+    renders with clip, and saves the cropped region including caption text.
+    Uses y-overlap heuristic for multi-column figure layout.
     """
+    FIGURE_CROP_ZOOM = 2.0
+    MIN_IMG_DIM = 50
+    Y_GAP = 40  # max vertical gap to merge sub-panels on same row
+
     try:
         page = doc[page_num]
         image_infos = page.get_image_info()
-        large_images = [
+
+        large_infos = [
             info for info in image_infos
-            if info.get("width", 0) >= min_dim and info.get("height", 0) >= min_dim
+            if info.get("width", 0) >= MIN_IMG_DIM and info.get("height", 0) >= MIN_IMG_DIM
             and info.get("bbox")
         ]
 
-        if not large_images:
-            logger.debug("  No large images found on page {0}, using full-page screenshot fallback".format(page_num + 1))
-            _screenshot_page(doc, page_num, pdf_dir, pdf_basename, result)
-            return
+        if not large_infos:
+            logger.debug("  No large images found on page {0}".format(page_num + 1))
+            return []
 
-        mat = fitz.Matrix(SCREENSHOT_ZOOM, SCREENSHOT_ZOOM)
-        pix = page.get_pixmap(matrix=mat)
+        # Convert to Rect objects
+        all_rects = [fitz.Rect(b[0], b[1], b[2], b[3]) for b in [i["bbox"] for i in large_infos]]
 
-        existing_count = len(result.figures)
+        # Simple grouping: merge all bboxes into one group per page
+        # Physics papers usually have one figure per page
+        # If there are captions, use them to determine number of groups
+        num_captions = len(page_captions) if page_captions else 1
 
-        for idx, img_info in enumerate(large_images):
-            bbox = img_info["bbox"]
-            crop_rect = fitz.Rect(
-                bbox[0] * SCREENSHOT_ZOOM,
-                bbox[1] * SCREENSHOT_ZOOM,
-                bbox[2] * SCREENSHOT_ZOOM,
-                bbox[3] * SCREENSHOT_ZOOM
-            )
-            crop_rect.x0 = max(0, crop_rect.x0)
-            crop_rect.y0 = max(0, crop_rect.y0)
-            crop_rect.x1 = min(pix.width, crop_rect.x1)
-            crop_rect.y1 = min(pix.height, crop_rect.y1)
+        # Strategy: sort by y, group using y-overlap + y-gap
+        sorted_rects = sorted(all_rects, key=lambda r: r.y0)
 
-            if crop_rect.width < min_dim * SCREENSHOT_ZOOM or crop_rect.height < min_dim * SCREENSHOT_ZOOM:
+        figure_groups = []
+        for rect in sorted_rects:
+            merged = False
+            for i, group in enumerate(figure_groups):
+                # Check if rect y-ranges overlap with group y-ranges
+                # or if they are very close
+                y_overlap = rect.y0 < group.y1 and group.y0 < rect.y1
+                y_dist = min(abs(rect.y0 - group.y1), abs(rect.y1 - group.y0))
+                x_overlap = rect.x0 < group.x1 and group.x0 < rect.x1
+
+                if y_overlap or (y_dist < Y_GAP and x_overlap):
+                    group.x0 = min(group.x0, rect.x0)
+                    group.y0 = min(group.y0, rect.y0)
+                    group.x1 = max(group.x1, rect.x1)
+                    group.y1 = max(group.y1, rect.y1)
+                    merged = True
+                    break
+
+            if not merged:
+                figure_groups.append(rect)
+
+        # If we have more groups than captions, merge some
+        if len(figure_groups) > num_captions:
+            # Try merging: merge small groups near large ones
+            figure_groups.sort(key=lambda g: (g.y1 - g.y0) * (g.x1 - g.x0), reverse=True)
+            large_groups = figure_groups[:num_captions]
+            small_groups = figure_groups[num_captions:]
+            for small_g in small_groups:
+                best_idx = 0
+                best_dist = float("inf")
+                for j, large_g in enumerate(large_groups):
+                    d = abs(small_g.y0 - large_g.y1) + abs(small_g.x0 - large_g.x0)
+                    if d < best_dist:
+                        best_dist = d
+                        best_idx = j
+                large_groups[best_idx].x0 = min(large_groups[best_idx].x0, small_g.x0)
+                large_groups[best_idx].y0 = min(large_groups[best_idx].y0, small_g.y0)
+                large_groups[best_idx].x1 = max(large_groups[best_idx].x1, small_g.x1)
+                large_groups[best_idx].y1 = max(large_groups[best_idx].y1, small_g.y1)
+            figure_groups = large_groups
+
+        results = []
+        for idx, group_rect in enumerate(figure_groups):
+            PAD = 5
+            group_rect.x0 = max(0, group_rect.x0 - PAD)
+            group_rect.y0 = max(0, group_rect.y0 - PAD)
+            group_rect.x1 += PAD
+            group_rect.y1 += PAD
+
+            # Extend downward to include caption text
+            if idx < len(page_captions):
+                fig_num = page_captions[idx]["fig_num"]
+                search_terms = [
+                    "Fig. " + fig_num, "Figure " + fig_num, "FIG " + fig_num,
+                ]
+                if "(" in fig_num:
+                    base = fig_num.split("(")[0]
+                    search_terms.extend(["Fig. " + base, "Figure " + base])
+                found_rect = None
+                for term in search_terms:
+                    areas = page.search_for(term)
+                    if areas:
+                        full_rect = areas[0]
+                        for ar in areas[1:]:
+                            full_rect = full_rect.include_rect(ar)
+                        found_rect = full_rect
+                        found_rect.y1 += 40
+                        break
+                if found_rect and found_rect.y1 > group_rect.y1:
+                    group_rect.y1 = found_rect.y1 + PAD
+                    group_rect.x0 = min(group_rect.x0, found_rect.x0 - PAD)
+                    group_rect.x1 = max(group_rect.x1, found_rect.x1 + PAD)
+
+            # Render with clip
+            mat = fitz.Matrix(FIGURE_CROP_ZOOM, FIGURE_CROP_ZOOM)
+            try:
+                pix = page.get_pixmap(matrix=mat, clip=group_rect)
+            except Exception as render_e:
+                logger.warning("  Clip render failed (page {0} fig {1}): {2}".format(
+                    page_num + 1, idx + 1, render_e))
                 continue
 
-            crop_pix = fitz.Pixmap(pix, crop_rect)
+            if pix.width < 100 or pix.height < 100:
+                continue
 
-            fig_num = existing_count + idx + 1
+            fig_num = start_num + idx
             fig_filename = "{0}_fig{1}.png".format(pdf_basename, fig_num)
             fig_path = os.path.join(pdf_dir, fig_filename)
-            crop_pix.save(fig_path)
+            pix.save(fig_path)
 
-            caption_text = "Figure {0} (Page {1})".format(fig_num, page_num + 1)
-            page_capts = [c for c in result.captions if c["page_num"] == page_num]
-            if page_capts:
-                idx_in_page = len([f for f in result.figures if f.get("page_num") == page_num]) + idx
-                cap_idx = min(idx_in_page, len(page_capts) - 1)
-                caption_text = page_capts[cap_idx]["text"]
+            caption_text = page_captions[idx]["text"] if idx < len(page_captions) else "Figure {0} (Page {1})".format(fig_num, page_num + 1)
 
-            result.figures.append({
+            results.append({
                 "figure_number": str(fig_num),
                 "file_path": fig_path,
                 "caption": caption_text,
                 "page_num": page_num,
-                "width": int(crop_rect.width),
-                "height": int(crop_rect.height),
+                "width": pix.width,
+                "height": pix.height,
                 "file_size": os.path.getsize(fig_path),
             })
-            logger.info("  Cropped figure {0}: {1} ({2}x{3})".format(
-                fig_num, fig_path, int(crop_rect.width), int(crop_rect.height)))
+            logger.info("  Complete Figure {0}: {1} ({2}x{3})".format(
+                fig_num, fig_path, pix.width, pix.height))
+
+        return results
 
     except Exception as e:
-        logger.warning("  Figure crop failed (page {0}): {1}, using full-page screenshot".format(page_num + 1, e))
-        _screenshot_page(doc, page_num, pdf_dir, pdf_basename, result)
-
-
+        logger.warning("  Complete figure extraction failed (page {0}): {1}".format(page_num + 1, e))
+        return []
 def extract_text_only(pdf_path: str) -> str:
     """Extract text only (no figures)"""
     try:
