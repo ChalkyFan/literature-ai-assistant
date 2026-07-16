@@ -137,27 +137,16 @@ def parse_pdf(pdf_path: str) -> ParsedPDF:
                     pass
         logger.info("  Trimmed to {0} largest figures".format(len(result.figures)))
 
-    # --- Pass 2: Page screenshots for pages with figure captions ---
-    # Take screenshots for pages that have text-based figure captions
-    # even if they also have embedded images (which may be sub-components)
-    caption_pages = set(c["page_num"] for c in result.captions)
-    if caption_pages:
-        logger.info("Taking page screenshots for %d pages with figure captions..." % len(caption_pages))
-        for page_num in sorted(caption_pages):
-            _screenshot_page(doc, page_num, pdf_dir, pdf_basename, result)
-
-    # --- Pass 3: Supplement with page screenshots for image-rich pages ---
+    # --- Pass 2: Supplement with cropped figures for pages with few embedded images ---
     if embedded_count < 3 and pages_with_images:
         logger.info("Only {0} embedded images, supplementing with page screenshots...".format(embedded_count))
         for page_num in sorted(pages_with_images):
-            if page_num in caption_pages:
-                continue  # Already screenshotted in Pass 2
             figs_on_page = [f for f in result.figures if f["page_num"] == page_num]
             if len(figs_on_page) >= 2:
                 continue
-            _screenshot_page(doc, page_num, pdf_dir, pdf_basename, result)
+            _crop_page_figures(doc, page_num, pdf_dir, pdf_basename, result, min_dim=150)
 
-    # --- Pass 4: Fallback - screenshot early pages ---
+    # --- Pass 3: Fallback - screenshot early pages ---
     if len(result.figures) < 3 and len(doc) > 0:
         logger.info("Still fewer than 3 figures, screenshotting early pages...")
         pages_to_screenshot = set(range(min(5, len(doc)))) - {f["page_num"] for f in result.figures}
@@ -368,6 +357,79 @@ def _screenshot_page(doc, page_num: int, pdf_dir: str, pdf_basename: str, result
         logger.info("  Page screenshot: {0}".format(fig_path))
     except Exception as e:
         logger.warning("  Page screenshot failed (page {0}): {1}".format(page_num + 1, e))
+
+
+def _crop_page_figures(doc, page_num: int, pdf_dir: str, pdf_basename: str, result, min_dim=100):
+    """Extract individual figure images from a page by cropping render to image bounding boxes.
+
+    Uses PyMuPDF's image_info to find large image regions on the page,
+    renders the page, and crops to each region. Falls back to _screenshot_page
+    if image_info is empty.
+    """
+    try:
+        page = doc[page_num]
+        image_infos = page.get_image_info()
+        large_images = [
+            info for info in image_infos
+            if info.get("width", 0) >= min_dim and info.get("height", 0) >= min_dim
+            and info.get("bbox")
+        ]
+
+        if not large_images:
+            logger.debug("  No large images found on page {0}, using full-page screenshot fallback".format(page_num + 1))
+            _screenshot_page(doc, page_num, pdf_dir, pdf_basename, result)
+            return
+
+        mat = fitz.Matrix(SCREENSHOT_ZOOM, SCREENSHOT_ZOOM)
+        pix = page.get_pixmap(matrix=mat)
+
+        existing_count = len(result.figures)
+
+        for idx, img_info in enumerate(large_images):
+            bbox = img_info["bbox"]
+            crop_rect = fitz.Rect(
+                bbox[0] * SCREENSHOT_ZOOM,
+                bbox[1] * SCREENSHOT_ZOOM,
+                bbox[2] * SCREENSHOT_ZOOM,
+                bbox[3] * SCREENSHOT_ZOOM
+            )
+            crop_rect.x0 = max(0, crop_rect.x0)
+            crop_rect.y0 = max(0, crop_rect.y0)
+            crop_rect.x1 = min(pix.width, crop_rect.x1)
+            crop_rect.y1 = min(pix.height, crop_rect.y1)
+
+            if crop_rect.width < min_dim * SCREENSHOT_ZOOM or crop_rect.height < min_dim * SCREENSHOT_ZOOM:
+                continue
+
+            crop_pix = fitz.Pixmap(pix, crop_rect)
+
+            fig_num = existing_count + idx + 1
+            fig_filename = "{0}_fig{1}.png".format(pdf_basename, fig_num)
+            fig_path = os.path.join(pdf_dir, fig_filename)
+            crop_pix.save(fig_path)
+
+            caption_text = "Figure {0} (Page {1})".format(fig_num, page_num + 1)
+            page_capts = [c for c in result.captions if c["page_num"] == page_num]
+            if page_capts:
+                idx_in_page = len([f for f in result.figures if f.get("page_num") == page_num]) + idx
+                cap_idx = min(idx_in_page, len(page_capts) - 1)
+                caption_text = page_capts[cap_idx]["text"]
+
+            result.figures.append({
+                "figure_number": str(fig_num),
+                "file_path": fig_path,
+                "caption": caption_text,
+                "page_num": page_num,
+                "width": int(crop_rect.width),
+                "height": int(crop_rect.height),
+                "file_size": os.path.getsize(fig_path),
+            })
+            logger.info("  Cropped figure {0}: {1} ({2}x{3})".format(
+                fig_num, fig_path, int(crop_rect.width), int(crop_rect.height)))
+
+    except Exception as e:
+        logger.warning("  Figure crop failed (page {0}): {1}, using full-page screenshot".format(page_num + 1, e))
+        _screenshot_page(doc, page_num, pdf_dir, pdf_basename, result)
 
 
 def extract_text_only(pdf_path: str) -> str:
