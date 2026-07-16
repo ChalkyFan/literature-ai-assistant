@@ -6,9 +6,9 @@ from datetime import datetime, timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from flask import Flask, render_template, request, jsonify, send_from_directory, Response
+from flask import Flask, render_template, request, jsonify, send_from_directory
 
-from arxiv_assistant import config, db, bibtex
+from arxiv_assistant import config, db
 
 import hashlib
 
@@ -441,6 +441,8 @@ def ask_ai(paper_id: int):
 
     question = data.get("question", "").strip()
 
+    use_gemini = data.get("use_gemini", False)
+
     if not question:
 
         return jsonify({"ok": False, "error": "Question required"}), 400
@@ -493,33 +495,57 @@ def ask_ai(paper_id: int):
 
         import requests
 
-        headers = {"Authorization": "Bearer {0}".format(config_local.DEEPSEEK_API_KEY), "Content-Type": "application/json"}
+        if use_gemini:
 
-        payload = {
+            model_used = config_local.GEMINI_MODEL
 
-            "model": config_local.DEEPSEEK_MODEL,
+            headers = {"x-goog-api-key": config_local.GEMINI_API_KEY, "Content-Type": "application/json"}
 
-            "messages": [{"role": "user", "content": prompt}],
+            payload = {
 
-            "temperature": 0.3,
+                "contents": [{"role": "user", "parts": [{"text": prompt}]}],
 
-            "max_tokens": 1024,
+                "generationConfig": {"temperature": 0.3, "maxOutputTokens": 1024},
 
-        }
+            }
 
-        resp = requests.post(config_local.DEEPSEEK_API_URL, headers=headers, json=payload, timeout=60)
+            resp = requests.post(config_local.GEMINI_API_URL, headers=headers, json=payload, timeout=60)
 
-        resp.raise_for_status()
+            resp.raise_for_status()
 
-        answer = resp.json()["choices"][0]["message"]["content"]
+            answer = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+
+        else:
+
+            model_used = config_local.DEEPSEEK_MODEL
+
+            headers = {"Authorization": "Bearer {0}".format(config_local.DEEPSEEK_API_KEY), "Content-Type": "application/json"}
+
+            payload = {
+
+                "model": model_used,
+
+                "messages": [{"role": "user", "content": prompt}],
+
+                "temperature": 0.3,
+
+                "max_tokens": 1024,
+
+            }
+
+            resp = requests.post(config_local.DEEPSEEK_API_URL, headers=headers, json=payload, timeout=60)
+
+            resp.raise_for_status()
+
+            answer = resp.json()["choices"][0]["message"]["content"]
 
         db.save_conversation(paper_id, question, answer)
 
-        return jsonify({"ok": True, "answer": answer, "question": question})
+        return jsonify({"ok": True, "answer": answer, "question": question, "model": model_used})
 
     except Exception as e:
 
-        return None
+        return jsonify({"ok": False, "error": str(e)}), 500
 
 # ===== API: Conversations =====
 
@@ -743,9 +769,8 @@ def get_history():
 @app.route("/papers/<path:filename>")
 
 def serve_paper_file(filename: str):
-
-    papers_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), config.PAPERS_DIR)
-
+    # If env var PAPERS_DIR is set (worktree mode), use it; otherwise use config default
+    papers_dir = os.environ.get("PAPERS_DIR") or os.path.join(os.path.dirname(os.path.dirname(__file__)), config.PAPERS_DIR)
     return send_from_directory(papers_dir, filename)
 
 # ===== API: Hide paper (soft delete) =====
@@ -794,7 +819,7 @@ def my_papers():
 
         starred = db.get_starred_papers(username=user.get("username", ""))
 
-        all_tagged = db.get_papers_by_tag("缁勪細鎶ュ憡")
+        all_tagged = db.get_papers_by_tag("组会报告")
 
         tagged_report = []
 
@@ -864,7 +889,7 @@ def api_add_keyword():
 
     if not data or not data.get("keyword"):
 
-        return jsonify({"ok": False, "error": "缂哄皯鍙傛暟"}), 400
+        return jsonify({"ok": False, "error": "缺少参数"}), 400
 
     kw = data["keyword"].strip()
 
@@ -872,13 +897,13 @@ def api_add_keyword():
 
     if weight < 0.1 or weight > 1.2:
 
-        return jsonify({"ok": False, "error": "鏉冮噸蹇呴』鍦?0.1 ~ 1.2 涔嬮棿"}), 400
+        return jsonify({"ok": False, "error": "权重必须在 0.1 ~ 1.2 之间"}), 400
 
     created_by = data.get("username", "")
 
     if db.check_keyword_exists(kw):
 
-        return jsonify({"ok": False, "error": "缂哄皯鍙傛暟"}), 400
+        return jsonify({"ok": False, "error": "缺少参数"}), 400
 
     ok = db.add_keyword(kw, weight, created_by)
 
@@ -896,7 +921,7 @@ def api_update_keyword(kw_id: int):
 
     if weight < 0.1 or weight > 1.2:
 
-        return jsonify({"ok": False, "error": "鏉冮噸蹇呴』鍦?0.1 ~ 1.2 涔嬮棿"}), 400
+        return jsonify({"ok": False, "error": "权重必须在 0.1 ~ 1.2 之间"}), 400
 
     ok = db.update_keyword(kw_id, kw or None, weight)
 
@@ -938,162 +963,131 @@ def generate_detailed_analysis(paper_id: int):
 
     if result is None:
 
-        return jsonify({"ok": False, "error": "鍒嗘瀽澶辫触"}), 500
+        return jsonify({"ok": False, "error": "分析失败"}), 500
 
     return jsonify({"ok": True, "analysis": result})
 
 def _run_detailed_analysis_inner(paper_id, paper):
-
-    """鍐呴儴璇︾粏鍒嗘瀽鍑芥暟锛岃繑鍥炲垎鏋愬唴瀹规垨 None"""
-
+    import os
     if not paper or not paper.get("pdf_path") or not os.path.exists(paper["pdf_path"]):
-
         return None
-
     import arxiv_assistant.pdf_parser as pdf_parser
-
     parsed = pdf_parser.parse_pdf(paper["pdf_path"])
-
-    import config_local
-
-    import requests
-
+    text_excerpt = parsed.text[:10000]
+    import config_local, requests
     cfg = config_local
-
-    api_key = cfg.DEEPSEEK_API_KEY
-
-    api_url = cfg.DEEPSEEK_API_URL
-
-    model_name = cfg.DEEPSEEK_MODEL
-
-    text_excerpt = parsed.text[:8000]
-
-    figure_desc = ""
-
+    prompt_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "prompt for analysis.md")
+    with open(prompt_path, "r", encoding="utf-8") as pf:
+        prompt_template = pf.read()
+    figure_parts = []
     for fig in parsed.figures[:10]:
+        fn = fig.get("figure_number", "?")
+        cap = (fig.get("caption", "") or "")[:300]
+        figure_parts.append("### Figure " + str(fn) + "\uff1a" + cap + "\n")
+        figure_parts.append("**\u8be6\u7ec6\u89e3\u8bfb\uff1a**\n")
+        figure_parts.append("-\u56fe\u4e2d\u5c55\u793a\u4e86\u4ec0\u4e48\u6570\u636e\uff1f\u5750\u6807\u8f74\u542b\u4e49\uff1f\u5173\u952e\u8d8b\u52bf\u548c\u7279\u5f81\uff1f\n")
+        figure_parts.append("-\u8be5\u56fe\u4f7f\u7528\u7684\u5b9e\u9a8c\u624b\u6bb5/\u8ba1\u7b97\u65b9\u6cd5\u662f\u4ec0\u4e48\uff1f\u5173\u952e\u7ed3\u679c\u6709\u54ea\u4e9b\uff1f\n")
+        figure_parts.append("-\u7ed3\u5408\u6b63\u6587\uff0c\u8be5\u56fe\u652f\u6491\u4e86\u4f5c\u8005\u7684\u54ea\u4e2a\u8bba\u70b9\uff1f\n")
+        figure_parts.append("---\n\n")
+    figure_section = "".join(figure_parts) if figure_parts else "\uff08\u672c\u6587\u65e0\u56fe\u8868\u6216\u56fe\u8868\u672a\u63d0\u53d6\u6210\u529f\uff09\n"
+    # Build multimodal prompt with text + images
+    figure_parts = []
+    for fig in parsed.figures[:10]:
+        fn = fig.get("figure_number", "?")
+        cap = (fig.get("caption", "") or "")[:300]
+        figure_parts.append("### Figure " + str(fn) + "\uff1a" + cap + "\n")
+    figure_section = "".join(figure_parts) if figure_parts else "\uff08\u672c\u6587\u65e0\u56fe\u8868\u6216\u56fe\u8868\u672a\u63d0\u53d6\u6210\u529f\uff09\n"
 
-        cap = fig.get("caption", "")[:200]
-
-        fnum = fig.get("figure_number", "?")
-
-        figure_desc += "Figure " + str(fnum) + ": " + cap + "\n"
-
-    prompt = "浣犳槸鍑濊仛鎬佺墿鐞嗛鍩熺殑AI鐮旂┒鍔╂墜銆傝瀵硅繖绡囪鏂囪繘琛岃缁嗗垎鏋愶紝杈撳嚭涓枃銆俓n\n"
-
-    prompt += "璁烘枃鏂囨湰寮€澶撮儴鍒嗭細\n" + text_excerpt + "\n\n"
-
-    prompt += "璁烘枃鍖呭惈浠ヤ笅鍥捐〃锛堝浘娉級锛歕n" + figure_desc + "\n\n"
-
-    prompt += "璇锋寜浠ヤ笅鏍煎紡杈撳嚭锛歕n\n"
-
-    prompt += "## 1. 鎽樿缈昏瘧\n[灏嗚鏂囨憳瑕佺炕璇戜负涓枃]\n\n"
-
-    prompt += "## 2. 鍥捐〃璇︾粏瑙ｈ\n[鎸変粠涓婂埌涓嬬殑椤哄簭锛岀粨鍚堝浘娉ㄥ拰鏂囩珷鍐呭锛岃缁嗚В璇绘瘡涓浘琛ㄧ殑鍐呭鍜屾剰涔塢\n\n"
-
-    prompt += "## 3. 鐮旂┒鏂规硶鎬荤粨\n[鎬荤粨鏂囩珷鐨勪富瑕佺爺绌舵柟娉昡\n\n"
-
-    prompt += "## 4. 涓昏缁撹\n[鎬荤粨鏂囩珷鐨勬牳蹇冪粨璁篯"
+    prompt = prompt_template.replace("{FIGURES}", figure_section) + "\n\n## Paper\n\n" + text_excerpt
 
     try:
-
-        payload = {"model": model_name, "messages": [{"role": "user", "content": prompt}], "temperature": 0.3, "max_tokens": 4000}
-
-        headers = {"Authorization": "Bearer " + api_key, "Content-Type": "application/json"}
-
-        resp = requests.post(api_url, headers=headers, json=payload, timeout=120)
-
+        headers = {"x-goog-api-key": cfg.GEMINI_API_KEY, "Content-Type": "application/json"}
+        
+        # Build parts: text first, then figure images
+        parts = [{"text": prompt[:20000]}]
+        for fig in parsed.figures[:10]:
+            fp = fig.get("file_path", "")
+            if not fp or not os.path.exists(fp):
+                continue
+            fn = fig.get("figure_number", "?")
+            cap = (fig.get("caption", "") or "")[:100]
+            parts.append({"text": "--- Figure " + str(fn) + ": " + cap + " ---"})
+            try:
+                with open(fp, "rb") as _f:
+                    _data = _f.read()
+                _b64 = __import__("base64").b64encode(_data).decode()
+                _ext = os.path.splitext(fp)[1].lower()
+                _mime = "image/png" if _ext == ".png" else "image/jpeg"
+                parts.append({"inline_data": {"mime_type": _mime, "data": _b64}})
+            except:
+                pass
+        
+        payload = {"contents": [{"role": "user", "parts": parts}]}
+        resp = requests.post(cfg.GEMINI_API_URL, headers=headers, json=payload, timeout=600)
         resp.raise_for_status()
+        gemini_result = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+    except Exception:
+        gemini_result = "# 1. Abstract\n(Translation failed)\n\n# 2. Methods\n(N/A)\n\n# 3. Figures\n(N/A)\n\n# 4. Outlook\n(N/A)"
 
-        analysis_content = resp.json()["choices"][0]["message"]["content"]
+    gemini_result = _strip_bold(gemini_result)
 
-    except Exception as e:
+    # Inject figure images into the response HTML for web display
+    injected = gemini_result
+    for i, fig in enumerate(parsed.figures[:10]):
+        fn = fig.get("figure_number", str(i+1))
+        img_html = _serve_figure_img(fig)
+        if not img_html:
+            continue
+        markers = ["### Figure " + fn, "### Figure " + str(i+1)]
+        for marker in markers:
+            idx = injected.find(marker)
+            if idx >= 0:
+                eol = injected.find(chr(10), idx)
+                if eol < 0:
+                    eol = len(injected)
+                insert_pos = eol + 1
+                img_block = chr(10) + chr(10) + img_html + chr(10)
+                injected = injected[:insert_pos] + img_block + injected[insert_pos:]
+                break
 
-        return None
-
-    db.save_detailed_analysis(paper_id, analysis_content)
-
-    return analysis_content
-
-# ===== BibTeX / RIS Export =====
-
-@app.route("/api/paper/<int:paper_id>/bibtex", methods=["GET"])
-def export_paper_bibtex(paper_id: int):
-    """Export a single paper as BibTeX (.bib)"""
-    paper = db.get_paper_by_id(paper_id)
-    if not paper:
-        return jsonify({"ok": False, "error": "Paper not found"}), 404
-    bib = bibtex.generate_bibtex(dict(paper))
-    filename = "paper_{0}.bib".format(paper["arxiv_id"] or paper_id)
-    return Response(
-        bib,
-        mimetype="text/plain; charset=utf-8",
-        headers={"Content-Disposition": "attachment; filename={0}".format(filename)}
-    )
-
-
-@app.route("/api/paper/<int:paper_id>/ris", methods=["GET"])
-def export_paper_ris(paper_id: int):
-    """Export a single paper as RIS (Zotero-compatible)"""
-    paper = db.get_paper_by_id(paper_id)
-    if not paper:
-        return jsonify({"ok": False, "error": "Paper not found"}), 404
-    ris = bibtex.generate_ris(dict(paper))
-    filename = "paper_{0}.ris".format(paper["arxiv_id"] or paper_id)
-    return Response(
-        ris,
-        mimetype="text/plain; charset=utf-8",
-        headers={"Content-Disposition": "attachment; filename={0}".format(filename)}
-    )
+    db.save_detailed_analysis(paper_id, injected)
+    return injected
+    return injected
 
 
-@app.route("/api/papers/bibtex-batch", methods=["POST"])
-def export_batch_bibtex():
-    """Export multiple papers as a combined .bib file"""
-    data = request.get_json(silent=True) or {}
-    paper_ids = data.get("paper_ids", [])
-    if not paper_ids:
-        return jsonify({"ok": False, "error": "No paper IDs provided"}), 400
-
-    papers = []
-    for pid in paper_ids:
-        paper = db.get_paper_by_id(pid)
-        if paper:
-            papers.append(dict(paper))
-
-    if not papers:
-        return jsonify({"ok": False, "error": "No valid papers found"}), 404
-
-    bib = bibtex.generate_batch_bibtex(papers)
-    return Response(
-        bib,
-        mimetype="text/plain; charset=utf-8",
-        headers={"Content-Disposition": "attachment; filename=papers_export.bib"}
-    )
 
 
-@app.route("/api/papers/ris-batch", methods=["POST"])
-def export_batch_ris():
-    """Export multiple papers as a combined .ris file (Zotero-compatible)"""
-    data = request.get_json(silent=True) or {}
-    paper_ids = data.get("paper_ids", [])
-    if not paper_ids:
-        return jsonify({"ok": False, "error": "No paper IDs provided"}), 400
+def _serve_figure_img(fig):
+    fp = fig.get("file_path", "")
+    if not fp or not os.path.exists(fp):
+        return ""
+    try:
+        with open(fp, "rb") as _f:
+            _data = _f.read()
+        _b64 = __import__("base64").b64encode(_data).decode()
+        _ext = os.path.splitext(fp)[1].lower()
+        _mime = "image/png" if _ext == ".png" else "image/jpeg"
+        return '<img src="data:' + _mime + ';base64,' + _b64 + '" style="max-width:100%;height:auto;margin:10px 0;border:1px solid #ddd;border-radius:4px;">'
+    except:
+        return ""
 
-    papers = []
-    for pid in paper_ids:
-        paper = db.get_paper_by_id(pid)
-        if paper:
-            papers.append(dict(paper))
+def _clean_output(text):
+    import re
+    text = text.replace("**", "")
+    text = re.sub(r"(?<!\*)\*(?!\*)([^*]+?)(?<!\*)\*(?!\*)", lambda m: m.group(1), text)
+    for pat in ["\u6b64\u5904\u5e94\u4e3a[^\u3002\n]*[\u622a\u56fe\n]",
+                "\u8bf7\u5728\u6b64\u5904\u63d2\u5165[^\u3002\n]*",
+                "\(\u8bf7\u5728\u6b64\u5904\u63d2\u5165[^)]*\)"]:
+        text = re.sub(pat, "", text)
+    text = re.sub(r"\n\s*-{3,}\s*\n", "\n\n", text)
+    text = re.sub(r"^-{3,}\s*\n", "", text)
+    text = re.sub(r"\A.*?(?=##\s+\d)", "", text, flags=re.DOTALL)
+    text = re.sub(r"\n{4,}", "\n", text)
+    text = re.sub(r"  +", " ", text)
+    return text.strip()
 
-    if not papers:
-        return jsonify({"ok": False, "error": "No valid papers found"}), 404
-
-    ris = "\n".join(bibtex.generate_ris(p) for p in papers)
-    return Response(
-        ris,
-        mimetype="text/plain; charset=utf-8",
-        headers={"Content-Disposition": "attachment; filename=papers_export.ris"}
-    )
+def _strip_bold(text):
+    return _clean_output(text)
 
 
 @app.context_processor
@@ -1125,4 +1119,3 @@ if __name__ == "__main__":
     db.init_db()
 
     app.run(host=config.WEB_HOST, port=config.WEB_PORT, debug=False)
-
