@@ -1,4 +1,4 @@
-"""PDF parser: text extraction + figure extraction + Gemini caption filter"""
+﻿"""PDF parser: text extraction + figure extraction + Gemini caption filter"""
 import os
 import logging
 import re
@@ -8,6 +8,7 @@ import json
 from typing import List, Dict, Optional
 from dataclasses import dataclass, field
 import fitz
+from PIL import Image
 from . import config
 
 logger = logging.getLogger(__name__)
@@ -389,6 +390,51 @@ def _screenshot_page(doc, page_num: int, pdf_dir: str, pdf_basename: str, result
         logger.warning("  Page screenshot failed (page {0}): {1}".format(page_num + 1, e))
 
 
+
+def _crop_bottom_blank(img, min_ink_threshold=248, min_ink_ratio=0.001, pad=3):
+    """Crop mostly-blank rows from the bottom of a rendered figure.
+    
+    Scans from bottom-up, finds the last row with meaningful ink content,
+    then trims all rows below that plus a small padding. Adapts automatically
+    to each figure — works for any paper layout.
+    
+    Args:
+        img: PIL Image object (RGB or grayscale).
+        min_ink_threshold: pixel brightness below which is "ink" (0-255).
+        min_ink_ratio: minimum fraction of ink pixels for a row to count as content.
+        pad: extra rows to keep below last content row as safety margin.
+    
+    Returns:
+        Cropped PIL Image, or original if no significant blank space found.
+    """
+    import numpy as np
+    arr = np.array(img)
+    h, w = arr.shape[:2]
+    
+    # Convert to grayscale
+    if len(arr.shape) == 3:
+        gray = arr.astype(np.float32).mean(axis=2)
+    else:
+        gray = arr.astype(np.float32)
+    
+    # Find last row with significant ink content
+    last_content_row = 0
+    for row in range(h - 1, -1, -1):
+        dark_pixels = (gray[row] < min_ink_threshold).mean()
+        if dark_pixels > min_ink_ratio:
+            last_content_row = row
+            break
+    
+    # New bottom: content + safety pad
+    new_bottom = min(h, last_content_row + pad + 1)
+    
+    # Only crop if it saves significant space (>3 rows)
+    if h - new_bottom <= 3:
+        return img
+    
+    return img.crop((0, 0, w, new_bottom))
+
+
 def _extract_complete_figures(doc, page_num: int, pdf_dir: str, pdf_basename: str,
                                page_captions: list, start_num: int = 1) -> list:
     """Extract complete figures from a page by grouping nearby image bboxes and cropping.
@@ -469,7 +515,7 @@ def _extract_complete_figures(doc, page_num: int, pdf_dir: str, pdf_basename: st
 
         results = []
         for idx, group_rect in enumerate(figure_groups):
-            PAD = 5
+            PAD = 1
             group_rect.x0 = max(0, group_rect.x0 - PAD)
             group_rect.y0 = max(0, group_rect.y0 - PAD)
             group_rect.x1 += PAD
@@ -488,17 +534,22 @@ def _extract_complete_figures(doc, page_num: int, pdf_dir: str, pdf_basename: st
                 for term in search_terms:
                     areas = page.search_for(term)
                     if areas:
-                        full_rect = areas[0]
+                        found_rect = areas[0]
                         for ar in areas[1:]:
-                            full_rect = full_rect.include_rect(ar)
-                        found_rect = full_rect
-                        found_rect.y1 += 40
+                            d = abs(ar.y1 - group_rect.y1)
+                            if d < abs(found_rect.y1 - group_rect.y1):
+                                found_rect = ar
+                        found_rect.y1 += 2
                         break
                 if found_rect and found_rect.y1 > group_rect.y1:
                     group_rect.y1 = found_rect.y1 + PAD
                     group_rect.x0 = min(group_rect.x0, found_rect.x0 - PAD)
                     group_rect.x1 = max(group_rect.x1, found_rect.x1 + PAD)
 
+            # DEBUG: print group_rect
+            logger.info("    group_rect for Fig {0}: ({1:.1f}, {2:.1f}, {3:.1f}, {4:.1f}) = {5:.0f}x{6:.0f}".format(
+                idx+1, group_rect.x0, group_rect.y0, group_rect.x1, group_rect.y1,
+                group_rect.width, group_rect.height))
             # Render with clip
             mat = fitz.Matrix(FIGURE_CROP_ZOOM, FIGURE_CROP_ZOOM)
             try:
@@ -514,7 +565,17 @@ def _extract_complete_figures(doc, page_num: int, pdf_dir: str, pdf_basename: st
             fig_num = start_num + idx
             fig_filename = "{0}_fig{1}.png".format(pdf_basename, fig_num)
             fig_path = os.path.join(pdf_dir, fig_filename)
-            pix.save(fig_path)
+            # Content-aware bottom trim: remove excess blank rows below figure content
+            try:
+                img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+                cropped = _crop_bottom_blank(img)
+                if cropped.size[1] < pix.height:
+                    logger.info("    Trimmed {0} blank rows from bottom of Fig {1}".format(
+                        pix.height - cropped.size[1], fig_num))
+                cropped.save(fig_path)
+            except Exception as trim_e:
+                logger.warning("    Bottom trim failed for Fig {0}: {1}".format(fig_num, trim_e))
+                pix.save(fig_path)
 
             caption_text = page_captions[idx]["text"] if idx < len(page_captions) else "Figure {0} (Page {1})".format(fig_num, page_num + 1)
 
