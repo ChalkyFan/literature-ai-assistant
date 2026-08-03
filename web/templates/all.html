@@ -1,33 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}全部论文 - ArXiv文献助手<script>
-function toggleStar(id) {
-    fetch("/api/paper/" + id + "/star", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({username: CURRENT_USER ? CURRENT_USER.username : ""})
-    }).then(r => r.json()).then(d => { if(d.ok) location.reload(); });
-}
-</script>
-<script>
-
-function toggleStar(id) {
-
-    fetch("/api/paper/" + id + "/star", {
-
-        method: "POST",
-
-        headers: {"Content-Type": "application/json"},
-
-        body: JSON.stringify({username: CURRENT_USER ? CURRENT_USER.username : ""})
-
-    }).then(r => r.json()).then(d => { if(d.ok) location.reload(); });
-
-}
-
-</script>
-
-{% endblock %}
+{% block title %}全部论文 - ArXiv文献助手{% endblock %}
 
 {% block content %}
 
@@ -135,32 +108,8 @@ function toggleStar(id) {
 
 </div>
 
-<script>
-function toggleStar(id) {
-    fetch("/api/paper/" + id + "/star", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({username: CURRENT_USER ? CURRENT_USER.username : ""})
-    }).then(r => r.json()).then(d => { if(d.ok) location.reload(); });
-}
-</script>
-<script>
 
-function toggleStar(id) {
 
-    fetch("/api/paper/" + id + "/star", {
-
-        method: "POST",
-
-        headers: {"Content-Type": "application/json"},
-
-        body: JSON.stringify({username: CURRENT_USER ? CURRENT_USER.username : ""})
-
-    }).then(r => r.json()).then(d => { if(d.ok) location.reload(); });
-
-}
-
-</script>
 
 {% endblock %}
 
