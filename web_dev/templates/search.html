@@ -13,7 +13,7 @@
 {% if query and papers %}
 <div class="search-results">
     <p class="result-count">找到 {{ papers|length }} 篇相关论文</p>
-    <div class="paper-list">
+    <div class="paper-list" id="search-results">
         {% for p in papers %}
         <div class="paper-card">
             <div class="paper-header">
@@ -36,4 +36,22 @@
     <p>未找到与 "{{ query }}" 相关的论文</p>
 </div>
 {% endif %}
+
+<script>
+// Highlight matched query in titles/authors
+(function() {
+    var q = "{{ query|e }}";
+    if (!q) return;
+    var terms = q.split(/\s+/).filter(function(t) { return t.length > 1; });
+    if (terms.length === 0) return;
+    document.querySelectorAll("#search-results .paper-title a, #search-results .paper-authors").forEach(function(el) {
+        var text = el.innerHTML;
+        terms.forEach(function(t) {
+            var re = new RegExp("(" + t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "gi");
+            text = text.replace(re, "<mark class='hl'>$1</mark>");
+        });
+        el.innerHTML = text;
+    });
+})();
+</script>
 {% endblock %}

@@ -716,7 +716,7 @@ def get_papers_by_date(date: str = None, sort_by: str = "rating", source: str = 
 
 
 
-def get_all_papers(limit: int = 100, offset: int = 0, sort_by: str = "date") -> List[Dict]:
+def get_all_papers(limit: int = 100, offset: int = 0, sort_by: str = "date", status: str = None) -> List[Dict]:
 
 
     conn = get_connection()
@@ -740,6 +740,21 @@ def get_all_papers(limit: int = 100, offset: int = 0, sort_by: str = "date") -> 
         }.get(sort_by, "p.published_date DESC, p.id DESC")
 
 
+        where = ""
+
+
+        params = []
+
+
+        if status:
+
+
+            where = " WHERE p.status = ?"
+
+
+            params.append(status)
+
+
         rows = conn.execute("""
 
 
@@ -749,10 +764,43 @@ def get_all_papers(limit: int = 100, offset: int = 0, sort_by: str = "date") -> 
             FROM papers p LEFT JOIN ai_summaries s ON s.paper_id = p.id
 
 
-            ORDER BY """ + order_clause + " LIMIT ? OFFSET ?", (limit, offset)).fetchall()
+            """ + where + """
+
+
+            ORDER BY """ + order_clause + " LIMIT ? OFFSET ?", tuple(params) + (limit, offset)).fetchall()
 
 
         return [dict(r) for r in rows]
+
+
+    finally:
+
+
+        conn.close()
+
+
+def count_papers(status: str = None) -> int:
+
+
+    conn = get_connection()
+
+
+    try:
+
+
+        if status:
+
+
+            row = conn.execute("SELECT COUNT(*) AS c FROM papers WHERE status = ?", (status,)).fetchone()
+
+
+        else:
+
+
+            row = conn.execute("SELECT COUNT(*) AS c FROM papers").fetchone()
+
+
+        return row["c"] if row else 0
 
 
     finally:
