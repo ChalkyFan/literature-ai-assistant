@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% block title %}{{ paper.title[:60] }} - ArXiv文献助手{% endblock %}
 {% block content %}
 
@@ -304,7 +304,7 @@
     <!-- Figures with Lightbox -->
     {% if paper.figures %}
     <div class="detail-figures">
-        <h2>图表 ({{ paper.figures|length }} 张)</h2>
+        <h2>图表 (<span id="figure-count">{{ paper.figures|length }}</span> 张)<button id="re-extract-btn" class="btn btn-outline btn-sm" onclick="reExtractFigures()" title="重新读取 PDF 并重新提取所有图片，覆盖原有图片" style="margin-left:10px;">↻ 重新截图</button></h2>
         <div class="figure-grid" id="figure-grid">
             {% for fig in paper.figures %}
             <div class="figure-item" data-fig-idx="{{ loop.index0 }}">
@@ -365,6 +365,63 @@
 </div>
 
 <script>
+// ==== Figure re-extract ====
+function reExtractFigures() {
+    var btn = document.getElementById("re-extract-btn");
+    btn.disabled = true;
+    btn.textContent = "正在重新截图...";
+
+    fetch(window.location.pathname + "/re-extract-figures", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"}
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.status === "success") {
+            var grid = document.getElementById("figure-grid");
+            grid.innerHTML = "";
+            var newFigures = data.figures;
+            window.figures = [];
+            for (var i = 0; i < newFigures.length; i++) {
+                var f = newFigures[i];
+                window.figures.push({src: f.src, caption: f.caption});
+                var item = document.createElement("div");
+                item.className = "figure-item";
+                item.setAttribute("data-fig-idx", i);
+                var img = document.createElement("img");
+                img.src = f.src;
+                img.alt = f.caption;
+                img.className = "fig-thumb";
+                img.onclick = (function(idx) {
+                    return function() { openLightbox(idx); };
+                })(i);
+                var cap = document.createElement("div");
+                cap.className = "figure-caption";
+                cap.textContent = f.caption;
+                item.appendChild(img);
+                item.appendChild(cap);
+                grid.appendChild(item);
+            }
+            var countEl = document.getElementById("figure-count");
+            if (countEl) countEl.textContent = newFigures.length;
+            btn.textContent = "\u2713 完成";
+            setTimeout(function() {
+                btn.disabled = false;
+                btn.textContent = "\u21bb 重新截图";
+            }, 3000);
+        } else {
+            alert("重新截图失败: " + data.message);
+            btn.disabled = false;
+            btn.textContent = "\u21bb 重新截图";
+        }
+    })
+    .catch(function(err) {
+        alert("重新截图出错: " + err);
+        btn.disabled = false;
+        btn.textContent = "\u21bb 重新截图";
+    });
+}
+
 // ==== Figure lightbox ====
 var figures = [
     {% for fig in paper.figures %}

@@ -11,6 +11,11 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 from arxiv_assistant import config, db
 
 import hashlib
+import logging
+import time as _time
+from collections import defaultdict
+from logging.handlers import RotatingFileHandler
+from werkzeug.exceptions import HTTPException, NotFound, Forbidden
 
 app = Flask(__name__)
 
@@ -19,6 +24,54 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), config.PAPERS_DIR, "_uploads")
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# Rotating log (5MB x 5 backups) - prevents unbounded log growth
+LOG_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "web_dev.log")
+_log_handler = RotatingFileHandler(LOG_FILE, maxBytes=5 * 1024 * 1024, backupCount=5, encoding="utf-8")
+_log_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
+app.logger.addHandler(_log_handler)
+app.logger.setLevel(logging.INFO)
+
+# ---- Error handlers: 404 must not be swallowed as 500 ----
+@app.errorhandler(NotFound)
+def handle_404(e):
+    return "Page not found", 404
+
+@app.errorhandler(Forbidden)
+def handle_403(e):
+    return "Forbidden", 403
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    # HTTPExceptions (400/401/405/...) are handled by Flask normally
+    if isinstance(e, HTTPException):
+        return e
+    import traceback
+    app.logger.error("Unhandled exception: %s", traceback.format_exc())
+    return "Internal Server Error", 500
+
+# ---- Helpers ----
+def get_current_user():
+    """Parse arxiv_user cookie -> user dict or None (single shared helper)."""
+    try:
+        import json as _json, base64 as _b64
+        uc = request.cookies.get("arxiv_user", "")
+        if uc:
+            return _json.loads(_b64.b64decode(uc).decode("utf-8"))
+    except Exception:
+        pass
+    return None
+
+# Simple in-memory rate limit: {key: [timestamps]}, 10 requests / 60s
+_rate_limit = defaultdict(list)
+
+def _rate_limit_check(limit_key: str, max_count: int = 10, window: float = 60.0) -> bool:
+    now = _time.time()
+    _rate_limit[limit_key] = [t for t in _rate_limit[limit_key] if now - t < window]
+    if len(_rate_limit[limit_key]) >= max_count:
+        return False
+    _rate_limit[limit_key].append(now)
+    return True
 
 @app.route("/")
 
@@ -46,24 +99,18 @@ def index():
 
     papers = [p for p in papers if not p.get("is_hidden")]
 
+    reporter_map = db.get_paper_reporters_map([p["id"] for p in papers])
+
     for p in papers:
 
-        p["reporters"] = db.get_paper_reporters(p["id"])
+        p["reporters"] = reporter_map.get(p["id"], [])
 
     # Apply per-user star status
-    current_user = None
-    try:
-        import json as _json, base64 as _b64
-        uc = request.cookies.get("arxiv_user", "")
-        if uc:
-            u = _json.loads(_b64.b64decode(uc).decode("utf-8"))
-            current_user = u
-            if u.get("username"):
-                star_map = db.get_user_star_map([p["id"] for p in papers], u["username"])
-                for p in papers:
-                    p["is_starred"] = star_map.get(p["id"], False)
-    except Exception:
-        pass
+    current_user = get_current_user()
+    if current_user and current_user.get("username"):
+        star_map = db.get_user_star_map([p["id"] for p in papers], current_user["username"])
+        for p in papers:
+            p["is_starred"] = star_map.get(p["id"], False)
     return render_template("index.html", papers=papers, date=date, sort_by=sort_by, tag=tag, source=src, today=datetime.now().strftime("%Y-%m-%d"), current_user=current_user)
 
 @app.route("/paper/<int:paper_id>")
@@ -80,45 +127,21 @@ def paper_detail(paper_id: int):
 
     # Apply per-user star status
 
-    try:
+    cu = get_current_user()
 
-        import json as _json, base64 as _b64
+    if cu and cu.get("username"):
 
-        uc = request.cookies.get("arxiv_user", "")
+        star_map = db.get_user_star_map([paper["id"]], cu["username"])
 
-        if uc:
-
-            u = _json.loads(_b64.b64decode(uc).decode("utf-8"))
-
-            if u.get("username"):
-
-                star_map = db.get_user_star_map([paper["id"]], u["username"])
-
-                paper["is_starred"] = star_map.get(paper["id"], False)
-
-    except Exception:
-
-        pass
+        paper["is_starred"] = star_map.get(paper["id"], False)
 
     # Log view history if user is logged in
 
-    try:
+    cu = get_current_user()
 
-        import json as _json, base64 as _b64
+    if cu and cu.get("username"):
 
-        uc = request.cookies.get("arxiv_user", "")
-
-        if uc:
-
-            u = _json.loads(_b64.b64decode(uc).decode("utf-8"))
-
-            if u.get("username"):
-
-                db.log_view(paper_id, u["username"])
-
-    except Exception:
-
-        pass
+        db.log_view(paper_id, cu["username"])
 
     conversations = db.get_conversations(paper_id)
 
@@ -138,27 +161,15 @@ def search():
 
     # Apply per-user star status
 
-    try:
+    current_user = get_current_user()
 
-        import json as _json, base64 as _b64
+    if current_user and current_user.get("username"):
 
-        uc = request.cookies.get("arxiv_user", "")
+        star_map = db.get_user_star_map([p["id"] for p in papers], current_user["username"])
 
-        if uc:
+        for p in papers:
 
-            u = _json.loads(_b64.b64decode(uc).decode("utf-8"))
-
-            if u.get("username"):
-
-                star_map = db.get_user_star_map([p["id"] for p in papers], u["username"])
-
-                for p in papers:
-
-                    p["is_starred"] = star_map.get(p["id"], False)
-
-    except Exception:
-
-        pass
+            p["is_starred"] = star_map.get(p["id"], False)
 
     return render_template("search.html", papers=papers, query=query)
 
@@ -174,40 +185,21 @@ def all_papers():
 
     offset = (page - 1) * limit
 
-    all_papers = db.get_all_papers(limit=limit, offset=offset)
-
-    # Sort in-memory
-
-    if sort_by == "rating":
-
-        all_papers.sort(key=lambda p: p.get("value_rating") or 0, reverse=True)
-
-    elif sort_by == "keywords":
-
-        kw_map = db.get_keyword_counts([p["id"] for p in all_papers if p.get("id")])
-
-        all_papers.sort(key=lambda p: kw_map.get(p["id"], 0), reverse=True)
-
+    all_papers = db.get_all_papers(limit=limit, offset=offset, sort_by=sort_by)
     papers = [p for p in all_papers if not p.get("is_hidden")]
+
+    reporter_map = db.get_paper_reporters_map([p["id"] for p in papers])
 
     for p in papers:
 
-        p["reporters"] = db.get_paper_reporters(p["id"])
+        p["reporters"] = reporter_map.get(p["id"], [])
 
     # Apply per-user star status
-    current_user = None
-    try:
-        import json as _json, base64 as _b64
-        uc = request.cookies.get("arxiv_user", "")
-        if uc:
-            u = _json.loads(_b64.b64decode(uc).decode("utf-8"))
-            current_user = u
-            if u.get("username"):
-                star_map = db.get_user_star_map([p["id"] for p in papers], u["username"])
-                for p in papers:
-                    p["is_starred"] = star_map.get(p["id"], False)
-    except Exception:
-        pass
+    current_user = get_current_user()
+    if current_user and current_user.get("username"):
+        star_map = db.get_user_star_map([p["id"] for p in papers], current_user["username"])
+        for p in papers:
+            p["is_starred"] = star_map.get(p["id"], False)
     return render_template("all.html", papers=papers, page=page, sort_by=sort_by, current_user=current_user)
 
 # ===== API: Upload custom file =====
@@ -313,16 +305,8 @@ def upload_paper():
     }
 
     # Get uploader from cookie
-    try:
-        import json as _json, base64 as _b64
-        uc = request.cookies.get("arxiv_user", "")
-        if uc:
-            uu = _json.loads(_b64.b64decode(uc).decode("utf-8"))
-            paper["uploaded_by"] = uu.get("username", "")
-        else:
-            paper["uploaded_by"] = ""
-    except Exception:
-        paper["uploaded_by"] = ""
+    _cu = get_current_user()
+    paper["uploaded_by"] = _cu.get("username", "") if _cu else ""
     paper_id = db.insert_paper(paper, source="custom")
 
     if not paper_id:
@@ -332,8 +316,6 @@ def upload_paper():
     # AI analysis
 
     from arxiv_assistant import ai_reader
-
-    analysis = ai_reader.analyze_paper(text)
 
     # If PDF, try to extract figures
 
@@ -581,6 +563,10 @@ def get_taken_colors():
 
 def auth_login():
 
+    if not _rate_limit_check("login:" + (request.remote_addr or "?")):
+
+        return jsonify({"ok": False, "error": "尝试次数过多，请稍后再试"}), 429
+
     data = request.get_json()
 
     username = (data.get("username", "") if data else "").strip().upper()
@@ -616,6 +602,10 @@ def auth_login():
 @app.route("/api/auth/register", methods=["POST"])
 
 def auth_register():
+
+    if not _rate_limit_check("register:" + (request.remote_addr or "?")):
+
+        return jsonify({"ok": False, "error": "尝试次数过多，请稍后再试"}), 429
 
     data = request.get_json()
 
@@ -734,35 +724,19 @@ def admin_refresh():
 
 def get_history():
 
-    try:
+    _cu = get_current_user()
 
-        import json as _json, base64 as _b64
+    if _cu and _cu.get("username"):
 
-        uc = request.cookies.get("arxiv_user", "")
+        history = db.get_user_history(_cu["username"])
 
-        if uc:
+        reporter_map = db.get_paper_reporters_map([p["id"] for p in history if p.get("id")])
 
-            u = _json.loads(_b64.b64decode(uc).decode("utf-8"))
+        for p in history:
 
-            if u.get("username"):
+            p["reporters"] = reporter_map.get(p["id"], [])
 
-                history = db.get_user_history(u["username"])
-
-                for p in history:
-
-                    try:
-
-                        p["reporters"] = db.get_paper_reporters(p["id"])
-
-                    except Exception:
-
-                        p["reporters"] = []
-
-                return jsonify({"ok": True, "history": history})
-
-    except Exception:
-
-        pass
+        return jsonify({"ok": True, "history": history})
 
     return jsonify({"ok": False, "history": []})
 
@@ -779,14 +753,8 @@ def serve_paper_file(filename: str):
 
 def hide_paper(paper_id: int):
 
-    import json as _j, base64 as _b64
-    try:
-        uc = request.cookies.get("arxiv_user", "")
-        if uc:
-            u = _j.loads(_b64.b64decode(uc).decode("utf-8"))
-            if u.get("role") != "admin":
-                return jsonify({"ok": False, "error": "Only admin can delete entries"}), 403
-    except Exception:
+    _u = get_current_user()
+    if not _u or _u.get("role") != "admin":
         return jsonify({"ok": False, "error": "Authentication required"}), 401
 
     db.hide_paper(paper_id)
@@ -799,21 +767,7 @@ def hide_paper(paper_id: int):
 
 def my_papers():
 
-    user = None
-
-    try:
-
-        import json as _json, base64 as _b64
-
-        user_cookie = request.cookies.get("arxiv_user", "")
-
-        if user_cookie:
-
-            user = _json.loads(_b64.b64decode(user_cookie).decode("utf-8"))
-
-    except Exception:
-
-        pass
+    user = get_current_user()
 
     if user:
 
@@ -823,13 +777,13 @@ def my_papers():
 
         tagged_report = []
 
+        reporter_map = db.get_paper_reporters_map([p["id"] for p in all_tagged])
+
         for p in all_tagged:
 
-            reporters = db.get_paper_reporters(p["id"])
+            p["reporters"] = reporter_map.get(p["id"], [])
 
-            p["reporters"] = reporters
-
-            for r in reporters:
+            for r in p["reporters"]:
 
                 if r["username"] == user.get("username", ""):
 
@@ -893,7 +847,13 @@ def api_add_keyword():
 
     kw = data["keyword"].strip()
 
-    weight = float(data.get("weight", 1.0))
+    try:
+
+        weight = float(data.get("weight", 1.0))
+
+    except (TypeError, ValueError):
+
+        return jsonify({"ok": False, "error": "权重必须是数字"}), 400
 
     if weight < 0.1 or weight > 1.2:
 
@@ -917,7 +877,13 @@ def api_update_keyword(kw_id: int):
 
     kw = data.get("keyword", "").strip() if data else ""
 
-    weight = float(data.get("weight", 1.0)) if data else 1.0
+    try:
+
+        weight = float(data.get("weight", 1.0)) if data else 1.0
+
+    except (TypeError, ValueError):
+
+        return jsonify({"ok": False, "error": "权重必须是数字"}), 400
 
     if weight < 0.1 or weight > 1.2:
 
@@ -1051,10 +1017,87 @@ def _run_detailed_analysis_inner(paper_id, paper):
                 break
 
     db.save_detailed_analysis(paper_id, injected)
-    return injected
-    return injected
 
 
+@app.route("/api/paper/<int:paper_id>/re-extract-figures", methods=["POST"])
+
+def re_extract_figures(paper_id: int):
+
+    """Re-extract figures from PDF, replacing old ones."""
+
+    paper = db.get_paper_by_id(paper_id)
+
+    if not paper:
+
+        return jsonify({"status": "error", "message": "论文不存在"}), 404
+
+    pdf_path = paper.get("pdf_path")
+
+    if not pdf_path or not os.path.exists(pdf_path):
+
+        return jsonify({"status": "error", "message": "PDF 文件不存在"}), 400
+
+    try:
+
+        from arxiv_assistant import pdf_parser
+
+        # Parse PDF to extract figures
+        parsed = pdf_parser.parse_pdf(pdf_path)
+
+        # Delete old figure records
+        db.delete_figures_by_paper(paper_id)
+
+        # Save new figure records
+        for fig in parsed.figures:
+
+            db.save_figure(paper_id, fig["figure_number"], fig.get("caption", ""), fig["file_path"])
+
+        # Build response with new figure data for AJAX refresh
+        new_figures = []
+        for fig in parsed.figures:
+            fp = fig["file_path"]
+            # Convert path to URL
+            parts = fp.split('papers')
+            if len(parts) > 1:
+                url_path = '/papers' + parts[1].replace('\\', '/')
+            else:
+                url_path = '/papers/' + os.path.basename(fp)
+            new_figures.append({
+                "figure_number": fig["figure_number"],
+                "caption": fig.get("caption", ""),
+                "src": url_path,
+                "width": fig.get("width", 0),
+                "height": fig.get("height", 0)
+            })
+
+        return jsonify({
+            "status": "success",
+            "message": "成功重新提取 {0} 张图片".format(len(new_figures)),
+            "figures": new_figures
+        })
+
+    except Exception as e:
+
+        import traceback
+
+        traceback.print_exc()
+
+        return jsonify({"status": "error", "message": "重新截图失败: " + str(e)}), 500
+
+
+
+
+def _figure_url_path(fp):
+    """Convert a figure file path to a /papers/... URL path."""
+    fp_norm = fp.replace("\\", "/")
+    marker = "/papers/"
+    idx = fp_norm.find(marker)
+    if idx >= 0:
+        return fp_norm[idx:]
+    papers_dir = (os.environ.get("PAPERS_DIR") or os.path.join(os.path.dirname(os.path.dirname(__file__)), config.PAPERS_DIR)).replace("\\", "/")
+    if fp_norm.startswith(papers_dir):
+        return "/papers/" + fp_norm[len(papers_dir):].lstrip("/")
+    return "/papers/" + os.path.basename(fp)
 
 
 def _serve_figure_img(fig):
@@ -1062,12 +1105,8 @@ def _serve_figure_img(fig):
     if not fp or not os.path.exists(fp):
         return ""
     try:
-        with open(fp, "rb") as _f:
-            _data = _f.read()
-        _b64 = __import__("base64").b64encode(_data).decode()
-        _ext = os.path.splitext(fp)[1].lower()
-        _mime = "image/png" if _ext == ".png" else "image/jpeg"
-        return '<img src="data:' + _mime + ';base64,' + _b64 + '" style="max-width:100%;height:auto;margin:10px 0;border:1px solid #ddd;border-radius:4px;">'
+        src_url = _figure_url_path(fp)
+        return '<img src="' + src_url + '" style="max-width:100%;height:auto;margin:10px 0;border:1px solid #ddd;border-radius:4px;">'
     except:
         return ""
 
@@ -1094,23 +1133,7 @@ def _strip_bold(text):
 
 def inject_globals():
 
-    user = None
-
-    try:
-
-        import hashlib as _json
-
-        user_cookie = request.cookies.get("arxiv_user", "")
-
-        if user_cookie:
-
-            import base64 as _b64
-
-            user = _json.loads(_b64.b64decode(user_cookie).decode("utf-8"))
-
-    except Exception:
-
-        pass
+    user = get_current_user()
 
     return {"now": datetime.now(), "config": config, "current_user": user}
 

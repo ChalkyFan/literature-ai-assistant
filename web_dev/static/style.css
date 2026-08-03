@@ -564,6 +564,8 @@ body {
 
 .btn-outline:hover { background: #f5f5f5; border-color: #ccc; }
 
+.btn-sm { padding: 4px 10px; font-size: 0.8em; }
+
 /* Search page */
 
 .search-form { display: flex; gap: 12px; margin-bottom: 24px; }
