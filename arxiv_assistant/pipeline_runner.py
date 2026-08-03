@@ -1,38 +1,18 @@
-"""Daily pipeline entry - called by Task Scheduler"""
-import logging
-import sys
-import os
-from datetime import datetime, timedelta, timezone
-from logging.handlers import RotatingFileHandler
-
-sys.path.insert(0, os.path.dirname(__file__))
-from arxiv_assistant import db, fetcher, downloader, pdf_parser, ai_reader
-from arxiv_assistant.report import generate_daily_report
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    handlers=[logging.StreamHandler(), RotatingFileHandler("pipeline.log", maxBytes=5 * 1024 * 1024, backupCount=5, encoding="utf-8")],
-)
-logger = logging.getLogger("pipeline")
-
+﻿"""Minimal wrapper to run the daily pipeline from within the web server process."""
+import logging, sys, os
+logger = logging.getLogger("pipeline_runner")
 
 def run():
-    logger.info("=" * 50)
-    logger.info("Arxiv Assistant - Daily Pipeline Started")
-    
-    # --- Auto backup ---
-    try:
-        import subprocess
-        subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), "backup_db.py")],
-                      capture_output=True, timeout=30)
-    except Exception:
-        pass
-    logger.info("=" * 50)
+    """Run the full pipeline (fetch, download, AI analyze, report)."""
+    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+    os.chdir(os.path.dirname(os.path.dirname(__file__)))
+    from arxiv_assistant import db, fetcher, downloader, pdf_parser, ai_reader
+    from arxiv_assistant.report import generate_daily_report
+    from datetime import datetime, timezone, timedelta
 
     db.init_db()
 
-    # Clear old browse history (older than 1 day)
+    # Clear old history
     try:
         cleared = db.clear_user_history()
         logger.info(f"  Cleared {cleared} old history entries")
@@ -40,9 +20,8 @@ def run():
         logger.warning(f"  Failed to clear history: {e}")
 
     logger.info("[1/4] Fetching new papers from arXiv...")
-    # Retry fetch if arXiv API is slow/intermittent
+    import time as _time
     papers = []
-    import time
     for attempt in range(2):
         try:
             papers = fetcher.fetch_today_papers()
@@ -51,8 +30,8 @@ def run():
         except Exception as e:
             logger.warning(f"  Fetch attempt {attempt+1} failed: {e}")
         if attempt < 1:
-            logger.info("  Waiting 60s before retry, avoid rate-limit...")
-            time.sleep(60)
+            logger.info("  Waiting 60s before retry...")
+            _time.sleep(60)
     logger.info(f"  Filtered to {len(papers)} papers")
 
     if not papers:
@@ -108,11 +87,4 @@ def run():
             today = yesterday
     report_path = generate_daily_report(papers_with_analysis, today)
     logger.info(f"  Report: {report_path}")
-
-    logger.info("=" * 50)
     logger.info("Pipeline completed")
-    logger.info("=" * 50)
-
-
-if __name__ == "__main__":
-    run()

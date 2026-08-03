@@ -200,6 +200,7 @@
 .ask-ai-input-area button {
     white-space: nowrap;
 }
+.btn-outline{background:#fff;border:1px solid #2563eb;color:#2563eb;padding:6px 10px;border-radius:6px;cursor:pointer;white-space:nowrap;}.btn-outline:hover{background:#2563eb;color:#fff;}
 </style>
 <div class="paper-detail">
     <div class="detail-header">
@@ -297,17 +298,14 @@
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
         </button>
+        {% if paper.pdf_path %}<a href="/papers/{{ (paper.pdf_path.split('papers\\')[1] if 'papers\\' in paper.pdf_path else paper.pdf_path.split('papers/')[1]).replace('\\', '/') }}" target="_blank" class="btn btn-outline">&#128196; 本地 PDF</a>{% endif %}
         <a href="https://arxiv.org/abs/{{ paper.arxiv_id }}" target="_blank" class="btn btn-outline">查看 arXiv 原文</a>
-        <div class="export-group" style="display:inline-block;margin-left:8px;">
-            <a href="/api/paper/{{ paper.id }}/bibtex" class="btn btn-outline" style="font-size:0.8em;padding:4px 10px;" download>📄 导出 BibTeX</a>
-            <a href="/api/paper/{{ paper.id }}/ris" class="btn btn-outline" style="font-size:0.8em;padding:4px 10px;" download>📚 导出 RIS (Zotero)</a>
-        </div>
     </div>
 
     <!-- Figures with Lightbox -->
     {% if paper.figures %}
     <div class="detail-figures">
-        <h2>图表 ({{ paper.figures|length }} 张)</h2>
+        <h2>图表 (<span id="figure-count">{{ paper.figures|length }}</span> 张)<button id="re-extract-btn" class="btn btn-outline btn-sm" onclick="reExtractFigures()" title="重新读取 PDF 并重新提取所有图片，覆盖原有图片" style="margin-left:10px;">↻ 重新截图</button></h2>
         <div class="figure-grid" id="figure-grid">
             {% for fig in paper.figures %}
             <div class="figure-item" data-fig-idx="{{ loop.index0 }}">
@@ -315,7 +313,7 @@
                      alt="{{ fig.caption }}"
                      class="fig-thumb"
                      onclick="openLightbox({{ loop.index0 }})">
-                <div class="figure-caption">{{ fig.caption }}</div>
+                <div class="figure-caption" onclick="this.classList.toggle('expanded')" title="点击展开/收起图注">{{ fig.caption }}</div>
             </div>
             {% endfor %}
         </div>
@@ -323,11 +321,17 @@
 
     <!-- Lightbox overlay -->
     <div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
+        <div class="lightbox-toolbar">
+            <button onclick="toggleZoom()">&#128269; 缩放</button>
+            <button onclick="downloadLightbox()">&#11015; 下载</button>
+        </div>
         <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
         <button class="lightbox-prev" onclick="changeFigure(-1)">&#10094;</button>
         <button class="lightbox-next" onclick="changeFigure(1)">&#10095;</button>
         <div class="lightbox-content">
-            <img id="lightbox-img" src="" alt="">
+            <div class="lightbox-img-wrap">
+                <img id="lightbox-img" src="" alt="">
+            </div>
             <div id="lightbox-caption" class="lightbox-caption"></div>
             <div id="lightbox-counter" class="lightbox-counter"></div>
         </div>
@@ -352,7 +356,7 @@
     </div>
     <div id="ask-ai-body" class="ask-ai-body">
         {% for c in conversations %}
-        <div class="qa-item">
+        <div class="qa-item" id="conv-{{ c.id }}">
             <div class="qa-question">问：{{ c.question }}</div>
             <div class="qa-answer">答：{{ c.answer }} <button class="btn-delete-conv" onclick="deleteConversation({{ c.id }})" title="删除该对话">✖</button></div>
         </div>
@@ -363,10 +367,68 @@
     <div class="ask-ai-input-area">
         <input type="text" id="ask-ai-input" placeholder="输入你的问题..." onkeydown="if(event.key==='Enter') askQuestion()">
         <button class="btn btn-primary" onclick="askQuestion()">发送</button>
+        <button class="btn btn-outline" id="gemini-btn" onclick="askQuestion(true)" style="margin-right:5px;font-size:12px;"> Gemini 3</button>
     </div>
 </div>
 
 <script>
+// ==== Figure re-extract ====
+function reExtractFigures() {
+    var btn = document.getElementById("re-extract-btn");
+    btn.disabled = true;
+    btn.textContent = "正在重新截图...";
+
+    fetch(window.location.pathname + "/re-extract-figures", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"}
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.status === "success") {
+            var grid = document.getElementById("figure-grid");
+            grid.innerHTML = "";
+            var newFigures = data.figures;
+            window.figures = [];
+            for (var i = 0; i < newFigures.length; i++) {
+                var f = newFigures[i];
+                window.figures.push({src: f.src, caption: f.caption});
+                var item = document.createElement("div");
+                item.className = "figure-item";
+                item.setAttribute("data-fig-idx", i);
+                var img = document.createElement("img");
+                img.src = f.src;
+                img.alt = f.caption;
+                img.className = "fig-thumb";
+                img.onclick = (function(idx) {
+                    return function() { openLightbox(idx); };
+                })(i);
+                var cap = document.createElement("div");
+                cap.className = "figure-caption";
+                cap.textContent = f.caption;
+                item.appendChild(img);
+                item.appendChild(cap);
+                grid.appendChild(item);
+            }
+            var countEl = document.getElementById("figure-count");
+            if (countEl) countEl.textContent = newFigures.length;
+            btn.textContent = "\u2713 完成";
+            setTimeout(function() {
+                btn.disabled = false;
+                btn.textContent = "\u21bb 重新截图";
+            }, 3000);
+        } else {
+            showToast("重新截图失败: " + data.message, "error");
+            btn.disabled = false;
+            btn.textContent = "\u21bb 重新截图";
+        }
+    })
+    .catch(function(err) {
+        showToast("重新截图出错: " + err, "error");
+        btn.disabled = false;
+        btn.textContent = "\u21bb 重新截图";
+    });
+}
+
 // ==== Figure lightbox ====
 var figures = [
     {% for fig in paper.figures %}
@@ -401,13 +463,39 @@ function updateLightbox() {
     document.getElementById("lightbox-img").src = fig.src;
     document.getElementById("lightbox-caption").textContent = fig.caption;
     document.getElementById("lightbox-counter").textContent = (currentFig + 1) + " / " + figures.length;
+    document.getElementById("lightbox-img").classList.remove("zoomed");
+}
+
+var lightboxZoomed = false;
+function toggleZoom() {
+    lightboxZoomed = !lightboxZoomed;
+    document.getElementById("lightbox-img").classList.toggle("zoomed", lightboxZoomed);
+}
+function downloadLightbox() {
+    var fig = figures[currentFig];
+    if (!fig) return;
+    var a = document.createElement("a");
+    a.href = fig.src;
+    a.download = "figure_" + (currentFig + 1) + ".png";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    showToast("正在下载图片", "info");
 }
 
 document.addEventListener("keydown", function(e) {
-    if (!document.getElementById("lightbox").classList.contains("active")) return;
-    if (e.key === "Escape") closeLightbox();
-    if (e.key === "ArrowLeft") changeFigure(-1);
-    if (e.key === "ArrowRight") changeFigure(1);
+    var lb = document.getElementById("lightbox");
+    var ae = document.activeElement;
+    var inInput = ae && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA" || ae.isContentEditable);
+    if (lb && lb.classList.contains("active")) {
+        if (e.key === "Escape") closeLightbox();
+        if (e.key === "ArrowLeft") changeFigure(-1);
+        if (e.key === "ArrowRight") changeFigure(1);
+        return;
+    }
+    if (inInput) return;
+    if (e.key === "s" || e.key === "S") { toggleStar({{ paper.id }}); }
+    if (e.key === "f" || e.key === "F") { var si = document.querySelector(".search-input"); if (si) si.focus(); }
 });
 
 // ==== Ask AI draggable popup ====
@@ -440,8 +528,10 @@ window.toggleAskPopup = function toggleAskPopup() {
     if (bubbleEl) bubbleEl.classList.remove("show");
 }
 
-function askQuestion() {
+function askQuestion(useGemini) {
     var input = document.getElementById("ask-ai-input");
+    if (!useGemini) useGemini = false;
+
     var q = input.value.trim();
     if (!q) return;
     input.value = "";
@@ -453,13 +543,15 @@ function askQuestion() {
     fetch("/api/paper/{{ paper.id }}/ask", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({question: q})
+        body: JSON.stringify({question: q, use_gemini: useGemini})
     })
     .then(r => r.json())
     .then(d => {
         document.getElementById("ask-ai-loading").style.display = "none";
         if (d.ok) {
-            msgDiv.innerHTML += '<div class="qa-item"><div class="qa-answer">答：' + escapeHtml(d.answer) + '</div></div>';
+            msgDiv.innerHTML += '<div class="qa-item"><div class="qa-answer">答：' + renderMarkdown(d.answer) + '</div></div>';
+            var lastQa = msgDiv.lastElementChild;
+            if (typeof renderMathInElement === "function" && lastQa) { renderMathInElement(lastQa, {delimiters: [{left: "$$", right: "$$", display: true},{left: "$", right: "$", display: false}]}); }
         } else {
             msgDiv.innerHTML += '<div class="qa-item"><div class="qa-answer" style="color:#dc2626;">错误：' + escapeHtml(d.error) + '</div></div>';
         }
@@ -490,7 +582,8 @@ function toggleTag(paperId, tagName) {
     if (isSet) {
         fetch("/api/paper/" + paperId + "/tags/" + encodeURIComponent(tagName), { method: "DELETE" })
             .then(r => r.json()).then(d => {
-                if (d.ok) el.innerHTML = "&#10060; " + tagName;
+                if (d.ok) { el.innerHTML = "&#10060; " + tagName; showToast("已移除标签", "success"); }
+                else { showToast(d.error || "操作失败", "error"); }
             });
     } else {
         fetch("/api/paper/" + paperId + "/tags", {
@@ -498,7 +591,8 @@ function toggleTag(paperId, tagName) {
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({tag_name: tagName})
         }).then(r => r.json()).then(d => {
-            if (d.ok) el.innerHTML = "&#9989; " + tagName;
+            if (d.ok) { el.innerHTML = "&#9989; " + tagName; showToast("已添加标签", "success"); }
+            else { showToast(d.error || "操作失败", "error"); }
         });
     }
 }
@@ -517,10 +611,10 @@ function generateDetailedAnalysis() {
         .then(function(r) { return r.json(); })
         .then(function(d2) {
             if (d2.ok && d2.analysis) { showDetailedAnalysis(d2.analysis); }
-            else { alert("生成失败: " + (d2.error || "未知错误")); btn.disabled = false; btn.textContent = "详细AI分析"; }
+            else { showToast("生成失败: " + (d2.error || "未知错误"), "error"); btn.disabled = false; btn.textContent = "详细AI分析"; }
         });
     })
-    .catch(function(e) { alert("请求失败: " + e.message); btn.disabled = false; btn.textContent = "详细AI分析"; });
+    .catch(function(e) { showToast("请求失败: " + e.message, "error"); btn.disabled = false; btn.textContent = "详细AI分析"; });
 }
 function showDetailedAnalysis(content) {
     var container = document.getElementById("detailed-analysis-container");
@@ -543,9 +637,10 @@ function showDetailedAnalysis(content) {
 
         contentDiv.innerHTML = html;
         container.style.display = "block";
-        
-        // Embed figures after detailed analysis
-        embedFiguresInAnalysis();
+        // Re-render LaTeX with KaTeX
+        if (typeof renderMathInElement === "function") {
+            renderMathInElement(contentDiv, {delimiters: [{left: "$$", right: "$$", display: true},{left: "$", right: "$", display: false}]});
+        }
         
         // Hide the separate figures section
         var oldFigures = document.querySelector(".detail-figures");
@@ -554,40 +649,6 @@ function showDetailedAnalysis(content) {
         var btn = document.getElementById("btn-detailed-analysis");
         if (btn) { btn.style.display = "none"; }
     }
-}
-
-function embedFiguresInAnalysis() {
-    var figures = document.querySelectorAll(".figure-item");
-    var container = document.getElementById("detailed-analysis-content");
-    if (!container || figures.length === 0) return;
-    
-    // Create figure gallery at the bottom of the analysis
-    var figGallery = document.createElement("div");
-    figGallery.className = "detailed-figure-gallery";
-    figGallery.innerHTML = '<h3>图表展示</h3><div style="display:flex;flex-direction:column;gap:16px;">';
-    
-    figures.forEach(function(fig) {
-        var img = fig.querySelector("img");
-        var cap = fig.querySelector(".figure-caption");
-        if (img) {
-            var wrapper = document.createElement("div");
-            wrapper.style.cssText = "margin-bottom:12px;";
-            var newImg = document.createElement("img");
-            newImg.src = img.src;
-            newImg.style.cssText = "max-width:100%;border-radius:8px;border:1px solid #eee;cursor:pointer;";
-            newImg.onclick = function() { img.onclick(); };
-            wrapper.appendChild(newImg);
-            if (cap) {
-                var newCap = document.createElement("div");
-                newCap.style.cssText = "color:#666;font-size:0.85em;margin-top:4px;padding:0 4px;";
-                newCap.textContent = cap.textContent;
-                wrapper.appendChild(newCap);
-            }
-            figGallery.querySelector("div").appendChild(wrapper);
-        }
-    });
-    figGallery.querySelector("div").innerHTML += "</div>";
-    container.appendChild(figGallery);
 }
 document.addEventListener("DOMContentLoaded", function() {
     fetch("/api/paper/{{ paper.id }}/detailed-analysis", {method: "GET"})
@@ -599,14 +660,16 @@ function deleteConversation(convId) {
     if (!confirm("确定删除该对话记录？")) return;
     fetch("/api/conversation/" + convId, {method: "DELETE"})
     .then(function(r) { return r.json(); })
-    .then(function(d) { if (d.ok) { var el = document.getElementById("conv-" + convId); if (el) el.remove(); } })
-    .catch(function(e) { alert("删除失败"); });
+    .then(function(d) {
+        if (d.ok) {
+            var el = document.getElementById("conv-" + convId);
+            if (el) el.remove();
+            showToast("对话已删除", "success");
+        } else { showToast("删除失败", "error"); }
+    })
+    .catch(function(e) { showToast("删除失败", "error"); });
 }
 // ==== Hide bubble on first click ====
-
-
-
-
 
 // ==== Bubble show ====
 (function() {
@@ -620,14 +683,42 @@ function updateStatus(id, status) {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({status: status})
-    }).then(r => r.json()).then(d => { if(d.ok) location.reload(); });
+    }).then(r => r.json()).then(d => {
+        if (d.ok) {
+            var btn = document.querySelector(".detail-actions .btn-primary, .detail-actions .btn-secondary");
+            if (btn) {
+                if (status === "read") {
+                    btn.className = "btn btn-secondary";
+                    btn.textContent = "标记为未读";
+                    btn.setAttribute("onclick", "updateStatus(" + id + ", 'unread')");
+                } else {
+                    btn.className = "btn btn-primary";
+                    btn.textContent = "标记为已读";
+                    btn.setAttribute("onclick", "updateStatus(" + id + ", 'read')");
+                }
+            }
+            showToast(status === "read" ? "已标记为已读" : "已标记为未读", "success");
+        } else { showToast(d.error || "操作失败", "error"); }
+    }).catch(e => showToast("网络错误: " + e.message, "error"));
 }
 function toggleStar(id) {
+    var icon = document.querySelector(".detail-actions .star-icon");
+    var prevActive = icon ? icon.classList.contains("active") : false;
+    if (icon) icon.classList.toggle("active");
     fetch("/api/paper/" + id + "/star", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({username: CURRENT_USER ? CURRENT_USER.username : ""})
-    }).then(r => r.json()).then(d => { if(d.ok) location.reload(); });
+    }).then(r => r.json()).then(d => {
+        if (!d.ok) {
+            if (icon) icon.classList.toggle("active");
+            showToast(d.error || "操作失败", "error");
+        } else { showToast(prevActive ? "已取消收藏" : "已收藏", "success"); }
+    }).catch(e => {
+        if (icon) icon.classList.toggle("active");
+        showToast("网络错误: " + e.message, "error");
+    });
 }
 </script>
 {% endblock %}
+

@@ -11,6 +11,11 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 from arxiv_assistant import config, db
 
 import hashlib
+import logging
+import time as _time
+from collections import defaultdict
+from logging.handlers import RotatingFileHandler
+from werkzeug.exceptions import HTTPException, NotFound, Forbidden
 
 app = Flask(__name__)
 
@@ -20,11 +25,73 @@ UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), config.PAP
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+# Rotating log (5MB x 5 backups) - prevents unbounded log growth
+LOG_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "web.log")
+_log_handler = RotatingFileHandler(LOG_FILE, maxBytes=5 * 1024 * 1024, backupCount=5, encoding="utf-8")
+_log_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
+app.logger.addHandler(_log_handler)
+app.logger.setLevel(logging.INFO)
+
+# ---- Error handlers: 404 must not be swallowed as 500 ----
+@app.errorhandler(NotFound)
+def handle_404(e):
+    return "Page not found", 404
+
+@app.errorhandler(Forbidden)
+def handle_403(e):
+    return "Forbidden", 403
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    # HTTPExceptions (400/401/405/...) are handled by Flask normally
+    if isinstance(e, HTTPException):
+        return e
+    import traceback
+    app.logger.error("Unhandled exception: %s", traceback.format_exc())
+    return "Internal Server Error", 500
+
+# ---- Helpers ----
+def get_current_user():
+    """Parse arxiv_user cookie -> user dict or None (single shared helper)."""
+    try:
+        import json as _json, base64 as _b64
+        uc = request.cookies.get("arxiv_user", "")
+        if uc:
+            return _json.loads(_b64.b64decode(uc).decode("utf-8"))
+    except Exception:
+        pass
+    return None
+
+# Simple in-memory rate limit: {key: [timestamps]}, 10 requests / 60s
+_rate_limit = defaultdict(list)
+
+def _rate_limit_check(limit_key: str, max_count: int = 10, window: float = 60.0) -> bool:
+    now = _time.time()
+    _rate_limit[limit_key] = [t for t in _rate_limit[limit_key] if now - t < window]
+    if len(_rate_limit[limit_key]) >= max_count:
+        return False
+    _rate_limit[limit_key].append(now)
+    return True
+
 @app.route("/")
 
 def index():
 
     date = request.args.get("date", datetime.now().strftime("%Y-%m-%d"))
+
+    try:
+
+        prev_date = (datetime.strptime(date, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
+
+        next_date = (datetime.strptime(date, "%Y-%m-%d") + timedelta(days=1)).strftime("%Y-%m-%d")
+
+    except ValueError:
+
+        date = datetime.now().strftime("%Y-%m-%d")
+
+        prev_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+
+        next_date = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
 
     sort_by = request.args.get("sort", "rating")
 
@@ -46,25 +113,19 @@ def index():
 
     papers = [p for p in papers if not p.get("is_hidden")]
 
+    reporter_map = db.get_paper_reporters_map([p["id"] for p in papers])
+
     for p in papers:
 
-        p["reporters"] = db.get_paper_reporters(p["id"])
+        p["reporters"] = reporter_map.get(p["id"], [])
 
     # Apply per-user star status
-    current_user = None
-    try:
-        import json as _json, base64 as _b64
-        uc = request.cookies.get("arxiv_user", "")
-        if uc:
-            u = _json.loads(_b64.b64decode(uc).decode("utf-8"))
-            current_user = u
-            if u.get("username"):
-                star_map = db.get_user_star_map([p["id"] for p in papers], u["username"])
-                for p in papers:
-                    p["is_starred"] = star_map.get(p["id"], False)
-    except Exception:
-        pass
-    return render_template("index.html", papers=papers, date=date, sort_by=sort_by, tag=tag, source=src, today=datetime.now().strftime("%Y-%m-%d"), current_user=current_user)
+    current_user = get_current_user()
+    if current_user and current_user.get("username"):
+        star_map = db.get_user_star_map([p["id"] for p in papers], current_user["username"])
+        for p in papers:
+            p["is_starred"] = star_map.get(p["id"], False)
+    return render_template("index.html", papers=papers, date=date, prev_date=prev_date, next_date=next_date, sort_by=sort_by, tag=tag, source=src, today=datetime.now().strftime("%Y-%m-%d"), current_user=current_user)
 
 @app.route("/paper/<int:paper_id>")
 
@@ -80,45 +141,21 @@ def paper_detail(paper_id: int):
 
     # Apply per-user star status
 
-    try:
+    cu = get_current_user()
 
-        import json as _json, base64 as _b64
+    if cu and cu.get("username"):
 
-        uc = request.cookies.get("arxiv_user", "")
+        star_map = db.get_user_star_map([paper["id"]], cu["username"])
 
-        if uc:
-
-            u = _json.loads(_b64.b64decode(uc).decode("utf-8"))
-
-            if u.get("username"):
-
-                star_map = db.get_user_star_map([paper["id"]], u["username"])
-
-                paper["is_starred"] = star_map.get(paper["id"], False)
-
-    except Exception:
-
-        pass
+        paper["is_starred"] = star_map.get(paper["id"], False)
 
     # Log view history if user is logged in
 
-    try:
+    cu = get_current_user()
 
-        import json as _json, base64 as _b64
+    if cu and cu.get("username"):
 
-        uc = request.cookies.get("arxiv_user", "")
-
-        if uc:
-
-            u = _json.loads(_b64.b64decode(uc).decode("utf-8"))
-
-            if u.get("username"):
-
-                db.log_view(paper_id, u["username"])
-
-    except Exception:
-
-        pass
+        db.log_view(paper_id, cu["username"])
 
     conversations = db.get_conversations(paper_id)
 
@@ -138,27 +175,15 @@ def search():
 
     # Apply per-user star status
 
-    try:
+    current_user = get_current_user()
 
-        import json as _json, base64 as _b64
+    if current_user and current_user.get("username"):
 
-        uc = request.cookies.get("arxiv_user", "")
+        star_map = db.get_user_star_map([p["id"] for p in papers], current_user["username"])
 
-        if uc:
+        for p in papers:
 
-            u = _json.loads(_b64.b64decode(uc).decode("utf-8"))
-
-            if u.get("username"):
-
-                star_map = db.get_user_star_map([p["id"] for p in papers], u["username"])
-
-                for p in papers:
-
-                    p["is_starred"] = star_map.get(p["id"], False)
-
-    except Exception:
-
-        pass
+            p["is_starred"] = star_map.get(p["id"], False)
 
     return render_template("search.html", papers=papers, query=query)
 
@@ -170,45 +195,36 @@ def all_papers():
 
     sort_by = request.args.get("sort", "date")
 
+    status = request.args.get("status", None)
+
+    if status not in ("unread", "read"):
+
+        status = None
+
     limit = 50
 
     offset = (page - 1) * limit
 
-    all_papers = db.get_all_papers(limit=limit, offset=offset)
-
-    # Sort in-memory
-
-    if sort_by == "rating":
-
-        all_papers.sort(key=lambda p: p.get("value_rating") or 0, reverse=True)
-
-    elif sort_by == "keywords":
-
-        kw_map = db.get_keyword_counts([p["id"] for p in all_papers if p.get("id")])
-
-        all_papers.sort(key=lambda p: kw_map.get(p["id"], 0), reverse=True)
-
+    all_papers = db.get_all_papers(limit=limit, offset=offset, sort_by=sort_by, status=status)
     papers = [p for p in all_papers if not p.get("is_hidden")]
+
+    total = db.count_papers(status=status)
+
+    total_pages = max(1, (total + limit - 1) // limit)
+
+    reporter_map = db.get_paper_reporters_map([p["id"] for p in papers])
 
     for p in papers:
 
-        p["reporters"] = db.get_paper_reporters(p["id"])
+        p["reporters"] = reporter_map.get(p["id"], [])
 
     # Apply per-user star status
-    current_user = None
-    try:
-        import json as _json, base64 as _b64
-        uc = request.cookies.get("arxiv_user", "")
-        if uc:
-            u = _json.loads(_b64.b64decode(uc).decode("utf-8"))
-            current_user = u
-            if u.get("username"):
-                star_map = db.get_user_star_map([p["id"] for p in papers], u["username"])
-                for p in papers:
-                    p["is_starred"] = star_map.get(p["id"], False)
-    except Exception:
-        pass
-    return render_template("all.html", papers=papers, page=page, sort_by=sort_by, current_user=current_user)
+    current_user = get_current_user()
+    if current_user and current_user.get("username"):
+        star_map = db.get_user_star_map([p["id"] for p in papers], current_user["username"])
+        for p in papers:
+            p["is_starred"] = star_map.get(p["id"], False)
+    return render_template("all.html", papers=papers, page=page, total_pages=total_pages, total=total, sort_by=sort_by, status=status, current_user=current_user)
 
 # ===== API: Upload custom file =====
 
@@ -313,16 +329,8 @@ def upload_paper():
     }
 
     # Get uploader from cookie
-    try:
-        import json as _json, base64 as _b64
-        uc = request.cookies.get("arxiv_user", "")
-        if uc:
-            uu = _json.loads(_b64.b64decode(uc).decode("utf-8"))
-            paper["uploaded_by"] = uu.get("username", "")
-        else:
-            paper["uploaded_by"] = ""
-    except Exception:
-        paper["uploaded_by"] = ""
+    _cu = get_current_user()
+    paper["uploaded_by"] = _cu.get("username", "") if _cu else ""
     paper_id = db.insert_paper(paper, source="custom")
 
     if not paper_id:
@@ -332,8 +340,6 @@ def upload_paper():
     # AI analysis
 
     from arxiv_assistant import ai_reader
-
-    analysis = ai_reader.analyze_paper(text)
 
     # If PDF, try to extract figures
 
@@ -441,6 +447,8 @@ def ask_ai(paper_id: int):
 
     question = data.get("question", "").strip()
 
+    use_gemini = data.get("use_gemini", False)
+
     if not question:
 
         return jsonify({"ok": False, "error": "Question required"}), 400
@@ -493,33 +501,57 @@ def ask_ai(paper_id: int):
 
         import requests
 
-        headers = {"Authorization": "Bearer {0}".format(config_local.DEEPSEEK_API_KEY), "Content-Type": "application/json"}
+        if use_gemini:
 
-        payload = {
+            model_used = config_local.GEMINI_MODEL
 
-            "model": config_local.DEEPSEEK_MODEL,
+            headers = {"x-goog-api-key": config_local.GEMINI_API_KEY, "Content-Type": "application/json"}
 
-            "messages": [{"role": "user", "content": prompt}],
+            payload = {
 
-            "temperature": 0.3,
+                "contents": [{"role": "user", "parts": [{"text": prompt}]}],
 
-            "max_tokens": 1024,
+                "generationConfig": {"temperature": 0.3, "maxOutputTokens": 1024},
 
-        }
+            }
 
-        resp = requests.post(config_local.DEEPSEEK_API_URL, headers=headers, json=payload, timeout=60)
+            resp = requests.post(config_local.GEMINI_API_URL, headers=headers, json=payload, timeout=60)
 
-        resp.raise_for_status()
+            resp.raise_for_status()
 
-        answer = resp.json()["choices"][0]["message"]["content"]
+            answer = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+
+        else:
+
+            model_used = config_local.DEEPSEEK_MODEL
+
+            headers = {"Authorization": "Bearer {0}".format(config_local.DEEPSEEK_API_KEY), "Content-Type": "application/json"}
+
+            payload = {
+
+                "model": model_used,
+
+                "messages": [{"role": "user", "content": prompt}],
+
+                "temperature": 0.3,
+
+                "max_tokens": 1024,
+
+            }
+
+            resp = requests.post(config_local.DEEPSEEK_API_URL, headers=headers, json=payload, timeout=60)
+
+            resp.raise_for_status()
+
+            answer = resp.json()["choices"][0]["message"]["content"]
 
         db.save_conversation(paper_id, question, answer)
 
-        return jsonify({"ok": True, "answer": answer, "question": question})
+        return jsonify({"ok": True, "answer": answer, "question": question, "model": model_used})
 
     except Exception as e:
 
-        return None
+        return jsonify({"ok": False, "error": str(e)}), 500
 
 # ===== API: Conversations =====
 
@@ -554,6 +586,10 @@ def get_taken_colors():
 @app.route("/api/auth/login", methods=["POST"])
 
 def auth_login():
+
+    if not _rate_limit_check("login:" + (request.remote_addr or "?")):
+
+        return jsonify({"ok": False, "error": "尝试次数过多，请稍后再试"}), 429
 
     data = request.get_json()
 
@@ -590,6 +626,10 @@ def auth_login():
 @app.route("/api/auth/register", methods=["POST"])
 
 def auth_register():
+
+    if not _rate_limit_check("register:" + (request.remote_addr or "?")):
+
+        return jsonify({"ok": False, "error": "尝试次数过多，请稍后再试"}), 429
 
     data = request.get_json()
 
@@ -708,44 +748,27 @@ def admin_refresh():
 
 def get_history():
 
-    try:
+    _cu = get_current_user()
 
-        import json as _json, base64 as _b64
+    if _cu and _cu.get("username"):
 
-        uc = request.cookies.get("arxiv_user", "")
+        history = db.get_user_history(_cu["username"])
 
-        if uc:
+        reporter_map = db.get_paper_reporters_map([p["id"] for p in history if p.get("id")])
 
-            u = _json.loads(_b64.b64decode(uc).decode("utf-8"))
+        for p in history:
 
-            if u.get("username"):
+            p["reporters"] = reporter_map.get(p["id"], [])
 
-                history = db.get_user_history(u["username"])
-
-                for p in history:
-
-                    try:
-
-                        p["reporters"] = db.get_paper_reporters(p["id"])
-
-                    except Exception:
-
-                        p["reporters"] = []
-
-                return jsonify({"ok": True, "history": history})
-
-    except Exception:
-
-        pass
+        return jsonify({"ok": True, "history": history})
 
     return jsonify({"ok": False, "history": []})
 
 @app.route("/papers/<path:filename>")
 
 def serve_paper_file(filename: str):
-
-    papers_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), config.PAPERS_DIR)
-
+    # If env var PAPERS_DIR is set (worktree mode), use it; otherwise use config default
+    papers_dir = os.environ.get("PAPERS_DIR") or os.path.join(os.path.dirname(os.path.dirname(__file__)), config.PAPERS_DIR)
     return send_from_directory(papers_dir, filename)
 
 # ===== API: Hide paper (soft delete) =====
@@ -754,14 +777,8 @@ def serve_paper_file(filename: str):
 
 def hide_paper(paper_id: int):
 
-    import json as _j, base64 as _b64
-    try:
-        uc = request.cookies.get("arxiv_user", "")
-        if uc:
-            u = _j.loads(_b64.b64decode(uc).decode("utf-8"))
-            if u.get("role") != "admin":
-                return jsonify({"ok": False, "error": "Only admin can delete entries"}), 403
-    except Exception:
+    _u = get_current_user()
+    if not _u or _u.get("role") != "admin":
         return jsonify({"ok": False, "error": "Authentication required"}), 401
 
     db.hide_paper(paper_id)
@@ -774,21 +791,7 @@ def hide_paper(paper_id: int):
 
 def my_papers():
 
-    user = None
-
-    try:
-
-        import json as _json, base64 as _b64
-
-        user_cookie = request.cookies.get("arxiv_user", "")
-
-        if user_cookie:
-
-            user = _json.loads(_b64.b64decode(user_cookie).decode("utf-8"))
-
-    except Exception:
-
-        pass
+    user = get_current_user()
 
     if user:
 
@@ -798,13 +801,13 @@ def my_papers():
 
         tagged_report = []
 
+        reporter_map = db.get_paper_reporters_map([p["id"] for p in all_tagged])
+
         for p in all_tagged:
 
-            reporters = db.get_paper_reporters(p["id"])
+            p["reporters"] = reporter_map.get(p["id"], [])
 
-            p["reporters"] = reporters
-
-            for r in reporters:
+            for r in p["reporters"]:
 
                 if r["username"] == user.get("username", ""):
 
@@ -868,7 +871,13 @@ def api_add_keyword():
 
     kw = data["keyword"].strip()
 
-    weight = float(data.get("weight", 1.0))
+    try:
+
+        weight = float(data.get("weight", 1.0))
+
+    except (TypeError, ValueError):
+
+        return jsonify({"ok": False, "error": "权重必须是数字"}), 400
 
     if weight < 0.1 or weight > 1.2:
 
@@ -892,7 +901,13 @@ def api_update_keyword(kw_id: int):
 
     kw = data.get("keyword", "").strip() if data else ""
 
-    weight = float(data.get("weight", 1.0)) if data else 1.0
+    try:
+
+        weight = float(data.get("weight", 1.0)) if data else 1.0
+
+    except (TypeError, ValueError):
+
+        return jsonify({"ok": False, "error": "权重必须是数字"}), 400
 
     if weight < 0.1 or weight > 1.2:
 
@@ -943,98 +958,206 @@ def generate_detailed_analysis(paper_id: int):
     return jsonify({"ok": True, "analysis": result})
 
 def _run_detailed_analysis_inner(paper_id, paper):
-
-    """内部详细分析函数，返回分析内容或 None"""
-
+    import os
     if not paper or not paper.get("pdf_path") or not os.path.exists(paper["pdf_path"]):
-
         return None
-
     import arxiv_assistant.pdf_parser as pdf_parser
-
     parsed = pdf_parser.parse_pdf(paper["pdf_path"])
-
-    import config_local
-
-    import requests
-
+    text_excerpt = parsed.text[:10000]
+    import config_local, requests
     cfg = config_local
-
-    api_key = cfg.DEEPSEEK_API_KEY
-
-    api_url = cfg.DEEPSEEK_API_URL
-
-    model_name = cfg.DEEPSEEK_MODEL
-
-    text_excerpt = parsed.text[:8000]
-
-    figure_desc = ""
-
+    prompt_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "prompt for analysis.md")
+    with open(prompt_path, "r", encoding="utf-8") as pf:
+        prompt_template = pf.read()
+    figure_parts = []
     for fig in parsed.figures[:10]:
+        fn = fig.get("figure_number", "?")
+        cap = (fig.get("caption", "") or "")[:300]
+        figure_parts.append("### Figure " + str(fn) + "\uff1a" + cap + "\n")
+        figure_parts.append("**\u8be6\u7ec6\u89e3\u8bfb\uff1a**\n")
+        figure_parts.append("-\u56fe\u4e2d\u5c55\u793a\u4e86\u4ec0\u4e48\u6570\u636e\uff1f\u5750\u6807\u8f74\u542b\u4e49\uff1f\u5173\u952e\u8d8b\u52bf\u548c\u7279\u5f81\uff1f\n")
+        figure_parts.append("-\u8be5\u56fe\u4f7f\u7528\u7684\u5b9e\u9a8c\u624b\u6bb5/\u8ba1\u7b97\u65b9\u6cd5\u662f\u4ec0\u4e48\uff1f\u5173\u952e\u7ed3\u679c\u6709\u54ea\u4e9b\uff1f\n")
+        figure_parts.append("-\u7ed3\u5408\u6b63\u6587\uff0c\u8be5\u56fe\u652f\u6491\u4e86\u4f5c\u8005\u7684\u54ea\u4e2a\u8bba\u70b9\uff1f\n")
+        figure_parts.append("---\n\n")
+    figure_section = "".join(figure_parts) if figure_parts else "\uff08\u672c\u6587\u65e0\u56fe\u8868\u6216\u56fe\u8868\u672a\u63d0\u53d6\u6210\u529f\uff09\n"
+    # Build multimodal prompt with text + images
+    figure_parts = []
+    for fig in parsed.figures[:10]:
+        fn = fig.get("figure_number", "?")
+        cap = (fig.get("caption", "") or "")[:300]
+        figure_parts.append("### Figure " + str(fn) + "\uff1a" + cap + "\n")
+    figure_section = "".join(figure_parts) if figure_parts else "\uff08\u672c\u6587\u65e0\u56fe\u8868\u6216\u56fe\u8868\u672a\u63d0\u53d6\u6210\u529f\uff09\n"
 
-        cap = fig.get("caption", "")[:200]
+    prompt = prompt_template.replace("{FIGURES}", figure_section) + "\n\n## Paper\n\n" + text_excerpt
 
-        fnum = fig.get("figure_number", "?")
+    try:
+        headers = {"x-goog-api-key": cfg.GEMINI_API_KEY, "Content-Type": "application/json"}
+        
+        # Build parts: text first, then figure images
+        parts = [{"text": prompt[:20000]}]
+        for fig in parsed.figures[:10]:
+            fp = fig.get("file_path", "")
+            if not fp or not os.path.exists(fp):
+                continue
+            fn = fig.get("figure_number", "?")
+            cap = (fig.get("caption", "") or "")[:100]
+            parts.append({"text": "--- Figure " + str(fn) + ": " + cap + " ---"})
+            try:
+                with open(fp, "rb") as _f:
+                    _data = _f.read()
+                _b64 = __import__("base64").b64encode(_data).decode()
+                _ext = os.path.splitext(fp)[1].lower()
+                _mime = "image/png" if _ext == ".png" else "image/jpeg"
+                parts.append({"inline_data": {"mime_type": _mime, "data": _b64}})
+            except:
+                pass
+        
+        payload = {"contents": [{"role": "user", "parts": parts}]}
+        resp = requests.post(cfg.GEMINI_API_URL, headers=headers, json=payload, timeout=600)
+        resp.raise_for_status()
+        gemini_result = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+    except Exception:
+        gemini_result = "# 1. Abstract\n(Translation failed)\n\n# 2. Methods\n(N/A)\n\n# 3. Figures\n(N/A)\n\n# 4. Outlook\n(N/A)"
 
-        figure_desc += "Figure " + str(fnum) + ": " + cap + "\n"
+    gemini_result = _strip_bold(gemini_result)
 
-    prompt = "你是凝聚态物理领域的AI研究助手。请对这篇论文进行详细分析，输出中文。\n\n"
+    # Inject figure images into the response HTML for web display
+    injected = gemini_result
+    for i, fig in enumerate(parsed.figures[:10]):
+        fn = fig.get("figure_number", str(i+1))
+        img_html = _serve_figure_img(fig)
+        if not img_html:
+            continue
+        markers = ["### Figure " + fn, "### Figure " + str(i+1)]
+        for marker in markers:
+            idx = injected.find(marker)
+            if idx >= 0:
+                eol = injected.find(chr(10), idx)
+                if eol < 0:
+                    eol = len(injected)
+                insert_pos = eol + 1
+                img_block = chr(10) + chr(10) + img_html + chr(10)
+                injected = injected[:insert_pos] + img_block + injected[insert_pos:]
+                break
 
-    prompt += "论文文本开头部分：\n" + text_excerpt + "\n\n"
+    db.save_detailed_analysis(paper_id, injected)
 
-    prompt += "论文包含以下图表（图注）：\n" + figure_desc + "\n\n"
 
-    prompt += "请按以下格式输出：\n\n"
+@app.route("/api/paper/<int:paper_id>/re-extract-figures", methods=["POST"])
 
-    prompt += "## 1. 摘要翻译\n[将论文摘要翻译为中文]\n\n"
+def re_extract_figures(paper_id: int):
 
-    prompt += "## 2. 图表详细解读\n[按从上到下的顺序，结合图注和文章内容，详细解读每个图表的内容和意义]\n\n"
+    """Re-extract figures from PDF, replacing old ones."""
 
-    prompt += "## 3. 研究方法总结\n[总结文章的主要研究方法]\n\n"
+    paper = db.get_paper_by_id(paper_id)
 
-    prompt += "## 4. 主要结论\n[总结文章的核心结论]"
+    if not paper:
+
+        return jsonify({"status": "error", "message": "论文不存在"}), 404
+
+    pdf_path = paper.get("pdf_path")
+
+    if not pdf_path or not os.path.exists(pdf_path):
+
+        return jsonify({"status": "error", "message": "PDF 文件不存在"}), 400
 
     try:
 
-        payload = {"model": model_name, "messages": [{"role": "user", "content": prompt}], "temperature": 0.3, "max_tokens": 4000}
+        from arxiv_assistant import pdf_parser
 
-        headers = {"Authorization": "Bearer " + api_key, "Content-Type": "application/json"}
+        # Parse PDF to extract figures
+        parsed = pdf_parser.parse_pdf(pdf_path)
 
-        resp = requests.post(api_url, headers=headers, json=payload, timeout=120)
+        # Delete old figure records
+        db.delete_figures_by_paper(paper_id)
 
-        resp.raise_for_status()
+        # Save new figure records
+        for fig in parsed.figures:
 
-        analysis_content = resp.json()["choices"][0]["message"]["content"]
+            db.save_figure(paper_id, fig["figure_number"], fig.get("caption", ""), fig["file_path"])
+
+        # Build response with new figure data for AJAX refresh
+        new_figures = []
+        for fig in parsed.figures:
+            fp = fig["file_path"]
+            # Convert path to URL
+            parts = fp.split('papers')
+            if len(parts) > 1:
+                url_path = '/papers' + parts[1].replace('\\', '/')
+            else:
+                url_path = '/papers/' + os.path.basename(fp)
+            new_figures.append({
+                "figure_number": fig["figure_number"],
+                "caption": fig.get("caption", ""),
+                "src": url_path,
+                "width": fig.get("width", 0),
+                "height": fig.get("height", 0)
+            })
+
+        return jsonify({
+            "status": "success",
+            "message": "成功重新提取 {0} 张图片".format(len(new_figures)),
+            "figures": new_figures
+        })
 
     except Exception as e:
 
-        return None
+        import traceback
 
-    db.save_detailed_analysis(paper_id, analysis_content)
+        traceback.print_exc()
 
-    return analysis_content
+        return jsonify({"status": "error", "message": "重新截图失败: " + str(e)}), 500
+
+
+
+
+def _figure_url_path(fp):
+    """Convert a figure file path to a /papers/... URL path."""
+    fp_norm = fp.replace("\\", "/")
+    marker = "/papers/"
+    idx = fp_norm.find(marker)
+    if idx >= 0:
+        return fp_norm[idx:]
+    papers_dir = (os.environ.get("PAPERS_DIR") or os.path.join(os.path.dirname(os.path.dirname(__file__)), config.PAPERS_DIR)).replace("\\", "/")
+    if fp_norm.startswith(papers_dir):
+        return "/papers/" + fp_norm[len(papers_dir):].lstrip("/")
+    return "/papers/" + os.path.basename(fp)
+
+
+def _serve_figure_img(fig):
+    fp = fig.get("file_path", "")
+    if not fp or not os.path.exists(fp):
+        return ""
+    try:
+        src_url = _figure_url_path(fp)
+        return '<img src="' + src_url + '" style="max-width:100%;height:auto;margin:10px 0;border:1px solid #ddd;border-radius:4px;">'
+    except:
+        return ""
+
+def _clean_output(text):
+    import re
+    text = text.replace("**", "")
+    text = re.sub(r"(?<!\*)\*(?!\*)([^*]+?)(?<!\*)\*(?!\*)", lambda m: m.group(1), text)
+    for pat in ["\u6b64\u5904\u5e94\u4e3a[^\u3002\n]*[\u622a\u56fe\n]",
+                "\u8bf7\u5728\u6b64\u5904\u63d2\u5165[^\u3002\n]*",
+                "\(\u8bf7\u5728\u6b64\u5904\u63d2\u5165[^)]*\)"]:
+        text = re.sub(pat, "", text)
+    text = re.sub(r"\n\s*-{3,}\s*\n", "\n\n", text)
+    text = re.sub(r"^-{3,}\s*\n", "", text)
+    text = re.sub(r"\A.*?(?=##\s+\d)", "", text, flags=re.DOTALL)
+    text = re.sub(r"\n{4,}", "\n", text)
+    text = re.sub(r"  +", " ", text)
+    return text.strip()
+
+def _strip_bold(text):
+    return _clean_output(text)
+
 
 @app.context_processor
 
 def inject_globals():
 
-    user = None
-
-    try:
-
-        import hashlib as _json
-
-        user_cookie = request.cookies.get("arxiv_user", "")
-
-        if user_cookie:
-
-            import base64 as _b64
-
-            user = _json.loads(_b64.b64decode(user_cookie).decode("utf-8"))
-
-    except Exception:
-
-        pass
+    user = get_current_user()
 
     return {"now": datetime.now(), "config": config, "current_user": user}
 

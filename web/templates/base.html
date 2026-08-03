@@ -1,1242 +1,589 @@
 <!DOCTYPE html>
 
-
-
-
 <html lang="zh-CN">
-
-
-
 
 <head>
 
-
-
-
     <meta charset="UTF-8">
-
-
-
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
-
-
     <title>{% block title %}ArXiv文献助手{% endblock %}</title>
-
-
-
 
     <link rel="stylesheet" href="/static/style.css">
 
-
-
-
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>">
 
-
-
+<!-- KaTeX for LaTeX rendering -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true},{left: '$', right: '$', display: false}]});"></script>
 
 </head>
 
-
-
-
 <body>
-
-
-
 
     <nav class="navbar">
 
-
-
-
         <div class="nav-inner">
-
-
-
 
             <a href="/" class="nav-brand">ArXiv文献助手</a>
 
-
-
-
             <div class="nav-links">
-
-
-
 
                 <a href="/" class="nav-link">今日简报</a>
 
-
-
-
                 <a href="/all" class="nav-link">全部论文</a>
-
-
-
 
                 <a href="javascript:void(0)" onclick="openUploadModal()" class="nav-link">自行添加</a>
 
-
-
-
                 <a href="/my" class="nav-link">我的</a>
-
-
-
 
                 <a href="javascript:void(0)" id="admin-refresh-btn" class="nav-link" style="display:none;color:#f59e0b;" onclick="adminRefresh()">↻ 立刻更新</a>
 
-
-
-
             </div>
-
-
-
 
             <form class="nav-search" action="/search" method="get">
 
-
-
-
                 <input type="text" name="q" placeholder="搜索论文标题/作者..." class="search-input">
-
-
-
 
             </form>
 
-
-
+            <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" title="切换明暗主题">🌙</button>
 
             <span id="nav-user-badge" class="nav-user-badge" style="display:none;" onclick="showUserMenu()"></span>
 
-
-
-
             <img src="/static/logo_v2.png" class="nav-logo" alt="Logo">
 
-
-
-
         </div>
-
-
-
 
     </nav>
 
-
-
-
     <main class="main-content">
-
-
-
 
         {% block content %}{% endblock %}
 
-
-
-
     </main>
-
-
-
-
-
-
-
-
 
 <!-- Upload Modal -->
 
-
-
-
 <div id="upload-modal" class="upload-modal">
-
-
-
 
     <div class="upload-modal-content">
 
-
-
-
         <div class="upload-modal-header">
-
-
-
 
             <h2>自行添加文献</h2>
 
-
-
-
             <button class="upload-close" onclick="closeUploadModal()">&times;</button>
-
-
-
 
         </div>
 
-
-
-
         <div class="upload-modal-body">
-
-
-
 
             <div class="upload-title-input">
 
-
-
-
                 <label>标题（可选，留空则用文件名）</label>
-
-
-
 
                 <div><input type="text" id="upload-title" placeholder="输入文献标题..." class="search-input-large"></div>
 
-
-
-
             </div>
-
-
-
 
             <div class="upload-dropzone" id="upload-dropzone"
 
-
-
-
                  ondragover="event.preventDefault(); this.classList.add('drag-over')"
-
-
-
 
                  ondragleave="this.classList.remove('drag-over')"
 
-
-
-
                  ondrop="handleDrop(event)">
-
-
-
 
                 <div class="upload-icon">&#128196;</div>
 
-
-
-
                 <p>拖拽文件到此</p>
-
-
-
 
                 <p class="upload-hint">支持 PDF / DOCX / PPTX 格式</p>
 
-
-
-
                 <button type="button" class="btn btn-outline" onclick="document.getElementById('file-input').click()">或点击浏览</button>
-
-
-
 
                 <input type="file" id="file-input" accept=".pdf,.docx,.pptx" style="display:none" onchange="handleFileSelect(this)">
 
-
-
-
             </div>
-
-
-
 
             <div id="upload-status" class="upload-status" style="display:none">
 
-
-
-
                 <div class="upload-progress">&#8987; 正在上传并分析文件...</div>
-
-
-
 
             </div>
 
-
-
-
         </div>
 
-
-
-
     </div>
-
-
-
 
 </div>
 
-
-
-
-
-
-
-
-
 <!-- Login Modal -->
-
-
 
 <div id="login-modal" class="upload-modal" style="display:none;">
 
-
-
     <div class="upload-modal-content" style="width:420px;">
-
-
 
         <div class="upload-modal-header">
 
-
-
             <h2 id="login-title">登录 / 注册</h2>
 
-
-
         </div>
-
-
 
         <div class="upload-modal-body">
 
-
-
             <!-- Tab Switcher -->
-
-
 
             <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid #e2e8f0;">
 
-
-
                 <button id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')" style="flex:1;padding:8px;border:none;background:none;font-size:14px;cursor:pointer;font-family:inherit;border-bottom:2px solid #2563eb;color:#2563eb;font-weight:600;">登录</button>
-
-
 
                 <button id="tab-register" class="auth-tab" onclick="switchAuthTab('register')" style="flex:1;padding:8px;border:none;background:none;font-size:14px;cursor:pointer;font-family:inherit;color:#94a3b8;font-weight:500;">注册</button>
 
-
-
             </div>
-
-
-
-
-
-
 
             <!-- Login Form -->
 
-
-
             <div id="login-form" style="display:block;">
-
-
 
                 <div class="upload-title-input" style="margin-bottom:10px;">
 
-
-
                     <label>用户名</label>
-
-
 
                     <input type="text" id="login-username" placeholder="输入姓名拼音缩写，如 ZWF" class="search-input-large" style="text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
 
-
-
                 </div>
-
-
 
                 <div class="upload-title-input" style="margin-bottom:10px;">
 
-
-
                     <label>密码</label>
-
-
 
                     <input type="password" id="login-password" placeholder="输入密码..." class="search-input-large">
 
-
-
                 </div>
-
-
 
                 <button class="btn btn-primary" onclick="doLogin()" style="width:100%;padding:10px;margin-top:4px;">登录</button>
 
-
-
                 <div id="login-error" style="color:#dc2626;font-size:0.85em;margin-top:8px;display:none;"></div>
 
-
-
             </div>
-
-
-
-
-
-
 
             <!-- Register Form -->
 
-
-
             <div id="register-form" style="display:none;">
 
-
-
                 <div class="upload-title-input" style="margin-bottom:10px;">
-
-
 
                     <label>用户名</label>
 
-
-
                     <input type="text" id="reg-username" placeholder="输入姓名拼音缩写，如 ZWF" class="search-input-large" style="text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
-
-
 
                 </div>
 
-
-
                 <div class="upload-title-input" style="margin-bottom:10px;">
-
-
 
                     <label>密码</label>
 
-
-
                     <input type="password" id="reg-password" placeholder="输入密码..." class="search-input-large">
-
-
 
                 </div>
 
-
-
                 <div class="upload-title-input" style="margin-bottom:10px;">
-
-
 
                     <label>确认密码</label>
 
-
-
                     <input type="password" id="reg-password2" placeholder="再次输入密码..." class="search-input-large">
 
-
-
                 </div>
-
-
 
                 <div class="upload-title-input" style="margin-bottom:10px;" id="reg-key-section">
 
-
-
                     <label>注册密钥 <span style="color:#94a3b8;font-size:0.8em;">（首次注册需要）</span></label>
-
-
 
                     <input type="password" id="reg-key" placeholder="输入密钥..." class="search-input-large">
 
-
-
                 </div>
-
-
 
                 <div class="upload-title-input" style="margin-bottom:10px;">
 
-
-
                     <label>选择你的颜色 <span style="color:#94a3b8;font-size:0.8em;">（用于组会圆点）</span></label>
-
-
 
                     <div class="color-picker" id="reg-color-picker"></div>
 
-
-
                 </div>
-
-
 
                 <button class="btn btn-primary" onclick="doRegister()" style="width:100%;padding:10px;margin-top:4px;">创建账号</button>
 
-
-
                 <div id="register-error" style="color:#dc2626;font-size:0.85em;margin-top:8px;display:none;"></div>
-
-
 
             </div>
 
-
-
         </div>
-
-
 
     </div>
 
-
-
 </div><script>
 
+// ===== Theme & Toast & Markdown =====
+var THEME_KEY = "lit_theme";
+function getTheme() { try { return localStorage.getItem(THEME_KEY) || "light"; } catch(e) { return "light"; } }
+function setTheme(t) { document.documentElement.setAttribute("data-theme", t); try { localStorage.setItem(THEME_KEY, t); } catch(e) {} updateThemeBtn(); }
+function toggleTheme() { setTheme(getTheme() === "dark" ? "light" : "dark"); }
+function updateThemeBtn() {
+    var btn = document.getElementById("theme-toggle-btn");
+    if (btn) btn.textContent = getTheme() === "dark" ? "☀️" : "🌙";
+}
+(function() { setTheme(getTheme()); })();
 
+function showToast(msg, type) {
+    type = type || "info";
+    var container = document.getElementById("toast-container");
+    if (!container) return;
+    var el = document.createElement("div");
+    el.className = "toast toast-" + type;
+    el.textContent = msg;
+    container.appendChild(el);
+    setTimeout(function() { el.classList.add("show"); }, 10);
+    setTimeout(function() { el.classList.remove("show"); setTimeout(function() { el.remove(); }, 300); }, 2500);
+}
 
+function renderMarkdown(text) {
+    var esc = function(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); };
+    function inline(s) {
+        return s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+                .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+                .replace(/`([^`]+)`/g, "<code>$1</code>");
+    }
+    var blocks = esc(text).split(/\n{2,}/);
+    var html = "";
+    blocks.forEach(function(b) {
+        var lines = b.split(/\n/);
+        var m = lines[0].match(/^(#{1,4})\s+(.*)/);
+        if (m) { html += "<h" + m[1].length + ">" + inline(m[2]) + "</h" + m[1].length + ">"; return; }
+        if (/^\s*[-*]\s+/.test(lines[0])) {
+            html += "<ul>";
+            lines.forEach(function(l) { if (/^\s*[-*]\s+/.test(l)) html += "<li>" + inline(l.replace(/^\s*[-*]\s+/, "")) + "</li>"; });
+            html += "</ul>";
+            return;
+        }
+        html += "<p>" + lines.map(inline).join("<br>") + "</p>";
+    });
+    return html;
+}
 
 // ===== User Auth System =====
 
-
-
-
 var CURRENT_USER = null;
-
-
-
-
-
-
-
-
 
 function getUserCookie() {
 
-
-
-
     var name = "arxiv_user=";
-
-
-
 
     var cookies = document.cookie.split(";");
 
-
-
-
     for (var i = 0; i < cookies.length; i++) {
-
-
-
 
         var c = cookies[i].trim();
 
-
-
-
         if (c.indexOf(name) === 0) {
-
-
-
 
             try {
 
-
-
-
                 return JSON.parse(atob(c.substring(name.length)));
-
-
-
 
             } catch(e) { return null; }
 
-
-
-
         }
 
-
-
-
     }
-
-
-
 
     return null;
 
-
-
-
 }
-
-
-
-
-
-
-
-
 
 function setUserCookie(user) {
 
-
-
-
     var encoded = btoa(JSON.stringify(user));
-
-
-
 
     document.cookie = "arxiv_user=" + encoded + ";path=/";
 
-
-
-
     CURRENT_USER = user;
-
-
-
 
     updateNavUI();
 
-
-
-
 }
-
-
-
-
-
-
-
-
 
 function clearUserCookie() {
 
-
-
-
     document.cookie = "arxiv_user=;path=/;max-age=0";
-
-
-
 
     CURRENT_USER = null;
 
-
-
-
     updateNavUI();
 
-
-
-
 }
-
-
-
-
-
-
-
-
 
 function updateNavUI() {
 
-
-
-
     // Show keyword button if not on paper detail page
-
-
-
 
     var kwBtn = document.getElementById("floating-keyword-btn");
 
-
-
-
     if (kwBtn && window.location.pathname.indexOf("/paper/") !== 0) {
-
-
-
 
         kwBtn.style.display = "flex";
 
-
-
-
         kwBtn.title = CURRENT_USER && CURRENT_USER.role === "admin" ? "管理关键词" : "增添关键词";
 
-
-
-
     }
-
-
-
 
     var badge = document.getElementById("nav-user-badge");
 
-
-
-
     var refreshBtn = document.getElementById("admin-refresh-btn");
-
-
-
 
     if (CURRENT_USER) {
 
-
-
-
         badge.style.display = "inline-block";
-
-
-
 
         badge.style.background = CURRENT_USER.color || "#3b82f6";
 
-
-
-
         badge.textContent = CURRENT_USER.username;
-
-
-
 
         badge.title = CURRENT_USER.role === "admin" ? "管理员" : CURRENT_USER.username;
 
-
-
-
         if (refreshBtn) refreshBtn.style.display = CURRENT_USER.role === "admin" ? "inline-block" : "none";
 
-
-
-
     } else {
-
-
-
 
         badge.style.display = "none";
 
-
-
-
         if (refreshBtn) refreshBtn.style.display = "none";
-
-
-
 
     }
 
-
-
-
 }
-
-
-
-
-
-
-
-
 
 // ===== Login Modal =====
 
-
-
 function switchAuthTab(tab) {
-
-
 
     var loginForm = document.getElementById("login-form");
 
-
-
     var registerForm = document.getElementById("register-form");
-
-
 
     var tabLogin = document.getElementById("tab-login");
 
-
-
     var tabRegister = document.getElementById("tab-register");
-
-
 
     if (tab === "login") {
 
-
-
         loginForm.style.display = "block";
-
-
 
         registerForm.style.display = "none";
 
-
-
         tabLogin.style.borderBottom = "2px solid #2563eb";
-
-
 
         tabLogin.style.color = "#2563eb";
 
-
-
         tabLogin.style.fontWeight = "600";
-
-
 
         tabRegister.style.borderBottom = "2px solid transparent";
 
-
-
         tabRegister.style.color = "#94a3b8";
-
-
 
         tabRegister.style.fontWeight = "500";
 
-
-
     } else {
-
-
 
         loginForm.style.display = "none";
 
-
-
         registerForm.style.display = "block";
-
-
 
         tabRegister.style.borderBottom = "2px solid #2563eb";
 
-
-
         tabRegister.style.color = "#2563eb";
-
-
 
         tabRegister.style.fontWeight = "600";
 
-
-
         tabLogin.style.borderBottom = "2px solid transparent";
-
-
 
         tabLogin.style.color = "#94a3b8";
 
-
-
         tabLogin.style.fontWeight = "500";
-
-
 
         initRegColorPicker();
 
-
-
     }
 
-
-
 }
-
-
-
-
-
-
 
 function showLoginModal() {
 
-
-
     document.getElementById("login-modal").style.display = "flex";
-
-
 
     document.getElementById("login-error").style.display = "none";
 
-
-
     document.getElementById("register-error").style.display = "none";
-
-
 
     document.getElementById("login-username").value = "";
 
-
-
     document.getElementById("login-password").value = "";
-
-
 
     document.getElementById("reg-username").value = "";
 
-
-
     document.getElementById("reg-password").value = "";
-
-
 
     document.getElementById("reg-password2").value = "";
 
-
-
     document.getElementById("reg-key").value = "";
-
-
 
     switchAuthTab("login");
 
-
-
 }
-
-
-
-
-
-
 
 function hideLoginModal() {
 
-
-
     document.getElementById("login-modal").style.display = "none";
 
-
-
 }
-
-
-
-
-
-
 
 function doLogin() {
 
-
-
     var username = document.getElementById("login-username").value.trim().toUpperCase();
-
-
 
     var password = document.getElementById("login-password").value.trim();
 
-
-
     if (!username) { showLoginError("请输入用户名"); return; }
-
-
 
     if (!password) { showLoginError("请输入密码"); return; }
 
-
-
     fetch("/api/auth/login", {
-
-
 
         method: "POST",
 
-
-
         headers: {"Content-Type": "application/json"},
-
-
 
         body: JSON.stringify({username: username, password: password})
 
-
-
     })
-
-
 
     .then(function(r) { return r.json(); })
 
-
-
     .then(function(d) {
-
-
 
         if (!d.ok) { showLoginError(d.error || "登录失败"); return; }
 
-
-
         if (d.exists) {
-
-
 
             setUserCookie(d.user);
 
-
-
             hideLoginModal();
-
-
 
             location.reload();
 
-
-
         } else {
-
-
 
             showLoginError("用户名或密码错误");
 
-
-
         }
 
-
-
     })
-
-
 
     .catch(function(e) { showLoginError("网络错误: " + e.message); });
 
-
-
 }
-
-
-
-
-
-
 
 function doRegister() {
 
-
-
     var username = document.getElementById("reg-username").value.trim().toUpperCase();
-
-
 
     var password = document.getElementById("reg-password").value.trim();
 
-
-
     var password2 = document.getElementById("reg-password2").value.trim();
-
-
 
     var key = document.getElementById("reg-key").value.trim();
 
-
-
     var selectedColor = document.querySelector("#reg-color-picker .color-option.selected");
-
-
 
     var color = selectedColor ? selectedColor.getAttribute("data-color") : "#3b82f6";
 
-
-
     if (!username) { showRegError("请输入用户名"); return; }
-
-
 
     if (!password) { showRegError("请输入密码"); return; }
 
-
-
     if (password !== password2) { showRegError("两次输入的密码不一致"); return; }
-
-
 
     if (!key) { showRegError("请输入注册密钥"); return; }
 
-
-
     fetch("/api/auth/register", {
-
-
 
         method: "POST",
 
-
-
         headers: {"Content-Type": "application/json"},
-
-
 
         body: JSON.stringify({username: username, password: password, key: key, color: color})
 
-
-
     })
-
-
 
     .then(function(r) { return r.json(); })
 
-
-
     .then(function(d) {
-
-
 
         if (!d.ok) { showRegError(d.error || "注册失败"); return; }
 
-
-
         setUserCookie(d.user);
-
-
 
         hideLoginModal();
 
-
-
         location.reload();
-
-
 
     })
 
-
-
     .catch(function(e) { showRegError("网络错误: " + e.message); });
 
-
-
 }
-
-
-
-
-
-
 
 function showLoginError(msg) {
 
-
-
     var el = document.getElementById("login-error");
-
-
 
     el.textContent = msg;
 
-
-
     el.style.display = "block";
 
-
-
 }
-
-
 
 function showRegError(msg) {
 
-
-
     var el = document.getElementById("register-error");
-
-
 
     el.textContent = msg;
 
-
-
     el.style.display = "block";
 
-
-
 }
-
-
-
-
-
-
 
 function showUserMenu() {
 
-
-
     if (confirm("当前用户: " + CURRENT_USER.username + "\n\n点击确定切换账号")) {
-
-
 
         clearUserCookie();
 
-
-
         showLoginModal();
-
-
 
     }
 
-
-
 }
-
-
-
-
-
-
 
 function initRegColorPicker() {
 
-
-
     var container = document.getElementById("reg-color-picker");
 
-
-
     if (!container || container.hasChildNodes()) return;
-
-
 
     var colors = [
     // Row 1: Reds -> Oranges
@@ -1251,1533 +598,689 @@ function initRegColorPicker() {
     "#a9a9a9","#808000","#9a6324","#800000","#aaffc3","#bc8f8f","#cd853f","#5f9ea0"
 ];
 
-
-
     // Check which colors are taken
-
-
 
     fetch("/api/users/colors")
 
-
-
     .then(function(r) { return r.json(); })
 
-
-
     .then(function(d) {
-
-
 
         var taken = d.colors || [];
 
-
-
         colors.forEach(function(color) {
-
-
 
             var div = document.createElement("div");
 
-
-
             div.className = "color-option" + (taken.indexOf(color) >= 0 ? " taken" : "");
-
-
 
             div.setAttribute("data-color", color);
 
-
-
             div.style.background = color;
-
-
 
             if (taken.indexOf(color) >= 0) {
 
-
-
                 div.title = "已被选择";
 
-
-
             }
-
-
 
             div.onclick = function() {
 
-
-
                 if (this.classList.contains("taken")) return;
-
-
 
                 container.querySelectorAll(".color-option").forEach(function(el) { el.classList.remove("selected"); });
 
-
-
                 this.classList.add("selected");
-
-
 
             };
 
-
-
             container.appendChild(div);
-
-
 
         });
 
-
-
     });
 
-
-
 }
-
-
 
 // ===== Color Picker =====
 
-
-
-
 var COLOR_PALETTE = [
-
-
-
 
     "#e6194b","#3cb44b","#ffe119","#4363d8","#f58231","#911eb4","#42d4f4","#f032e6",
 
-
-
-
     "#bfef45","#fabebe","#469990","#e6beff","#9a6324","#fffac8","#800000","#aaffc3",
-
-
-
 
     "#808000","#ffd8b1","#000075","#a9a9a9","#e6194b","#fabed4","#ff0000","#00ff00",
 
-
-
-
     "#0000ff","#ff8000","#8000ff","#00ff80","#ff0080","#80ff00","#0080ff","#ff00ff",
-
-
-
 
     "#00ffff","#ffff00","#ff4488","#44ff88","#8844ff","#ff8844","#44ff44","#4488ff",
 
-
-
-
 ];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // ===== Group Report Toggle =====
 
-
-
-
 function toggleReport(paperId) {
-
-
-
 
     if (!CURRENT_USER) { showLoginModal(); return; }
 
-
-
-
     fetch("/api/paper/" + paperId + "/report", {
-
-
-
 
         method: "POST",
 
-
-
-
         headers: {"Content-Type": "application/json"},
-
-
-
 
         body: JSON.stringify({username: CURRENT_USER.username, color: CURRENT_USER.color})
 
-
-
-
     })
-
-
-
 
     .then(function(r) { return r.json(); })
 
-
-
-
     .then(function(d) {
 
-
-
-
-        if (!d.ok) { alert(d.error || "操作失败"); return; }
-
-
-
+        if (!d.ok) { showToast(d.error || "操作失败", "error"); return; }
 
         if (!d.added && d.count >= 2) {
 
-
-
-
-            alert("该条目已有两人加入组会报告，不能再添加");
-
-
-
-
-        }
-
-
-
-
-        location.reload();
-
-
-
-
-    })
-
-
-
-
-    .catch(function(e) { alert("网络错误: " + e.message); });
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// ===== Admin Refresh =====
-
-
-
-
-function adminRefresh() {
-
-
-
-
-    if (!CURRENT_USER || CURRENT_USER.role !== "admin") { return; }
-
-
-
-
-    if (!confirm("确定立刻更新今天和昨天的 arXiv 文章吗？")) return;
-
-
-
-
-    fetch("/api/admin/refresh", {
-
-
-
-
-        method: "POST",
-
-
-
-
-        headers: {"Content-Type": "application/json"},
-
-
-
-
-        body: JSON.stringify({username: CURRENT_USER.username})
-
-
-
-
-    })
-
-
-
-
-    .then(function(r) { return r.json(); })
-
-
-
-
-    .then(function(d) {
-
-
-
-
-        if (d.ok) { alert(d.message || "已开始更新"); }
-
-
-
-
-        else { alert(d.error || "失败"); }
-
-
-
-
-    })
-
-
-
-
-    .catch(function(e) { alert("网络错误: " + e.message); });
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// ===== Upload functions =====
-
-
-
-
-function openUploadModal() {
-
-
-
-
-    document.getElementById("upload-modal").classList.add("active");
-
-
-
-
-    document.getElementById("upload-status").style.display = "none";
-
-
-
-
-    document.getElementById("upload-title").value = "";
-
-
-
-
-}
-
-
-
-
-function closeUploadModal() {
-
-
-
-
-    document.getElementById("upload-modal").classList.remove("active");
-
-
-
-
-}
-
-
-
-
-function handleDrop(e) {
-
-
-
-
-    e.preventDefault();
-
-
-
-
-    document.getElementById("upload-dropzone").classList.remove("drag-over");
-
-
-
-
-    var files = e.dataTransfer.files;
-
-
-
-
-    if (files.length > 0) uploadFile(files[0]);
-
-
-
-
-}
-
-
-
-
-function handleFileSelect(input) {
-
-
-
-
-    if (input.files.length > 0) uploadFile(input.files[0]);
-
-
-
-
-}
-
-
-
-
-function uploadFile(file) {
-
-
-
-
-    var ext = file.name.split(".").pop().toLowerCase();
-
-
-
-
-    if (["pdf","docx","pptx"].indexOf(ext) < 0) { alert("仅支持 PDF / DOCX / PPTX 格式"); return; }
-
-
-
-
-    document.getElementById("upload-status").style.display = "block";
-
-
-
-
-    var msg = "正在上传并分析 " + file.name + "。";
-
-
-
-
-    document.getElementById("upload-status").innerHTML = "<div class='upload-progress'>" + msg + "</div>";
-
-
-
-
-    var formData = new FormData();
-
-
-
-
-    formData.append("file", file);
-
-
-
-
-    var title = document.getElementById("upload-title").value.trim();
-
-
-
-
-    if (title) formData.append("title", title);
-
-
-
-
-    fetch("/api/paper/upload", {method:"POST", body:formData})
-
-
-
-
-    .then(function(r) { return r.json(); })
-
-
-
-
-    .then(function(d) {
-
-
-
-
-        var el = document.getElementById("upload-status");
-
-
-
-
-        if (d.ok) { el.innerHTML = "<div class='upload-success'>分析完成！<a href=/paper/"+d.paper_id+">查看论文</a></div>"; }
-
-
-
-
-        else { el.innerHTML = "<div class='upload-error'>" + (d.error || "分析失败") + "</div>"; }
-
-
-
-
-    })
-
-
-
-
-    .catch(function(e) { document.getElementById("upload-status").innerHTML = "<div class='upload-error'>请求失败: " + e.message + "</div>"; });
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// ===== Init =====
-
-
-
-
-try {
-
-
-
-
-document.addEventListener("DOMContentLoaded", function() {
-
-
-
-
-    var user = getUserCookie();
-
-
-
-
-    if (user) {
-
-
-
-
-        CURRENT_USER = user;
-
-
-
-
-        updateNavUI();
-
-
-
-
-    } else {
-
-
-
-
-        setTimeout(function() { showLoginModal(); }, 200);
-
-
-
-
-    }
-
-
-
-
-});
-
-
-
-
-} catch(e) {
-
-
-
-
-    // Fallback: force show login
-
-
-
-
-    setTimeout(function() {
-
-
-
-
-        var m = document.getElementById("login-modal");
-
-
-
-
-        if (m) m.style.display = "flex";
-
-
-
-
-    }, 500);
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// ===== Delete confirmation =====
-
-
-
-
-function confirmDelete(paperId) {
-
-
-
-
-    if (!CURRENT_USER || CURRENT_USER.role !== "admin") { return; }
-
-
-
-
-    var modal = document.createElement("div");
-
-
-
-
-    modal.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;justify-content:center;align-items:center;";
-
-
-
-
-    modal.innerHTML = "<div style='background:white;border-radius:14px;padding:28px 32px;width:360px;box-shadow:0 8px 40px rgba(0,0,0,0.2);'>" +
-
-
-
-
-        "<h3 style='margin:0 0 16px 0;font-size:1.1em;'>确定删除该条目？</h3>" +
-
-
-
-
-        "<p style='color:#666;font-size:0.9em;margin-bottom:20px;'>仅从网页中隐藏，库中仍保留。</p>" +
-
-
-
-
-        "<div style='display:flex;justify-content:flex-end;gap:12px;'>" +
-
-
-
-
-        "<button onclick='this.parentElement.parentElement.parentElement.remove()' style='padding:8px 20px;border:1px solid #ddd;border-radius:8px;background:white;cursor:pointer;font-size:0.9em;'>否</button>" +
-
-
-
-
-        "<button onclick='doDelete(" + paperId + ")' style='padding:8px 20px;border:none;border-radius:8px;background:#dc2626;color:white;cursor:pointer;font-size:0.9em;font-weight:500;'>是</button>" +
-
-
-
-
-        "</div></div>";
-
-
-
-
-    document.body.appendChild(modal);
-
-
-
-
-    modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
-
-
-
-
-}
-
-
-
-
-function doDelete(paperId) {
-
-
-
-
-    fetch("/api/paper/" + paperId + "/hide", { method: "POST" })
-
-
-
-
-    .then(function(r) { return r.json(); })
-
-
-
-
-    .then(function(d) { if (d.ok) location.reload(); });
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// ===== Tag toggle =====
-
-
-
-
-function toggleTag(paperId, tagName) {
-
-
-
-
-    // Redirect 组会报告 to the unified report system
-
-
-
-
-    if (tagName === "\u7ec4\u4f1a\u62a5\u544a") {
-
-
-
-
-        toggleReport(paperId);
-
-
-
-
-        return;
-
-
-
-
-    }
-
-
-
-
-    var el = document.getElementById("tag-" + tagName + "-" + paperId);
-
-
-
-
-    if (!el) return;
-
-
-
-
-    var isSet = el.textContent.includes("\u2705");
-
-
-
-
-    if (isSet) {
-
-
-
-
-        fetch("/api/paper/" + paperId + "/tags/" + encodeURIComponent(tagName), { method: "DELETE" })
-
-
-
-
-            .then(function(r) { return r.json(); }).then(function(d) { if (d.ok) location.reload(); });
-
-
-
-
-    } else {
-
-
-
-
-        fetch("/api/paper/" + paperId + "/tags", {
-
-
-
-
-            method: "POST", headers: {"Content-Type": "application/json"},
-
-
-
-
-            body: JSON.stringify({tag_name: tagName})
-
-
-
-
-        }).then(function(r) { return r.json(); }).then(function(d) { if (d.ok) location.reload(); });
-
-
-
-
-    }
-
-
-
-
-}
-
-
-
-
-function toggleStar(id) {
-
-
-
-
-    fetch("/api/paper/" + id + "/star", {
-
-
-
-
-        method: "POST",
-
-
-
-
-        headers: {"Content-Type": "application/json"},
-
-
-
-
-        body: JSON.stringify({username: CURRENT_USER ? CURRENT_USER.username : ""})
-
-
-
-
-    }).then(function(r) { return r.json(); }).then(function(d) { if(d.ok) location.reload(); });
-
-
-
-
-}
-
-
-
-
-</script>
-
-
-
-
-<!-- Floating Keyword Button -->
-
-
-
-
-<button id="floating-keyword-btn" class="floating-btn" onclick="openKeywordModal()" title="管理关键词" style="display:none;">+</button>
-
-
-
-
-
-
-
-
-
-<!-- Keyword Management Modal -->
-
-
-
-
-<div id="keyword-modal" class="keyword-modal">
-
-
-
-
-    <div class="keyword-modal-content">
-
-
-
-
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-
-
-
-
-            <h3 id="kw-modal-title" style="margin:0;">管理关键词</h3>
-
-
-
-
-            <button onclick="closeKeywordModal()" style="background:none;border:none;font-size:1.5em;cursor:pointer;color:#999;">&times;</button>
-
-
-
-
-        </div>
-
-
-
-
-        <div id="kw-admin-mode" style="display:none;">
-
-
-
-
-            <div class="keyword-add-row">
-
-
-
-
-                <input type="text" id="kw-new-keyword" placeholder="输入新关键词...">
-
-
-
-
-                <input type="number" id="kw-new-weight" placeholder="权重" value="1.0" step="0.1" min="0.1" max="1.2" style="width:80px;">
-
-
-
-
-                <button class="btn btn-primary" onclick="addKeyword()" style="white-space:nowrap;">添加</button>
-
-
-
-
-            </div>
-
-
-
-
-            <table class="keyword-table">
-
-
-
-
-                <thead><tr><th>关键词</th><th>权重</th><th>操作</th></tr></thead>
-
-
-
-
-                <tbody id="kw-table-body"></tbody>
-
-
-
-
-            </table>
-
-
-
-
-        </div>
-
-
-
-
-            <div style="color:#888;font-size:0.78em;margin-top:6px;margin-bottom:4px;">权重范围: 0.1 ~ 1.2</div>
-
-
-
-
-        <div id="kw-user-mode">
-
-
-
-
-            <div class="keyword-add-row">
-
-
-
-
-                <input type="text" id="kw-user-keyword" placeholder="输入新关键词...">
-
-
-
-
-                <input type="number" id="kw-user-weight" placeholder="权重" value="1.0" step="0.1" min="0.1" max="1.2" style="width:80px;">
-
-
-
-
-                <button class="btn btn-primary" onclick="userAddKeyword()" style="white-space:nowrap;">提交</button>
-
-
-
-
-            </div>
-
-
-
-
-            <div id="kw-user-status" style="color:#666;font-size:0.85em;margin-top:8px;"></div>
-
-
-
-
-        </div>
-
-
-
-
-    </div>
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<script>
-
-
-
-
-// ===== Keyword Management =====
-
-
-
-
-// Show floating button on non-paper pages
-
-
-
-
-(function() {
-
-
-
-
-    var isPaperPage = window.location.pathname.indexOf('/paper/') === 0;
-
-
-
-
-    var btn = document.getElementById("floating-keyword-btn");
-
-
-
-
-    if (btn && !isPaperPage) {
-
-
-
-
-        btn.style.display = "flex";
-
-
-
-
-        // Update title based on user role
-
-
-
-
-        setTimeout(function() {
-
-
-
-
-            if (CURRENT_USER) {
-
-
-
-
-                btn.title = CURRENT_USER.role === "admin" ? "管理关键词" : "增添关键词";
-
-
-
-
-            }
-
-
-
-
-        }, 300);
-
-
-
-
-    }
-
-
-
-
-})();
-
-
-
-
-
-
-
-
-
-function openKeywordModal() {
-
-
-
-
-    var modal = document.getElementById("keyword-modal");
-
-
-
-
-    modal.classList.add("active");
-
-
-
-
-    var isAdmin = CURRENT_USER && CURRENT_USER.role === "admin";
-
-
-
-
-    document.getElementById("kw-admin-mode").style.display = isAdmin ? "block" : "none";
-
-
-
-
-    document.getElementById("kw-user-mode").style.display = isAdmin ? "none" : "block";
-
-
-
-
-    document.getElementById("kw-modal-title").textContent = isAdmin ? "管理关键词" : "增添关键词";
-
-
-
-
-    document.getElementById("floating-keyword-btn").textContent = isAdmin ? "⚙" : "+"; document.getElementById("floating-keyword-btn").title = isAdmin ? "管理关键词" : "增添关键词";
-
-
-
-
-    if (isAdmin) loadKeywords();
-
-
-
-
-    document.getElementById("kw-user-status").textContent = "";
-
-
-
-
-}
-
-
-
-
-function closeKeywordModal() {
-
-
-
-
-    document.getElementById("keyword-modal").classList.remove("active");
-
-
-
-
-}
-
-
-
-
-function loadKeywords() {
-
-
-
-
-    fetch("/api/keywords")
-
-
-
-
-    .then(function(r) { return r.json(); })
-
-
-
-
-    .then(function(d) {
-
-
-
-
-        if (!d.ok) return;
-
-
-
-
-        var tbody = document.getElementById("kw-table-body");
-
-
-
-
-        tbody.innerHTML = d.keywords.map(function(kw) {
-
-
-
-
-            return `<tr><td><input type="text" value="${kw.keyword}" id="kw-edit-word-${kw.id}"></td>` +
-
-
-
-
-                `<td><input type="number" value="${kw.weight}" step="0.1" min="0.1" max="1.2" id="kw-edit-weight-${kw.id}" style="width:80px;"></td>` +
-
-
-
-
-                `<td>` +
-
-
-
-
-                `<button class="btn btn-outline" style="font-size:0.8em;padding:2px 8px;" onclick="updateKeyword(${kw.id})">保存</button> ` +
-
-
-
-
-                `<button class="btn btn-outline" style="font-size:0.8em;padding:2px 8px;color:#dc2626;border-color:#dc2626;" onclick="deleteKeyword(${kw.id})">删除</button>` +
-
-
-
-
-                `</td></tr>`;
-
-
-
-
-        }).join("");
-
-
-
-
-    });
-
-
-
-
-}
-
-
-
-
-function addKeyword() {
-
-
-
-
-    var kw = document.getElementById("kw-new-keyword").value.trim();
-
-
-
-
-    var w = parseFloat(document.getElementById("kw-new-weight").value) || 1.0;
-
-
-
-
-    if (!kw) { alert("请输入关键词"); return; }
-
-
-
-
-    if (w < 0.1 || w > 1.2) { alert("权重必须在 0.1 ~ 1.2 之间"); return; }
-
-
-
-
-    fetch("/api/keywords", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({keyword: kw, weight: w, username: CURRENT_USER ? CURRENT_USER.username : ""})})
-
-
-
-
-    .then(function(r) { return r.json(); })
-
-
-
-
-    .then(function(d) {
-
-
-
-
-        if (d.ok) { document.getElementById("kw-new-keyword").value = ""; loadKeywords(); }
-
-
-
-
-        else { alert(d.error || "添加失败"); }
-
-
-
-
-    });
-
-
-
-
-}
-
-
-
-
-function updateKeyword(id) {
-
-
-
-
-    var kw = document.getElementById("kw-edit-word-" + id).value.trim();
-
-
-
-
-    var w = parseFloat(document.getElementById("kw-edit-weight-" + id).value) || 1.0;
-
-
-
-
-    if (w < 0.1 || w > 1.2) { alert("权重必须在 0.1 ~ 1.2 之间"); return; }
-
-
-
-
-    fetch("/api/keywords/" + id, {method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify({keyword: kw, weight: w})})
-
-
-
-
-    .then(function(r) { return r.json(); })
-
-
-
-
-    .then(function(d) { if (d.ok) loadKeywords(); });
-
-
-
-
-}
-
-
-
-
-function deleteKeyword(id) {
-
-
-
-
-    if (!confirm("确定删除该关键词？")) return;
-
-
-
-
-    fetch("/api/keywords/" + id, {method: "DELETE"})
-
-
-
-
-    .then(function(r) { return r.json(); })
-
-
-
-
-    .then(function(d) { if (d.ok) loadKeywords(); });
-
-
-
-
-}
-
-
-
-
-function userAddKeyword() {
-
-
-
-
-    var kw = document.getElementById("kw-user-keyword").value.trim();
-
-
-
-
-    var w = parseFloat(document.getElementById("kw-user-weight").value) || 1.0;
-
-
-
-
-    if (!kw) { alert("请输入关键词"); return; }
-
-
-
-
-    if (w < 0.1 || w > 1.2) { alert("权重必须在 0.1 ~ 1.2 之间"); return; }
-
-
-
-
-    fetch("/api/keywords/check?q=" + encodeURIComponent(kw))
-
-
-
-
-    .then(function(r) { return r.json(); })
-
-
-
-
-    .then(function(d) {
-
-
-
-
-        if (d.exists) {
-
-
-
-
-            document.getElementById("kw-user-status").textContent = "已有该关键词！如有需求删减或修改权重请联系管理员";
-
-
-
+            showToast("该条目已有两人加入组会报告，不能再添加", "error");
 
             return;
 
-
-
-
         }
 
+        if (d.added) {
 
+            var dots = document.getElementById("dots-" + paperId);
 
+            if (dots && CURRENT_USER) {
 
-        return fetch("/api/keywords", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({keyword: kw, weight: w, username: CURRENT_USER ? CURRENT_USER.username : ""})})
+                var dot = document.createElement("span");
 
+                dot.className = "report-dot";
 
+                dot.style.background = CURRENT_USER.color;
 
+                dot.title = CURRENT_USER.username;
 
-        .then(function(r2) { return r2.json(); })
-
-
-
-
-        .then(function(d2) {
-
-
-
-
-            if (d2.ok) {
-
-
-
-
-                document.getElementById("kw-user-keyword").value = "";
-
-
-
-
-                document.getElementById("kw-user-status").textContent = "添加成功！";
-
-
-
-
-            } else {
-
-
-
-
-                document.getElementById("kw-user-status").textContent = d2.error || "添加失败";
-
-
-
+                dots.appendChild(dot);
 
             }
 
+            showToast("已加入组会报告", "success");
 
+        } else {
 
+            var dots2 = document.getElementById("dots-" + paperId);
 
-        });
+            if (dots2) {
 
+                var existing = dots2.querySelector(".report-dot[title='" + CURRENT_USER.username + "']");
 
+                if (existing) existing.remove();
 
+            }
+
+            showToast("已移出组会报告", "success");
+
+        }
 
     })
 
-
-
-
-    .catch(function(e) { document.getElementById("kw-user-status").textContent = "请求失败"; });
-
-
-
+    .catch(function(e) { showToast("网络错误: " + e.message, "error"); });
 
 }
 
+// ===== Admin Refresh =====
 
+function adminRefresh() {
 
+    if (!CURRENT_USER || CURRENT_USER.role !== "admin") { return; }
+
+    if (!confirm("确定立刻更新今天和昨天的 arXiv 文章吗？")) return;
+
+    fetch("/api/admin/refresh", {
+
+        method: "POST",
+
+        headers: {"Content-Type": "application/json"},
+
+        body: JSON.stringify({username: CURRENT_USER.username})
+
+    })
+
+    .then(function(r) { return r.json(); })
+
+    .then(function(d) {
+
+        if (d.ok) { showToast(d.message || "已开始更新", "success"); }
+
+        else { showToast(d.error || "失败", "error"); }
+
+    })
+
+    .catch(function(e) { showToast("网络错误: " + e.message, "error"); });
+
+}
+
+// ===== Upload functions =====
+
+function openUploadModal() {
+
+    document.getElementById("upload-modal").classList.add("active");
+
+    document.getElementById("upload-status").style.display = "none";
+
+    document.getElementById("upload-title").value = "";
+
+}
+
+function closeUploadModal() {
+
+    document.getElementById("upload-modal").classList.remove("active");
+
+}
+
+function handleDrop(e) {
+
+    e.preventDefault();
+
+    document.getElementById("upload-dropzone").classList.remove("drag-over");
+
+    var files = e.dataTransfer.files;
+
+    if (files.length > 0) uploadFile(files[0]);
+
+}
+
+function handleFileSelect(input) {
+
+    if (input.files.length > 0) uploadFile(input.files[0]);
+
+}
+
+function uploadFile(file) {
+
+    var ext = file.name.split(".").pop().toLowerCase();
+
+    if (["pdf","docx","pptx"].indexOf(ext) < 0) { showToast("仅支持 PDF / DOCX / PPTX 格式", "error"); return; }
+
+    document.getElementById("upload-status").style.display = "block";
+
+    var msg = "正在上传并分析 " + file.name + "。";
+
+    document.getElementById("upload-status").innerHTML = "<div class='upload-progress'>" + msg + "</div>";
+
+    var formData = new FormData();
+
+    formData.append("file", file);
+
+    var title = document.getElementById("upload-title").value.trim();
+
+    if (title) formData.append("title", title);
+
+    fetch("/api/paper/upload", {method:"POST", body:formData})
+
+    .then(function(r) { return r.json(); })
+
+    .then(function(d) {
+
+        var el = document.getElementById("upload-status");
+
+        if (d.ok) { el.innerHTML = "<div class='upload-success'>分析完成！<a href=/paper/"+d.paper_id+">查看论文</a></div>"; showToast("分析完成！", "success"); }
+
+        else { el.innerHTML = "<div class='upload-error'>" + (d.error || "分析失败") + "</div>"; }
+
+    })
+
+    .catch(function(e) { document.getElementById("upload-status").innerHTML = "<div class='upload-error'>请求失败: " + e.message + "</div>"; });
+
+}
+
+// ===== Init =====
+
+try {
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    var user = getUserCookie();
+
+    if (user) {
+
+        CURRENT_USER = user;
+
+        updateNavUI();
+
+    } else {
+
+        setTimeout(function() { showLoginModal(); }, 200);
+
+    }
+
+});
+
+} catch(e) {
+
+    // Fallback: force show login
+
+    setTimeout(function() {
+
+        var m = document.getElementById("login-modal");
+
+        if (m) m.style.display = "flex";
+
+    }, 500);
+
+}
+
+// ===== Delete confirmation =====
+
+function confirmDelete(paperId) {
+
+    if (!CURRENT_USER || CURRENT_USER.role !== "admin") { return; }
+
+    var modal = document.createElement("div");
+
+    modal.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;justify-content:center;align-items:center;";
+
+    modal.innerHTML = "<div style='background:white;border-radius:14px;padding:28px 32px;width:360px;box-shadow:0 8px 40px rgba(0,0,0,0.2);'>" +
+
+        "<h3 style='margin:0 0 16px 0;font-size:1.1em;'>确定删除该条目？</h3>" +
+
+        "<p style='color:#666;font-size:0.9em;margin-bottom:20px;'>仅从网页中隐藏，库中仍保留。</p>" +
+
+        "<div style='display:flex;justify-content:flex-end;gap:12px;'>" +
+
+        "<button onclick='this.parentElement.parentElement.parentElement.remove()' style='padding:8px 20px;border:1px solid #ddd;border-radius:8px;background:white;cursor:pointer;font-size:0.9em;'>否</button>" +
+
+        "<button onclick='doDelete(" + paperId + ")' style='padding:8px 20px;border:none;border-radius:8px;background:#dc2626;color:white;cursor:pointer;font-size:0.9em;font-weight:500;'>是</button>" +
+
+        "</div></div>";
+
+    document.body.appendChild(modal);
+
+    modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+
+}
+
+function doDelete(paperId) {
+
+    fetch("/api/paper/" + paperId + "/hide", { method: "POST" })
+
+    .then(function(r) { return r.json(); })
+
+    .then(function(d) {
+
+        if (d.ok) {
+
+            var card = document.querySelector(".paper-card[data-id='" + paperId + "']");
+
+            if (card) card.remove();
+
+            showToast("已删除该条目", "success");
+
+        } else { showToast("删除失败", "error"); }
+
+    });
+
+}
+
+// ===== Tag toggle =====
+
+function toggleTag(paperId, tagName) {
+
+    if (tagName === "\u7ec4\u4f1a\u62a5\u544a") {
+
+        toggleReport(paperId);
+
+        return;
+
+    }
+
+    var el = document.getElementById("tag-" + tagName + "-" + paperId);
+
+    if (!el) return;
+
+    var isSet = el.textContent.includes("\u2705");
+
+    el.innerHTML = isSet ? "\u274c " + tagName : "\u2705 " + tagName;
+
+    var req = isSet
+
+        ? fetch("/api/paper/" + paperId + "/tags/" + encodeURIComponent(tagName), { method: "DELETE" })
+
+        : fetch("/api/paper/" + paperId + "/tags", {
+
+            method: "POST", headers: {"Content-Type": "application/json"},
+
+            body: JSON.stringify({tag_name: tagName})
+
+          });
+
+    req.then(function(r) { return r.json(); }).then(function(d) {
+
+        if (!d.ok) {
+
+            el.innerHTML = isSet ? "\u2705 " + tagName : "\u274c " + tagName;
+
+            showToast(d.error || "操作失败", "error");
+
+        } else { showToast(isSet ? "已移除标签" : "已添加标签", "success"); }
+
+    }).catch(function(e) {
+
+        el.innerHTML = isSet ? "\u2705 " + tagName : "\u274c " + tagName;
+
+        showToast("网络错误: " + e.message, "error");
+
+    });
+
+}
+
+function toggleStar(id) {
+
+    var el = document.getElementById("star-" + id);
+
+    var prevStarred = el ? el.classList.contains("starred") : false;
+
+    if (el) {
+
+        el.classList.toggle("starred");
+
+        el.innerHTML = prevStarred ? "☆" : "⭐";
+
+    }
+
+    fetch("/api/paper/" + id + "/star", {
+
+        method: "POST",
+
+        headers: {"Content-Type": "application/json"},
+
+        body: JSON.stringify({username: CURRENT_USER ? CURRENT_USER.username : ""})
+
+    }).then(function(r) { return r.json(); }).then(function(d) {
+
+        if (!d.ok) {
+
+            if (el) { el.classList.toggle("starred"); el.innerHTML = prevStarred ? "⭐" : "☆"; }
+
+            showToast(d.error || "操作失败", "error");
+
+        } else { showToast(prevStarred ? "已取消收藏" : "已收藏", "success"); }
+
+    }).catch(function(e) {
+
+        if (el) { el.classList.toggle("starred"); el.innerHTML = prevStarred ? "⭐" : "☆"; }
+
+        showToast("网络错误: " + e.message, "error");
+
+    });
+
+}
 
 </script>
 
+<!-- Floating Keyword Button -->
 
+<button id="floating-keyword-btn" class="floating-btn" onclick="openKeywordModal()" title="管理关键词" style="display:none;">+</button>
 
+<!-- Keyword Management Modal -->
 
+<div id="keyword-modal" class="keyword-modal">
 
+    <div class="keyword-modal-content">
 
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
 
+            <h3 id="kw-modal-title" style="margin:0;">管理关键词</h3>
 
+            <button onclick="closeKeywordModal()" style="background:none;border:none;font-size:1.5em;cursor:pointer;color:#999;">&times;</button>
+
+        </div>
+
+        <div id="kw-admin-mode" style="display:none;">
+
+            <div class="keyword-add-row">
+
+                <input type="text" id="kw-new-keyword" placeholder="输入新关键词...">
+
+                <input type="number" id="kw-new-weight" placeholder="权重" value="1.0" step="0.1" min="0.1" max="1.2" style="width:80px;">
+
+                <button class="btn btn-primary" onclick="addKeyword()" style="white-space:nowrap;">添加</button>
+
+            </div>
+
+            <table class="keyword-table">
+
+                <thead><tr><th>关键词</th><th>权重</th><th>操作</th></tr></thead>
+
+                <tbody id="kw-table-body"></tbody>
+
+            </table>
+
+        </div>
+
+            <div style="color:#888;font-size:0.78em;margin-top:6px;margin-bottom:4px;">权重范围: 0.1 ~ 1.2</div>
+
+        <div id="kw-user-mode">
+
+            <div class="keyword-add-row">
+
+                <input type="text" id="kw-user-keyword" placeholder="输入新关键词...">
+
+                <input type="number" id="kw-user-weight" placeholder="权重" value="1.0" step="0.1" min="0.1" max="1.2" style="width:80px;">
+
+                <button class="btn btn-primary" onclick="userAddKeyword()" style="white-space:nowrap;">提交</button>
+
+            </div>
+
+            <div id="kw-user-status" style="color:#666;font-size:0.85em;margin-top:8px;"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+// ===== Keyword Management =====
+
+// Show floating button on non-paper pages
+
+(function() {
+
+    var isPaperPage = window.location.pathname.indexOf('/paper/') === 0;
+
+    var btn = document.getElementById("floating-keyword-btn");
+
+    if (btn && !isPaperPage) {
+
+        btn.style.display = "flex";
+
+        // Update title based on user role
+
+        setTimeout(function() {
+
+            if (CURRENT_USER) {
+
+                btn.title = CURRENT_USER.role === "admin" ? "管理关键词" : "增添关键词";
+
+            }
+
+        }, 300);
+
+    }
+
+})();
+
+function openKeywordModal() {
+
+    var modal = document.getElementById("keyword-modal");
+
+    modal.classList.add("active");
+
+    var isAdmin = CURRENT_USER && CURRENT_USER.role === "admin";
+
+    document.getElementById("kw-admin-mode").style.display = isAdmin ? "block" : "none";
+
+    document.getElementById("kw-user-mode").style.display = isAdmin ? "none" : "block";
+
+    document.getElementById("kw-modal-title").textContent = isAdmin ? "管理关键词" : "增添关键词";
+
+    document.getElementById("floating-keyword-btn").textContent = isAdmin ? "⚙" : "+"; document.getElementById("floating-keyword-btn").title = isAdmin ? "管理关键词" : "增添关键词";
+
+    if (isAdmin) loadKeywords();
+
+    document.getElementById("kw-user-status").textContent = "";
+
+}
+
+function closeKeywordModal() {
+
+    document.getElementById("keyword-modal").classList.remove("active");
+
+}
+
+function loadKeywords() {
+
+    fetch("/api/keywords")
+
+    .then(function(r) { return r.json(); })
+
+    .then(function(d) {
+
+        if (!d.ok) return;
+
+        var tbody = document.getElementById("kw-table-body");
+
+        tbody.innerHTML = d.keywords.map(function(kw) {
+
+            return `<tr><td><input type="text" value="${kw.keyword}" id="kw-edit-word-${kw.id}"></td>` +
+
+                `<td><input type="number" value="${kw.weight}" step="0.1" min="0.1" max="1.2" id="kw-edit-weight-${kw.id}" style="width:80px;"></td>` +
+
+                `<td>` +
+
+                `<button class="btn btn-outline" style="font-size:0.8em;padding:2px 8px;" onclick="updateKeyword(${kw.id})">保存</button> ` +
+
+                `<button class="btn btn-outline" style="font-size:0.8em;padding:2px 8px;color:#dc2626;border-color:#dc2626;" onclick="deleteKeyword(${kw.id})">删除</button>` +
+
+                `</td></tr>`;
+
+        }).join("");
+
+    });
+
+}
+
+function addKeyword() {
+
+    var kw = document.getElementById("kw-new-keyword").value.trim();
+
+    var w = parseFloat(document.getElementById("kw-new-weight").value) || 1.0;
+
+    if (!kw) { showToast("请输入关键词", "error"); return; }
+
+    if (w < 0.1 || w > 1.2) { showToast("权重必须在 0.1 ~ 1.2 之间", "error"); return; }
+
+    fetch("/api/keywords", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({keyword: kw, weight: w, username: CURRENT_USER ? CURRENT_USER.username : ""})})
+
+    .then(function(r) { return r.json(); })
+
+    .then(function(d) {
+
+        if (d.ok) { document.getElementById("kw-new-keyword").value = ""; loadKeywords(); }
+
+        else { showToast(d.error || "添加失败", "error"); }
+
+    });
+
+}
+
+function updateKeyword(id) {
+
+    var kw = document.getElementById("kw-edit-word-" + id).value.trim();
+
+    var w = parseFloat(document.getElementById("kw-edit-weight-" + id).value) || 1.0;
+
+    if (w < 0.1 || w > 1.2) { showToast("权重必须在 0.1 ~ 1.2 之间", "error"); return; }
+
+    fetch("/api/keywords/" + id, {method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify({keyword: kw, weight: w})})
+
+    .then(function(r) { return r.json(); })
+
+    .then(function(d) { if (d.ok) loadKeywords(); });
+
+}
+
+function deleteKeyword(id) {
+
+    if (!confirm("确定删除该关键词？")) return;
+
+    fetch("/api/keywords/" + id, {method: "DELETE"})
+
+    .then(function(r) { return r.json(); })
+
+    .then(function(d) { if (d.ok) loadKeywords(); });
+
+}
+
+function userAddKeyword() {
+
+    var kw = document.getElementById("kw-user-keyword").value.trim();
+
+    var w = parseFloat(document.getElementById("kw-user-weight").value) || 1.0;
+
+    if (!kw) { showToast("请输入关键词", "error"); return; }
+
+    if (w < 0.1 || w > 1.2) { showToast("权重必须在 0.1 ~ 1.2 之间", "error"); return; }
+
+    fetch("/api/keywords/check?q=" + encodeURIComponent(kw))
+
+    .then(function(r) { return r.json(); })
+
+    .then(function(d) {
+
+        if (d.exists) {
+
+            document.getElementById("kw-user-status").textContent = "已有该关键词！如有需求删减或修改权重请联系管理员";
+
+            return;
+
+        }
+
+        return fetch("/api/keywords", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({keyword: kw, weight: w, username: CURRENT_USER ? CURRENT_USER.username : ""})})
+
+        .then(function(r2) { return r2.json(); })
+
+        .then(function(d2) {
+
+            if (d2.ok) {
+
+                document.getElementById("kw-user-keyword").value = "";
+
+                document.getElementById("kw-user-status").textContent = "添加成功！";
+
+            } else {
+
+                document.getElementById("kw-user-status").textContent = d2.error || "添加失败";
+
+            }
+
+        });
+
+    })
+
+    .catch(function(e) { document.getElementById("kw-user-status").textContent = "请求失败"; });
+
+}
+
+</script>
+
+<div id="toast-container"></div>
 
 </body>
 
-
-
-
 </html>
-
-
-
 

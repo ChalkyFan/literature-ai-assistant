@@ -101,7 +101,7 @@ def init_db():
                 published_date TEXT,
 
 
-                fetched_date TEXT DEFAULT (datetime('now')),
+                fetched_date TEXT DEFAULT (datetime('now', 'localtime')),
 
 
                 pdf_path TEXT,
@@ -551,11 +551,9 @@ def insert_paper(paper: Dict, source: str = "arxiv") -> Optional[int]:
 
             INSERT OR IGNORE INTO papers
 
+                (arxiv_id, title, authors, affiliations, abstract, categories, published_date, pdf_path, source, fetched_date, uploaded_by)
 
-                (arxiv_id, title, authors, affiliations, abstract, categories, published_date, pdf_path, source)
-
-
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 
 
         """, (
@@ -578,9 +576,9 @@ def insert_paper(paper: Dict, source: str = "arxiv") -> Optional[int]:
 
             published, paper.get("pdf_path", ""),
 
+            source, datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
 
-            source,
-
+            paper.get("uploaded_by", ""),
 
         ))
 
@@ -669,7 +667,7 @@ def get_papers_by_date(date: str = None, sort_by: str = "rating", source: str = 
                 "LEFT JOIN ai_summaries s ON s.paper_id = p.id "
 
 
-                "WHERE p.published_date = ? AND p.source = ? "
+                "WHERE date(p.fetched_date) = ? AND p.source = ? "
 
 
                 "ORDER BY " + order_clause,
@@ -693,7 +691,7 @@ def get_papers_by_date(date: str = None, sort_by: str = "rating", source: str = 
                 "LEFT JOIN ai_summaries s ON s.paper_id = p.id "
 
 
-                "WHERE p.published_date = ? "
+                "WHERE date(p.fetched_date) = ? "
 
 
                 "ORDER BY " + order_clause,
@@ -720,13 +718,43 @@ def get_papers_by_date(date: str = None, sort_by: str = "rating", source: str = 
 
 
 
-def get_all_papers(limit: int = 100, offset: int = 0) -> List[Dict]:
+def get_all_papers(limit: int = 100, offset: int = 0, sort_by: str = "date", status: str = None) -> List[Dict]:
 
 
     conn = get_connection()
 
 
     try:
+
+
+        order_clause = {
+
+
+            "rating": "CASE WHEN s.value_rating IS NOT NULL THEN s.value_rating ELSE 0 END DESC, p.published_date DESC, p.id DESC",
+
+
+            "date": "p.published_date DESC, p.id DESC",
+
+
+            "keywords": "(SELECT COUNT(*) FROM keywords_matched k WHERE k.paper_id = p.id) DESC, p.published_date DESC, p.id DESC",
+
+
+        }.get(sort_by, "p.published_date DESC, p.id DESC")
+
+
+        where = ""
+
+
+        params = []
+
+
+        if status:
+
+
+            where = " WHERE p.status = ?"
+
+
+            params.append(status)
 
 
         rows = conn.execute("""
@@ -738,13 +766,43 @@ def get_all_papers(limit: int = 100, offset: int = 0) -> List[Dict]:
             FROM papers p LEFT JOIN ai_summaries s ON s.paper_id = p.id
 
 
-            ORDER BY p.published_date DESC, p.id DESC LIMIT ? OFFSET ?
+            """ + where + """
 
 
-        """, (limit, offset)).fetchall()
+            ORDER BY """ + order_clause + " LIMIT ? OFFSET ?", tuple(params) + (limit, offset)).fetchall()
 
 
         return [dict(r) for r in rows]
+
+
+    finally:
+
+
+        conn.close()
+
+
+def count_papers(status: str = None) -> int:
+
+
+    conn = get_connection()
+
+
+    try:
+
+
+        if status:
+
+
+            row = conn.execute("SELECT COUNT(*) AS c FROM papers WHERE status = ?", (status,)).fetchone()
+
+
+        else:
+
+
+            row = conn.execute("SELECT COUNT(*) AS c FROM papers").fetchone()
+
+
+        return row["c"] if row else 0
 
 
     finally:
@@ -974,11 +1032,9 @@ def save_ai_summary(paper_id: int, summary: Dict):
 
             conn.execute("""INSERT INTO ai_summaries
 
-
                 (paper_id, core_problem, method, key_results, conclusions, limitations, value_rating, one_line_value, full_analysis)
 
-
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (
 
 
                 paper_id, summary.get("core_problem", ""), summary.get("method", ""),
@@ -1039,6 +1095,23 @@ def save_figure(paper_id: int, figure_number: str, caption: str, file_path: str,
 
 
 
+
+
+
+def delete_figures_by_paper(paper_id: int):
+
+
+    conn = get_connection()
+
+    try:
+
+        conn.execute('DELETE FROM figures WHERE paper_id = ?', (paper_id,))
+
+        conn.commit()
+
+    finally:
+
+        conn.close()
 
 
 def search_papers(query: str, limit: int = 50) -> List[Dict]:
@@ -1625,6 +1698,43 @@ def get_paper_reporters(paper_id: int) -> List[Dict]:
 
 
 
+
+
+
+def get_paper_reporters_map(paper_ids) -> Dict[int, list]:
+
+
+    """Return {paper_id: [reporter dicts]} for many papers in one query."""
+
+    if not paper_ids:
+
+        return {}
+
+    conn = get_connection()
+
+    try:
+
+        placeholders = ",".join("?" * len(paper_ids))
+
+        rows = conn.execute(
+
+            "SELECT paper_id, username, color FROM paper_reporters WHERE paper_id IN (" + placeholders + ")",
+
+            list(paper_ids)
+
+        ).fetchall()
+
+        result = {}
+
+        for r in rows:
+
+            result.setdefault(r["paper_id"], []).append({"username": r["username"], "color": r["color"]})
+
+        return result
+
+    finally:
+
+        conn.close()
 
 
 def get_user_report_papers(username: str) -> List[int]:

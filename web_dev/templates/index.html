@@ -4,7 +4,12 @@
 <div class="page-header">
     <h1>每日文献简报</h1>
     <div class="date-nav">
-        <span class="date-label">{{ date }}</span>
+        <div class="date-nav-arrows">
+            <a href="?date={{ prev_date }}" title="前一天">&larr; 前一天</a>
+            <span class="date-label">{{ date }}</span>
+            <a href="?date={{ next_date }}" title="后一天">后一天 &rarr;</a>
+            {% if date != today %}<a href="/" class="today-link">回到今天</a>{% endif %}
+        </div>
         <span class="paper-count">{{ papers|length }} 篇论文</span>
     </div>
     <div class="toolbar">
@@ -49,7 +54,7 @@
         {% endif %}
         <div class="paper-footer">
             <span class="status-badge status-{{ p.status }}">{{ p.status }}</span>
-            <label class="star-btn" onclick="toggleStar({{ p.id }})" title="收藏">
+            <label id="star-{{ p.id }}" class="star-btn{% if p.is_starred %} starred{% endif %}" onclick="toggleStar({{ p.id }})" title="收藏">
                 {% if p.is_starred %}&#11088;{% else %}&#9734;{% endif %}
             </label>
             <span class="report-dots" id="dots-{{ p.id }}">
@@ -65,18 +70,12 @@
 </div>
 {% else %}
 <div class="empty-state">
+    <span class="empty-icon">&#128218;</span>
     <p>今天还没有新增论文</p>
     <p class="hint">自动化任务会在每天早上抓取 arXiv 最新文章</p>
+    <a href="/all" class="btn btn-outline">查看全部论文</a>
 </div>
 {% endif %}
 
-<script>
-function toggleStar(id) {
-    fetch("/api/paper/" + id + "/star", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({username: CURRENT_USER ? CURRENT_USER.username : ""})
-    }).then(r => r.json()).then(d => { if(d.ok) location.reload(); });
-}
-</script>
+
 {% endblock %}
