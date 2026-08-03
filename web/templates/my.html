@@ -132,6 +132,16 @@ function switchMyTab(tab) {
     contents.forEach(function(c) { c.style.display = "none"; });
     document.getElementById("tab-" + tab).classList.add("active");
     document.getElementById("content-" + tab).style.display = "block";
+    try { localStorage.setItem("lit_my_tab", tab); } catch(e) {}
+    if (history.replaceState) history.replaceState(null, "", "#" + tab);
 }
+(function() {
+    var saved = null;
+    try { saved = localStorage.getItem("lit_my_tab"); } catch(e) {}
+    var hash = window.location.hash.replace("#", "");
+    var tab = hash || saved || "starred";
+    var el = document.getElementById("tab-" + tab);
+    if (el) switchMyTab(tab);
+})();
 </script>
 {% endblock %}

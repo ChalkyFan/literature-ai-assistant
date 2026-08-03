@@ -79,6 +79,20 @@ def index():
 
     date = request.args.get("date", datetime.now().strftime("%Y-%m-%d"))
 
+    try:
+
+        prev_date = (datetime.strptime(date, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
+
+        next_date = (datetime.strptime(date, "%Y-%m-%d") + timedelta(days=1)).strftime("%Y-%m-%d")
+
+    except ValueError:
+
+        date = datetime.now().strftime("%Y-%m-%d")
+
+        prev_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+
+        next_date = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
+
     sort_by = request.args.get("sort", "rating")
 
     tag = request.args.get("tag", None)
@@ -111,7 +125,7 @@ def index():
         star_map = db.get_user_star_map([p["id"] for p in papers], current_user["username"])
         for p in papers:
             p["is_starred"] = star_map.get(p["id"], False)
-    return render_template("index.html", papers=papers, date=date, sort_by=sort_by, tag=tag, source=src, today=datetime.now().strftime("%Y-%m-%d"), current_user=current_user)
+    return render_template("index.html", papers=papers, date=date, prev_date=prev_date, next_date=next_date, sort_by=sort_by, tag=tag, source=src, today=datetime.now().strftime("%Y-%m-%d"), current_user=current_user)
 
 @app.route("/paper/<int:paper_id>")
 
@@ -181,12 +195,22 @@ def all_papers():
 
     sort_by = request.args.get("sort", "date")
 
+    status = request.args.get("status", None)
+
+    if status not in ("unread", "read"):
+
+        status = None
+
     limit = 50
 
     offset = (page - 1) * limit
 
-    all_papers = db.get_all_papers(limit=limit, offset=offset, sort_by=sort_by)
+    all_papers = db.get_all_papers(limit=limit, offset=offset, sort_by=sort_by, status=status)
     papers = [p for p in all_papers if not p.get("is_hidden")]
+
+    total = db.count_papers(status=status)
+
+    total_pages = max(1, (total + limit - 1) // limit)
 
     reporter_map = db.get_paper_reporters_map([p["id"] for p in papers])
 
@@ -200,7 +224,7 @@ def all_papers():
         star_map = db.get_user_star_map([p["id"] for p in papers], current_user["username"])
         for p in papers:
             p["is_starred"] = star_map.get(p["id"], False)
-    return render_template("all.html", papers=papers, page=page, sort_by=sort_by, current_user=current_user)
+    return render_template("all.html", papers=papers, page=page, total_pages=total_pages, total=total, sort_by=sort_by, status=status, current_user=current_user)
 
 # ===== API: Upload custom file =====
 
