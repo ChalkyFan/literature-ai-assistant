@@ -13,3 +13,6 @@ venv/
 
 cache/
 web_dev/app_bibtex_backup.py
+
+*.log
+archive/

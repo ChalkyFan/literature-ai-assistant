@@ -2,16 +2,17 @@
 import logging
 import sys
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 sys.path.insert(0, os.path.dirname(__file__))
 from arxiv_assistant import db, fetcher, downloader, pdf_parser, ai_reader
 from arxiv_assistant.report import generate_daily_report
 
+from logging.handlers import RotatingFileHandler
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    handlers=[logging.StreamHandler(), logging.FileHandler("pipeline.log", encoding="utf-8")],
+    handlers=[logging.StreamHandler(), RotatingFileHandler("pipeline.log", maxBytes=5 * 1024 * 1024, backupCount=5, encoding="utf-8")],
 )
 logger = logging.getLogger("pipeline")
 
@@ -74,10 +75,10 @@ def run():
         logger.info(f"  Done: {title}")
 
     logger.info("[4/4] Generating daily report...")
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    today = datetime.now().strftime("%Y-%m-%d")
     papers_with_analysis = db.get_papers_by_date(today)
     if not papers_with_analysis:
-        yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%d")
+        yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
         papers_with_analysis = db.get_papers_by_date(yesterday)
         if papers_with_analysis:
             today = yesterday
