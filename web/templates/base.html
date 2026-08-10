@@ -8,9 +8,9 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{% block title %}ArXiv文献助手{% endblock %}</title>
+    <title data-i18n="{% block title_key %}title_base{% endblock %}" data-i18n-a="{% block title_a %}{% endblock %}">{% block title %}ArXiv文献助手{% endblock %}</title>
 
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/style.css?v=20260810f">
 
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>">
 
@@ -19,6 +19,7 @@
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
     onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true},{left: '$', right: '$', display: false}]});"></script>
+<script src="/static/i18n.js?v=20260810b"></script>
 
 </head>
 
@@ -28,29 +29,32 @@
 
         <div class="nav-inner">
 
-            <a href="/" class="nav-brand">ArXiv文献助手</a>
+            <a href="/" class="nav-brand" data-i18n="brand">ArXiv文献助手</a>
 
             <div class="nav-links">
 
-                <a href="/" class="nav-link">今日简报</a>
+                <a href="/" class="nav-link" data-i18n="nav_today">今日简报</a>
 
-                <a href="/all" class="nav-link">全部论文</a>
+                <a href="/all" class="nav-link" data-i18n="nav_all">全部论文</a>
 
-                <a href="javascript:void(0)" onclick="openUploadModal()" class="nav-link">自行添加</a>
+                <a href="javascript:void(0)" onclick="openUploadModal()" class="nav-link" data-i18n="nav_add">自行添加</a>
 
-                <a href="/my" class="nav-link">我的</a>
+                <a href="/my" class="nav-link" data-i18n="nav_my">我的</a>
 
-                <a href="javascript:void(0)" id="admin-refresh-btn" class="nav-link" style="display:none;color:#f59e0b;" onclick="adminRefresh()">↻ 立刻更新</a>
+                <a href="javascript:void(0)" id="admin-refresh-btn" class="nav-link" style="display:none;color:#f59e0b;" onclick="adminRefresh()" data-i18n="nav_refresh">↻ 立刻更新</a>
 
             </div>
 
             <form class="nav-search" action="/search" method="get">
 
-                <input type="text" name="q" placeholder="搜索论文标题/作者..." class="search-input">
+                <input type="text" name="q" placeholder="搜索论文标题/作者..." class="search-input" data-i18n-ph="search_ph">
 
             </form>
 
-            <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" title="切换明暗主题">🌙</button>
+            <div class="nav-toggles">
+                <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" data-i18n-title="theme_title">🌙</button>
+                <button id="lang-toggle-btn" class="theme-toggle lang-toggle" onclick="I18N.toggle()" data-i18n-title="lang_title">EN</button>
+            </div>
 
             <span id="nav-user-badge" class="nav-user-badge" style="display:none;" onclick="showUserMenu()"></span>
 
@@ -74,7 +78,7 @@
 
         <div class="upload-modal-header">
 
-            <h2>自行添加文献</h2>
+            <h2 data-i18n="upload_title">自行添加文献</h2>
 
             <button class="upload-close" onclick="closeUploadModal()">&times;</button>
 
@@ -84,9 +88,9 @@
 
             <div class="upload-title-input">
 
-                <label>标题（可选，留空则用文件名）</label>
+                <label data-i18n="upload_label_title">标题（可选，留空则用文件名）</label>
 
-                <div><input type="text" id="upload-title" placeholder="输入文献标题..." class="search-input-large"></div>
+                <div><input type="text" id="upload-title" placeholder="输入文献标题..." class="search-input-large" data-i18n-ph="upload_ph_title"></div>
 
             </div>
 
@@ -100,11 +104,11 @@
 
                 <div class="upload-icon">&#128196;</div>
 
-                <p>拖拽文件到此</p>
+                <p data-i18n="upload_drop">拖拽文件到此</p>
 
-                <p class="upload-hint">支持 PDF / DOCX / PPTX 格式</p>
+                <p class="upload-hint" data-i18n="upload_hint">支持 PDF / DOCX / PPTX 格式</p>
 
-                <button type="button" class="btn btn-outline" onclick="document.getElementById('file-input').click()">或点击浏览</button>
+                <button type="button" class="btn btn-outline" onclick="document.getElementById('file-input').click()" data-i18n="upload_browse">或点击浏览</button>
 
                 <input type="file" id="file-input" accept=".pdf,.docx,.pptx" style="display:none" onchange="handleFileSelect(this)">
 
@@ -112,7 +116,7 @@
 
             <div id="upload-status" class="upload-status" style="display:none">
 
-                <div class="upload-progress">&#8987; 正在上传并分析文件...</div>
+                <div class="upload-progress" data-i18n="upload_progress">&#8987; 正在上传并分析文件...</div>
 
             </div>
 
@@ -130,7 +134,7 @@
 
         <div class="upload-modal-header">
 
-            <h2 id="login-title">登录 / 注册</h2>
+            <h2 id="login-title" data-i18n="login_title">登录 / 注册</h2>
 
         </div>
 
@@ -140,9 +144,9 @@
 
             <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid #e2e8f0;">
 
-                <button id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')" style="flex:1;padding:8px;border:none;background:none;font-size:14px;cursor:pointer;font-family:inherit;border-bottom:2px solid #2563eb;color:#2563eb;font-weight:600;">登录</button>
+                <button id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')" style="flex:1;padding:8px;border:none;background:none;font-size:14px;cursor:pointer;font-family:inherit;border-bottom:2px solid #2563eb;color:#2563eb;font-weight:600;" data-i18n="tab_login">登录</button>
 
-                <button id="tab-register" class="auth-tab" onclick="switchAuthTab('register')" style="flex:1;padding:8px;border:none;background:none;font-size:14px;cursor:pointer;font-family:inherit;color:#94a3b8;font-weight:500;">注册</button>
+                <button id="tab-register" class="auth-tab" onclick="switchAuthTab('register')" style="flex:1;padding:8px;border:none;background:none;font-size:14px;cursor:pointer;font-family:inherit;color:#94a3b8;font-weight:500;" data-i18n="tab_register">注册</button>
 
             </div>
 
@@ -152,21 +156,21 @@
 
                 <div class="upload-title-input" style="margin-bottom:10px;">
 
-                    <label>用户名</label>
+                    <label data-i18n="label_username">用户名</label>
 
-                    <input type="text" id="login-username" placeholder="输入姓名拼音缩写，如 ZWF" class="search-input-large" style="text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
+                    <input type="text" id="login-username" placeholder="输入姓名拼音缩写，如 ZWF" data-i18n-ph="login_ph_user" class="search-input-large" style="text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
 
                 </div>
 
                 <div class="upload-title-input" style="margin-bottom:10px;">
 
-                    <label>密码</label>
+                    <label data-i18n="label_password">密码</label>
 
-                    <input type="password" id="login-password" placeholder="输入密码..." class="search-input-large">
+                    <input type="password" id="login-password" placeholder="输入密码..." data-i18n-ph="login_ph_pass" class="search-input-large">
 
                 </div>
 
-                <button class="btn btn-primary" onclick="doLogin()" style="width:100%;padding:10px;margin-top:4px;">登录</button>
+                <button class="btn btn-primary" onclick="doLogin()" style="width:100%;padding:10px;margin-top:4px;" data-i18n="btn_login">登录</button>
 
                 <div id="login-error" style="color:#dc2626;font-size:0.85em;margin-top:8px;display:none;"></div>
 
@@ -178,45 +182,45 @@
 
                 <div class="upload-title-input" style="margin-bottom:10px;">
 
-                    <label>用户名</label>
+                    <label data-i18n="label_username">用户名</label>
 
-                    <input type="text" id="reg-username" placeholder="输入姓名拼音缩写，如 ZWF" class="search-input-large" style="text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
-
-                </div>
-
-                <div class="upload-title-input" style="margin-bottom:10px;">
-
-                    <label>密码</label>
-
-                    <input type="password" id="reg-password" placeholder="输入密码..." class="search-input-large">
+                    <input type="text" id="reg-username" placeholder="输入姓名拼音缩写，如 ZWF" data-i18n-ph="login_ph_user" class="search-input-large" style="text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
 
                 </div>
 
                 <div class="upload-title-input" style="margin-bottom:10px;">
 
-                    <label>确认密码</label>
+                    <label data-i18n="label_password">密码</label>
 
-                    <input type="password" id="reg-password2" placeholder="再次输入密码..." class="search-input-large">
+                    <input type="password" id="reg-password" placeholder="输入密码..." data-i18n-ph="login_ph_pass" class="search-input-large">
+
+                </div>
+
+                <div class="upload-title-input" style="margin-bottom:10px;">
+
+                    <label data-i18n="label_confirm_password">确认密码</label>
+
+                    <input type="password" id="reg-password2" placeholder="再次输入密码..." data-i18n-ph="login_ph_pass2" class="search-input-large">
 
                 </div>
 
                 <div class="upload-title-input" style="margin-bottom:10px;" id="reg-key-section">
 
-                    <label>注册密钥 <span style="color:#94a3b8;font-size:0.8em;">（首次注册需要）</span></label>
+                    <label><span data-i18n="label_reg_key">注册密钥</span> <span style="color:#94a3b8;font-size:0.8em;" data-i18n="reg_key_hint">（首次注册需要）</span></label>
 
-                    <input type="password" id="reg-key" placeholder="输入密钥..." class="search-input-large">
+                    <input type="password" id="reg-key" placeholder="输入密钥..." data-i18n-ph="reg_ph_key" class="search-input-large">
 
                 </div>
 
                 <div class="upload-title-input" style="margin-bottom:10px;">
 
-                    <label>选择你的颜色 <span style="color:#94a3b8;font-size:0.8em;">（用于组会圆点）</span></label>
+                    <label><span data-i18n="label_color">选择你的颜色</span> <span style="color:#94a3b8;font-size:0.8em;" data-i18n="color_hint">（用于组会圆点）</span></label>
 
                     <div class="color-picker" id="reg-color-picker"></div>
 
                 </div>
 
-                <button class="btn btn-primary" onclick="doRegister()" style="width:100%;padding:10px;margin-top:4px;">创建账号</button>
+                <button class="btn btn-primary" onclick="doRegister()" style="width:100%;padding:10px;margin-top:4px;" data-i18n="btn_register">创建账号</button>
 
                 <div id="register-error" style="color:#dc2626;font-size:0.85em;margin-top:8px;display:none;"></div>
 
@@ -337,13 +341,15 @@ function updateNavUI() {
 
         kwBtn.style.display = "flex";
 
-        kwBtn.title = CURRENT_USER && CURRENT_USER.role === "admin" ? "管理关键词" : "增添关键词";
+        kwBtn.title = CURRENT_USER && CURRENT_USER.role === "admin" ? I18N.t("kw_manage") : I18N.t("kw_add");
 
     }
 
     var badge = document.getElementById("nav-user-badge");
 
     var refreshBtn = document.getElementById("admin-refresh-btn");
+
+    document.body.classList.toggle("nav-admin", !!(CURRENT_USER && CURRENT_USER.role === "admin"));
 
     if (CURRENT_USER) {
 
@@ -353,7 +359,7 @@ function updateNavUI() {
 
         badge.textContent = CURRENT_USER.username;
 
-        badge.title = CURRENT_USER.role === "admin" ? "管理员" : CURRENT_USER.username;
+        badge.title = CURRENT_USER.role === "admin" ? I18N.t("role_admin") : CURRENT_USER.username;
 
         if (refreshBtn) refreshBtn.style.display = CURRENT_USER.role === "admin" ? "inline-block" : "none";
 
@@ -457,9 +463,9 @@ function doLogin() {
 
     var password = document.getElementById("login-password").value.trim();
 
-    if (!username) { showLoginError("请输入用户名"); return; }
+    if (!username) { showLoginError(I18N.t("err_username_required")); return; }
 
-    if (!password) { showLoginError("请输入密码"); return; }
+    if (!password) { showLoginError(I18N.t("err_password_required")); return; }
 
     fetch("/api/auth/login", {
 
@@ -475,7 +481,7 @@ function doLogin() {
 
     .then(function(d) {
 
-        if (!d.ok) { showLoginError(d.error || "登录失败"); return; }
+        if (!d.ok) { showLoginError(I18N.srv(d.error) || I18N.t("err_login_failed")); return; }
 
         if (d.exists) {
 
@@ -487,13 +493,13 @@ function doLogin() {
 
         } else {
 
-            showLoginError("用户名或密码错误");
+            showLoginError(I18N.t("err_bad_credentials"));
 
         }
 
     })
 
-    .catch(function(e) { showLoginError("网络错误: " + e.message); });
+    .catch(function(e) { showLoginError(I18N.t("err_network", {a: e.message})); });
 
 }
 
@@ -511,13 +517,13 @@ function doRegister() {
 
     var color = selectedColor ? selectedColor.getAttribute("data-color") : "#3b82f6";
 
-    if (!username) { showRegError("请输入用户名"); return; }
+    if (!username) { showRegError(I18N.t("err_username_required")); return; }
 
-    if (!password) { showRegError("请输入密码"); return; }
+    if (!password) { showRegError(I18N.t("err_password_required")); return; }
 
-    if (password !== password2) { showRegError("两次输入的密码不一致"); return; }
+    if (password !== password2) { showRegError(I18N.t("err_pass_mismatch")); return; }
 
-    if (!key) { showRegError("请输入注册密钥"); return; }
+    if (!key) { showRegError(I18N.t("err_reg_key_required")); return; }
 
     fetch("/api/auth/register", {
 
@@ -533,7 +539,7 @@ function doRegister() {
 
     .then(function(d) {
 
-        if (!d.ok) { showRegError(d.error || "注册失败"); return; }
+        if (!d.ok) { showRegError(I18N.srv(d.error) || I18N.t("err_register_failed")); return; }
 
         setUserCookie(d.user);
 
@@ -543,7 +549,7 @@ function doRegister() {
 
     })
 
-    .catch(function(e) { showRegError("网络错误: " + e.message); });
+    .catch(function(e) { showRegError(I18N.t("err_network", {a: e.message})); });
 
 }
 
@@ -569,7 +575,7 @@ function showRegError(msg) {
 
 function showUserMenu() {
 
-    if (confirm("当前用户: " + CURRENT_USER.username + "\n\n点击确定切换账号")) {
+    if (confirm(I18N.t("user_switch_confirm", {a: CURRENT_USER.username}))) {
 
         clearUserCookie();
 
@@ -620,7 +626,7 @@ function initRegColorPicker() {
 
             if (taken.indexOf(color) >= 0) {
 
-                div.title = "已被选择";
+                div.title = I18N.t("color_taken");
 
             }
 
@@ -678,11 +684,11 @@ function toggleReport(paperId) {
 
     .then(function(d) {
 
-        if (!d.ok) { showToast(d.error || "操作失败", "error"); return; }
+        if (!d.ok) { showToast(I18N.srv(d.error) || I18N.t("toast_op_failed"), "error"); return; }
 
         if (!d.added && d.count >= 2) {
 
-            showToast("该条目已有两人加入组会报告，不能再添加", "error");
+            showToast(I18N.t("toast_report_full"), "error");
 
             return;
 
@@ -706,7 +712,7 @@ function toggleReport(paperId) {
 
             }
 
-            showToast("已加入组会报告", "success");
+            showToast(I18N.t("toast_report_added"), "success");
 
         } else {
 
@@ -720,13 +726,13 @@ function toggleReport(paperId) {
 
             }
 
-            showToast("已移出组会报告", "success");
+            showToast(I18N.t("toast_report_removed"), "success");
 
         }
 
     })
 
-    .catch(function(e) { showToast("网络错误: " + e.message, "error"); });
+    .catch(function(e) { showToast(I18N.t("err_network", {a: e.message}), "error"); });
 
 }
 
@@ -736,7 +742,7 @@ function adminRefresh() {
 
     if (!CURRENT_USER || CURRENT_USER.role !== "admin") { return; }
 
-    if (!confirm("确定立刻更新今天和昨天的 arXiv 文章吗？")) return;
+    if (!confirm(I18N.t("refresh_confirm"))) return;
 
     fetch("/api/admin/refresh", {
 
@@ -752,13 +758,13 @@ function adminRefresh() {
 
     .then(function(d) {
 
-        if (d.ok) { showToast(d.message || "已开始更新", "success"); }
+        if (d.ok) { showToast(I18N.srv(d.message) || I18N.t("toast_refresh_started"), "success"); }
 
-        else { showToast(d.error || "失败", "error"); }
+        else { showToast(I18N.srv(d.error) || I18N.t("toast_failed"), "error"); }
 
     })
 
-    .catch(function(e) { showToast("网络错误: " + e.message, "error"); });
+    .catch(function(e) { showToast(I18N.t("err_network", {a: e.message}), "error"); });
 
 }
 
@@ -802,11 +808,11 @@ function uploadFile(file) {
 
     var ext = file.name.split(".").pop().toLowerCase();
 
-    if (["pdf","docx","pptx"].indexOf(ext) < 0) { showToast("仅支持 PDF / DOCX / PPTX 格式", "error"); return; }
+    if (["pdf","docx","pptx"].indexOf(ext) < 0) { showToast(I18N.t("upload_format_only"), "error"); return; }
 
     document.getElementById("upload-status").style.display = "block";
 
-    var msg = "正在上传并分析 " + file.name + "。";
+    var msg = I18N.t("upload_msg", {a: file.name});
 
     document.getElementById("upload-status").innerHTML = "<div class='upload-progress'>" + msg + "</div>";
 
@@ -826,13 +832,13 @@ function uploadFile(file) {
 
         var el = document.getElementById("upload-status");
 
-        if (d.ok) { el.innerHTML = "<div class='upload-success'>分析完成！<a href=/paper/"+d.paper_id+">查看论文</a></div>"; showToast("分析完成！", "success"); }
+        if (d.ok) { el.innerHTML = "<div class='upload-success'>" + I18N.t("upload_done") + " <a href=/paper/"+d.paper_id+">" + I18N.t("upload_view") + "</a></div>"; showToast(I18N.t("upload_done"), "success"); }
 
-        else { el.innerHTML = "<div class='upload-error'>" + (d.error || "分析失败") + "</div>"; }
+        else { el.innerHTML = "<div class='upload-error'>" + (I18N.srv(d.error) || I18N.t("upload_failed")) + "</div>"; }
 
     })
 
-    .catch(function(e) { document.getElementById("upload-status").innerHTML = "<div class='upload-error'>请求失败: " + e.message + "</div>"; });
+    .catch(function(e) { document.getElementById("upload-status").innerHTML = "<div class='upload-error'>" + I18N.t("request_failed", {a: e.message}) + "</div>"; });
 
 }
 
@@ -884,15 +890,15 @@ function confirmDelete(paperId) {
 
     modal.innerHTML = "<div style='background:white;border-radius:14px;padding:28px 32px;width:360px;box-shadow:0 8px 40px rgba(0,0,0,0.2);'>" +
 
-        "<h3 style='margin:0 0 16px 0;font-size:1.1em;'>确定删除该条目？</h3>" +
+        "<h3 style='margin:0 0 16px 0;font-size:1.1em;'>" + I18N.t("delete_confirm_title") + "</h3>" +
 
-        "<p style='color:#666;font-size:0.9em;margin-bottom:20px;'>仅从网页中隐藏，库中仍保留。</p>" +
+        "<p style='color:#666;font-size:0.9em;margin-bottom:20px;'>" + I18N.t("delete_confirm_note") + "</p>" +
 
         "<div style='display:flex;justify-content:flex-end;gap:12px;'>" +
 
-        "<button onclick='this.parentElement.parentElement.parentElement.remove()' style='padding:8px 20px;border:1px solid #ddd;border-radius:8px;background:white;cursor:pointer;font-size:0.9em;'>否</button>" +
+        "<button onclick='this.parentElement.parentElement.parentElement.remove()' style='padding:8px 20px;border:1px solid #ddd;border-radius:8px;background:white;cursor:pointer;font-size:0.9em;'>" + I18N.t("btn_no") + "</button>" +
 
-        "<button onclick='doDelete(" + paperId + ")' style='padding:8px 20px;border:none;border-radius:8px;background:#dc2626;color:white;cursor:pointer;font-size:0.9em;font-weight:500;'>是</button>" +
+        "<button onclick='doDelete(" + paperId + ")' style='padding:8px 20px;border:none;border-radius:8px;background:#dc2626;color:white;cursor:pointer;font-size:0.9em;font-weight:500;'>" + I18N.t("btn_yes") + "</button>" +
 
         "</div></div>";
 
@@ -916,61 +922,9 @@ function doDelete(paperId) {
 
             if (card) card.remove();
 
-            showToast("已删除该条目", "success");
+            showToast(I18N.t("toast_deleted"), "success");
 
-        } else { showToast("删除失败", "error"); }
-
-    });
-
-}
-
-// ===== Tag toggle =====
-
-function toggleTag(paperId, tagName) {
-
-    if (tagName === "\u7ec4\u4f1a\u62a5\u544a") {
-
-        toggleReport(paperId);
-
-        return;
-
-    }
-
-    var el = document.getElementById("tag-" + tagName + "-" + paperId);
-
-    if (!el) return;
-
-    var isSet = el.textContent.includes("\u2705");
-
-    el.innerHTML = isSet ? "\u274c " + tagName : "\u2705 " + tagName;
-
-    var req = isSet
-
-        ? fetch("/api/paper/" + paperId + "/tags/" + encodeURIComponent(tagName), { method: "DELETE" })
-
-        : fetch("/api/paper/" + paperId + "/tags", {
-
-            method: "POST", headers: {"Content-Type": "application/json"},
-
-            body: JSON.stringify({tag_name: tagName})
-
-          });
-
-    req.then(function(r) { return r.json(); }).then(function(d) {
-
-        if (!d.ok) {
-
-            el.innerHTML = isSet ? "\u2705 " + tagName : "\u274c " + tagName;
-
-            showToast(d.error || "操作失败", "error");
-
-        } else { showToast(isSet ? "已移除标签" : "已添加标签", "success"); }
-
-    }).catch(function(e) {
-
-        el.innerHTML = isSet ? "\u2705 " + tagName : "\u274c " + tagName;
-
-        showToast("网络错误: " + e.message, "error");
+        } else { showToast(I18N.t("toast_delete_failed"), "error"); }
 
     });
 
@@ -1004,15 +958,15 @@ function toggleStar(id) {
 
             if (el) { el.classList.toggle("starred"); el.innerHTML = prevStarred ? "⭐" : "☆"; }
 
-            showToast(d.error || "操作失败", "error");
+            showToast(I18N.srv(d.error) || I18N.t("toast_op_failed"), "error");
 
-        } else { showToast(prevStarred ? "已取消收藏" : "已收藏", "success"); }
+        } else { showToast(prevStarred ? I18N.t("toast_unstarred") : I18N.t("toast_starred"), "success"); }
 
     }).catch(function(e) {
 
         if (el) { el.classList.toggle("starred"); el.innerHTML = prevStarred ? "⭐" : "☆"; }
 
-        showToast("网络错误: " + e.message, "error");
+        showToast(I18N.t("err_network", {a: e.message}), "error");
 
     });
 
@@ -1022,7 +976,7 @@ function toggleStar(id) {
 
 <!-- Floating Keyword Button -->
 
-<button id="floating-keyword-btn" class="floating-btn" onclick="openKeywordModal()" title="管理关键词" style="display:none;">+</button>
+<button id="floating-keyword-btn" class="floating-btn" onclick="openKeywordModal()" data-i18n-title="kw_manage" style="display:none;">+</button>
 
 <!-- Keyword Management Modal -->
 
@@ -1032,7 +986,7 @@ function toggleStar(id) {
 
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
 
-            <h3 id="kw-modal-title" style="margin:0;">管理关键词</h3>
+            <h3 id="kw-modal-title" style="margin:0;" data-i18n="kw_title_admin">管理关键词</h3>
 
             <button onclick="closeKeywordModal()" style="background:none;border:none;font-size:1.5em;cursor:pointer;color:#999;">&times;</button>
 
@@ -1042,17 +996,17 @@ function toggleStar(id) {
 
             <div class="keyword-add-row">
 
-                <input type="text" id="kw-new-keyword" placeholder="输入新关键词...">
+                <input type="text" id="kw-new-keyword" placeholder="输入新关键词..." data-i18n-ph="kw_ph_new">
 
-                <input type="number" id="kw-new-weight" placeholder="权重" value="1.0" step="0.1" min="0.1" max="1.2" style="width:80px;">
+                <input type="number" id="kw-new-weight" placeholder="权重" data-i18n-ph="kw_weight_ph" value="1.0" step="0.1" min="0.1" max="1.2" style="width:80px;">
 
-                <button class="btn btn-primary" onclick="addKeyword()" style="white-space:nowrap;">添加</button>
+                <button class="btn btn-primary" onclick="addKeyword()" style="white-space:nowrap;" data-i18n="kw_add_btn">添加</button>
 
             </div>
 
             <table class="keyword-table">
 
-                <thead><tr><th>关键词</th><th>权重</th><th>操作</th></tr></thead>
+                <thead><tr><th data-i18n="kw_thead_kw">关键词</th><th data-i18n="kw_thead_w">权重</th><th data-i18n="kw_thead_op">操作</th></tr></thead>
 
                 <tbody id="kw-table-body"></tbody>
 
@@ -1060,17 +1014,17 @@ function toggleStar(id) {
 
         </div>
 
-            <div style="color:#888;font-size:0.78em;margin-top:6px;margin-bottom:4px;">权重范围: 0.1 ~ 1.2</div>
+            <div style="color:#888;font-size:0.78em;margin-top:6px;margin-bottom:4px;" data-i18n="kw_range">权重范围: 0.1 ~ 1.2</div>
 
         <div id="kw-user-mode">
 
             <div class="keyword-add-row">
 
-                <input type="text" id="kw-user-keyword" placeholder="输入新关键词...">
+                <input type="text" id="kw-user-keyword" placeholder="输入新关键词..." data-i18n-ph="kw_ph_new">
 
-                <input type="number" id="kw-user-weight" placeholder="权重" value="1.0" step="0.1" min="0.1" max="1.2" style="width:80px;">
+                <input type="number" id="kw-user-weight" placeholder="权重" data-i18n-ph="kw_weight_ph" value="1.0" step="0.1" min="0.1" max="1.2" style="width:80px;">
 
-                <button class="btn btn-primary" onclick="userAddKeyword()" style="white-space:nowrap;">提交</button>
+                <button class="btn btn-primary" onclick="userAddKeyword()" style="white-space:nowrap;" data-i18n="kw_submit_btn">提交</button>
 
             </div>
 
@@ -1104,7 +1058,7 @@ function toggleStar(id) {
 
             if (CURRENT_USER) {
 
-                btn.title = CURRENT_USER.role === "admin" ? "管理关键词" : "增添关键词";
+                btn.title = CURRENT_USER.role === "admin" ? I18N.t("kw_manage") : I18N.t("kw_add");
 
             }
 
@@ -1126,9 +1080,9 @@ function openKeywordModal() {
 
     document.getElementById("kw-user-mode").style.display = isAdmin ? "none" : "block";
 
-    document.getElementById("kw-modal-title").textContent = isAdmin ? "管理关键词" : "增添关键词";
+    document.getElementById("kw-modal-title").textContent = isAdmin ? I18N.t("kw_title_admin") : I18N.t("kw_title_user");
 
-    document.getElementById("floating-keyword-btn").textContent = isAdmin ? "⚙" : "+"; document.getElementById("floating-keyword-btn").title = isAdmin ? "管理关键词" : "增添关键词";
+    document.getElementById("floating-keyword-btn").textContent = isAdmin ? "⚙" : "+"; document.getElementById("floating-keyword-btn").title = isAdmin ? I18N.t("kw_manage") : I18N.t("kw_add");
 
     if (isAdmin) loadKeywords();
 
@@ -1162,9 +1116,9 @@ function loadKeywords() {
 
                 `<td>` +
 
-                `<button class="btn btn-outline" style="font-size:0.8em;padding:2px 8px;" onclick="updateKeyword(${kw.id})">保存</button> ` +
+                `<button class="btn btn-outline" style="font-size:0.8em;padding:2px 8px;" onclick="updateKeyword(${kw.id})">${I18N.t("kw_save")}</button> ` +
 
-                `<button class="btn btn-outline" style="font-size:0.8em;padding:2px 8px;color:#dc2626;border-color:#dc2626;" onclick="deleteKeyword(${kw.id})">删除</button>` +
+                `<button class="btn btn-outline" style="font-size:0.8em;padding:2px 8px;color:#dc2626;border-color:#dc2626;" onclick="deleteKeyword(${kw.id})">${I18N.t("kw_delete")}</button>` +
 
                 `</td></tr>`;
 
@@ -1180,9 +1134,9 @@ function addKeyword() {
 
     var w = parseFloat(document.getElementById("kw-new-weight").value) || 1.0;
 
-    if (!kw) { showToast("请输入关键词", "error"); return; }
+    if (!kw) { showToast(I18N.t("kw_required"), "error"); return; }
 
-    if (w < 0.1 || w > 1.2) { showToast("权重必须在 0.1 ~ 1.2 之间", "error"); return; }
+    if (w < 0.1 || w > 1.2) { showToast(I18N.t("kw_weight_range"), "error"); return; }
 
     fetch("/api/keywords", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({keyword: kw, weight: w, username: CURRENT_USER ? CURRENT_USER.username : ""})})
 
@@ -1192,7 +1146,7 @@ function addKeyword() {
 
         if (d.ok) { document.getElementById("kw-new-keyword").value = ""; loadKeywords(); }
 
-        else { showToast(d.error || "添加失败", "error"); }
+        else { showToast(I18N.srv(d.error) || I18N.t("kw_add_failed"), "error"); }
 
     });
 
@@ -1204,7 +1158,7 @@ function updateKeyword(id) {
 
     var w = parseFloat(document.getElementById("kw-edit-weight-" + id).value) || 1.0;
 
-    if (w < 0.1 || w > 1.2) { showToast("权重必须在 0.1 ~ 1.2 之间", "error"); return; }
+    if (w < 0.1 || w > 1.2) { showToast(I18N.t("kw_weight_range"), "error"); return; }
 
     fetch("/api/keywords/" + id, {method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify({keyword: kw, weight: w})})
 
@@ -1216,7 +1170,7 @@ function updateKeyword(id) {
 
 function deleteKeyword(id) {
 
-    if (!confirm("确定删除该关键词？")) return;
+    if (!confirm(I18N.t("kw_delete_confirm"))) return;
 
     fetch("/api/keywords/" + id, {method: "DELETE"})
 
@@ -1232,9 +1186,9 @@ function userAddKeyword() {
 
     var w = parseFloat(document.getElementById("kw-user-weight").value) || 1.0;
 
-    if (!kw) { showToast("请输入关键词", "error"); return; }
+    if (!kw) { showToast(I18N.t("kw_required"), "error"); return; }
 
-    if (w < 0.1 || w > 1.2) { showToast("权重必须在 0.1 ~ 1.2 之间", "error"); return; }
+    if (w < 0.1 || w > 1.2) { showToast(I18N.t("kw_weight_range"), "error"); return; }
 
     fetch("/api/keywords/check?q=" + encodeURIComponent(kw))
 
@@ -1244,7 +1198,7 @@ function userAddKeyword() {
 
         if (d.exists) {
 
-            document.getElementById("kw-user-status").textContent = "已有该关键词！如有需求删减或修改权重请联系管理员";
+            document.getElementById("kw-user-status").textContent = I18N.t("kw_user_exists");
 
             return;
 
@@ -1260,11 +1214,11 @@ function userAddKeyword() {
 
                 document.getElementById("kw-user-keyword").value = "";
 
-                document.getElementById("kw-user-status").textContent = "添加成功！";
+                document.getElementById("kw-user-status").textContent = I18N.t("kw_user_added");
 
             } else {
 
-                document.getElementById("kw-user-status").textContent = d2.error || "添加失败";
+                document.getElementById("kw-user-status").textContent = I18N.srv(d2.error) || I18N.t("kw_add_failed");
 
             }
 
@@ -1272,7 +1226,7 @@ function userAddKeyword() {
 
     })
 
-    .catch(function(e) { document.getElementById("kw-user-status").textContent = "请求失败"; });
+    .catch(function(e) { document.getElementById("kw-user-status").textContent = I18N.t("request_failed_short"); });
 
 }
 

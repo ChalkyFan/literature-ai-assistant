@@ -1,42 +1,43 @@
 {% extends "base.html" %}
 
+{% block title_key %}title_all{% endblock %}
 {% block title %}全部论文 - ArXiv文献助手{% endblock %}
 
 {% block content %}
 
 <div class="page-header">
 
-    <h1>全部论文</h1>
+    <h1 data-i18n="h_all">全部论文</h1>
 
     <div class="toolbar">
 
         <div class="sort-bar">
 
-            <label>排序：</label>
+            <label data-i18n="sort_label">排序：</label>
 
-            <a href="?sort=rating&page=1{% if status %}&status={{ status }}{% endif %}" class="sort-btn {% if sort_by == 'rating' %}active{% endif %}">相关度</a>
+            <a href="?sort=rating&page=1{% if status %}&status={{ status }}{% endif %}" class="sort-btn {% if sort_by == 'rating' %}active{% endif %}" data-i18n="sort_relevance">相关度</a>
 
-            <a href="?sort=date&page=1{% if status %}&status={{ status }}{% endif %}" class="sort-btn {% if sort_by == 'date' %}active{% endif %}">日期</a>
+            <a href="?sort=date&page=1{% if status %}&status={{ status }}{% endif %}" class="sort-btn {% if sort_by == 'date' %}active{% endif %}" data-i18n="sort_date">日期</a>
 
-            <a href="?sort=keywords&page=1{% if status %}&status={{ status }}{% endif %}" class="sort-btn {% if sort_by == 'keywords' %}active{% endif %}">关键词数</a>
+            <a href="?sort=keywords&page=1{% if status %}&status={{ status }}{% endif %}" class="sort-btn {% if sort_by == 'keywords' %}active{% endif %}" data-i18n="sort_keywords">关键词数</a>
 
         </div>
 
         <div class="status-chips">
 
-            <label>状态：</label>
+            <label data-i18n="status_label">状态：</label>
 
-            <a href="?sort={{ sort_by }}&page=1" class="sort-btn {% if not status %}active{% endif %}">全部</a>
+            <a href="?sort={{ sort_by }}&page=1" class="sort-btn {% if not status %}active{% endif %}" data-i18n="all">全部</a>
 
-            <a href="?sort={{ sort_by }}&page=1&status=unread" class="sort-btn {% if status == 'unread' %}active{% endif %}">未读</a>
+            <a href="?sort={{ sort_by }}&page=1&status=unread" class="sort-btn {% if status == 'unread' %}active{% endif %}" data-i18n="status_unread">未读</a>
 
-            <a href="?sort={{ sort_by }}&page=1&status=read" class="sort-btn {% if status == 'read' %}active{% endif %}">已读</a>
+            <a href="?sort={{ sort_by }}&page=1&status=read" class="sort-btn {% if status == 'read' %}active{% endif %}" data-i18n="status_read">已读</a>
 
         </div>
 
     </div>
 
-    <span class="paper-count">共 {{ total }} 篇 · 第 {{ page }} / {{ total_pages }} 页</span>
+    <span class="paper-count" data-i18n="count_all" data-i18n-a="{{ total }}" data-i18n-b="{{ page }}" data-i18n-c="{{ total_pages }}">共 {{ total }} 篇 · 第 {{ page }} / {{ total_pages }} 页</span>
 
 </div>
 
@@ -48,7 +49,7 @@
 
         <span class="empty-icon">&#128269;</span>
 
-        <p>没有符合条件的论文</p>
+        <p data-i18n="empty_none">没有符合条件的论文</p>
 
     </div>
 
@@ -78,7 +79,7 @@
 
             {% if current_user and current_user.role == "admin" %}
 
-            <button class="btn-delete" onclick="confirmDelete({{ p.id }})">删除该条目</button>
+            <button class="btn-delete" onclick="confirmDelete({{ p.id }})" data-i18n="btn_delete_entry">删除该条目</button>
 
             {% endif %}
 
@@ -88,7 +89,7 @@
 
             <span class="status-badge status-{{ p.status }}">{{ p.status }}</span>
 
-            <label id="star-{{ p.id }}" class="star-btn{% if p.is_starred %} starred{% endif %}" onclick="toggleStar({{ p.id }})" title="收藏">
+            <label id="star-{{ p.id }}" class="star-btn{% if p.is_starred %} starred{% endif %}" onclick="toggleStar({{ p.id }})" data-i18n-title="title_star">
 
                 {% if p.is_starred %}&#11088;{% else %}&#9734;{% endif %}
 
@@ -104,9 +105,9 @@
 
             </span>
 
-            <a href="javascript:void(0)" class="btn-tag" onclick="toggleReport({{ p.id }})" title="加入组会报告">&#128202;</a>
+            <a href="javascript:void(0)" class="btn-tag" onclick="toggleReport({{ p.id }})" data-i18n-title="title_add_report">&#128202;</a>
 
-            <a href="/paper/{{ p.id }}" class="btn-detail">查看详情 &#8594;</a>
+            <a href="/paper/{{ p.id }}" class="btn-detail" data-i18n="btn_detail">查看详情 &#8594;</a>
 
         </div>
 
@@ -120,7 +121,7 @@
 
     {% if page > 1 %}
 
-    <a href="/all?page={{ page - 1 }}{% if sort_by != 'date' %}&sort={{ sort_by }}{% endif %}{% if status %}&status={{ status }}{% endif %}" class="btn btn-outline">&larr; 上一页</a>
+    <a href="/all?page={{ page - 1 }}{% if sort_by != 'date' %}&sort={{ sort_by }}{% endif %}{% if status %}&status={{ status }}{% endif %}" class="btn btn-outline" data-i18n="pag_prev">&larr; 上一页</a>
 
     {% endif %}
 
@@ -136,7 +137,7 @@
 
     {% if page < total_pages %}
 
-    <a href="/all?page={{ page + 1 }}{% if sort_by != 'date' %}&sort={{ sort_by }}{% endif %}{% if status %}&status={{ status }}{% endif %}" class="btn btn-outline">下一页 &rarr;</a>
+    <a href="/all?page={{ page + 1 }}{% if sort_by != 'date' %}&sort={{ sort_by }}{% endif %}{% if status %}&status={{ status }}{% endif %}" class="btn btn-outline" data-i18n="pag_next">下一页 &rarr;</a>
 
     {% endif %}
 

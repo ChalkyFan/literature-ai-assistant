@@ -1,30 +1,31 @@
 {% extends "base.html" %}
+{% block title_key %}title_index{% endblock %}
 {% block title %}今日简报 - ArXiv文献助手{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h1>每日文献简报</h1>
+    <h1 data-i18n="h_briefing">每日文献简报</h1>
     <div class="date-nav">
         <div class="date-nav-arrows">
-            <a href="?date={{ prev_date }}" title="前一天">&larr; 前一天</a>
+            <a href="?date={{ prev_date }}" data-i18n-title="prev_day_title" data-i18n="prev_day">&larr; 前一天</a>
             <span class="date-label">{{ date }}</span>
-            <a href="?date={{ next_date }}" title="后一天">后一天 &rarr;</a>
-            {% if date != today %}<a href="/" class="today-link">回到今天</a>{% endif %}
+            <a href="?date={{ next_date }}" data-i18n-title="next_day_title" data-i18n="next_day">后一天 &rarr;</a>
+            {% if date != today %}<a href="/" class="today-link" data-i18n="back_today">回到今天</a>{% endif %}
         </div>
-        <span class="paper-count">{{ papers|length }} 篇论文</span>
+        <span class="paper-count" data-i18n="papers_count" data-i18n-a="{{ papers|length }}">{{ papers|length }} 篇论文</span>
     </div>
     <div class="toolbar">
         <div class="sort-bar">
-            <label>排序：</label>
-            <a href="?sort=rating{% if tag %}&tag={{ tag }}{% endif %}{% if source == 'custom' %}&source=custom{% endif %}" class="sort-btn {% if sort_by == 'rating' %}active{% endif %}">相关度</a>
+            <label data-i18n="sort_label">排序：</label>
+            <a href="?sort=rating{% if tag %}&tag={{ tag }}{% endif %}{% if source == 'custom' %}&source=custom{% endif %}" class="sort-btn {% if sort_by == 'rating' %}active{% endif %}" data-i18n="sort_relevance">相关度</a>
             
-            <a href="?sort=keywords{% if tag %}&tag={{ tag }}{% endif %}{% if source == 'custom' %}&source=custom{% endif %}" class="sort-btn {% if sort_by == 'keywords' %}active{% endif %}">关键词数</a>
+            <a href="?sort=keywords{% if tag %}&tag={{ tag }}{% endif %}{% if source == 'custom' %}&source=custom{% endif %}" class="sort-btn {% if sort_by == 'keywords' %}active{% endif %}" data-i18n="sort_keywords">关键词数</a>
         </div>
         <div class="tag-bar">
-            <label>筛选：</label>
-            <a href="/" class="sort-btn {% if not tag and source != 'custom' %}active{% endif %}">全部</a>
-            <a href="?tag=待精读" class="sort-btn tag-btn-intense {% if tag == '待精读' %}active{% endif %}">待精读</a>
-            <a href="?tag=组会报告" class="sort-btn tag-btn-report {% if tag == '组会报告' %}active{% endif %}">组会报告</a>
-            <a href="?source=custom" class="sort-btn tag-btn-upload {% if source == 'custom' %}active{% endif %}">我的自行添加</a>
+            <label data-i18n="filter_label">筛选：</label>
+            <a href="/" class="sort-btn {% if not tag and source != 'custom' %}active{% endif %}" data-i18n="all">全部</a>
+            <a href="?tag=待精读" class="sort-btn tag-btn-intense {% if tag == '待精读' %}active{% endif %}" data-i18n="tag_intense">待精读</a>
+            <a href="?tag=组会报告" class="sort-btn tag-btn-report {% if tag == '组会报告' %}active{% endif %}" data-i18n="tag_report">组会报告</a>
+            <a href="?source=custom" class="sort-btn tag-btn-upload {% if source == 'custom' %}active{% endif %}" data-i18n="tag_custom">我的自行添加</a>
         </div>
     </div>
 </div>
@@ -45,7 +46,7 @@
         <div class="paper-authors-row">
             <span class="paper-authors-text">{{ p.authors[:180] if p.authors else "" }}</span>
             {% if current_user and current_user.role == "admin" %}
-            <button class="btn-delete" onclick="confirmDelete({{ p.id }})">删除该条目</button>
+            <button class="btn-delete" onclick="confirmDelete({{ p.id }})" data-i18n="btn_delete_entry">删除该条目</button>
             {% endif %}
         </div>
         {% if p.affiliations %}<div class="paper-affiliation">{{ p.affiliations[:100] }}</div>{% endif %}
@@ -54,7 +55,7 @@
         {% endif %}
         <div class="paper-footer">
             <span class="status-badge status-{{ p.status }}">{{ p.status }}</span>
-            <label id="star-{{ p.id }}" class="star-btn{% if p.is_starred %} starred{% endif %}" onclick="toggleStar({{ p.id }})" title="收藏">
+            <label id="star-{{ p.id }}" class="star-btn{% if p.is_starred %} starred{% endif %}" onclick="toggleStar({{ p.id }})" data-i18n-title="title_star">
                 {% if p.is_starred %}&#11088;{% else %}&#9734;{% endif %}
             </label>
             <span class="report-dots" id="dots-{{ p.id }}">
@@ -62,8 +63,8 @@
                 <span class="report-dot" style="background:{{ r.color }};" title="{{ r.username }}"></span>
                 {% endfor %}
             </span>
-            <a href="javascript:void(0)" class="btn-tag" onclick="toggleReport({{ p.id }})" title="加入组会报告">&#128202;</a>
-            <a href="/paper/{{ p.id }}" class="btn-detail">查看详情 &#8594;</a>
+            <a href="javascript:void(0)" class="btn-tag" onclick="toggleReport({{ p.id }})" data-i18n-title="title_add_report">&#128202;</a>
+            <a href="/paper/{{ p.id }}" class="btn-detail" data-i18n="btn_detail">查看详情 &#8594;</a>
         </div>
     </div>
     {% endfor %}
@@ -71,9 +72,9 @@
 {% else %}
 <div class="empty-state">
     <span class="empty-icon">&#128218;</span>
-    <p>今天还没有新增论文</p>
-    <p class="hint">自动化任务会在每天早上抓取 arXiv 最新文章</p>
-    <a href="/all" class="btn btn-outline">查看全部论文</a>
+    <p data-i18n="empty_today">今天还没有新增论文</p>
+    <p class="hint" data-i18n="empty_hint">自动化任务会在每天早上抓取 arXiv 最新文章</p>
+    <a href="/all" class="btn btn-outline" data-i18n="btn_view_all">查看全部论文</a>
 </div>
 {% endif %}
 

@@ -1,8 +1,9 @@
 {% extends "base.html" %}
+{% block title_key %}title_error{% endblock %}
 {% block title %}错误 - ArXiv文献助手{% endblock %}
 {% block content %}
 <div class="empty-state">
     <h2>{{ message }}</h2>
-    <a href="/" class="btn btn-primary">返回首页</a>
+    <a href="/" class="btn btn-primary" data-i18n="btn_home">返回首页</a>
 </div>
 {% endblock %}

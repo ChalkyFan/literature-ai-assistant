@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% block title_key %}title_paper{% endblock %}
+{% block title_a %}{{ paper.title[:60] }}{% endblock %}
 {% block title %}{{ paper.title[:60] }} - ArXiv文献助手{% endblock %}
 {% block content %}
 
@@ -204,7 +206,7 @@
 </style>
 <div class="paper-detail">
     <div class="detail-header">
-        <a href="/" class="back-link">&larr; 返回简报</a>
+        <a href="/" class="back-link" data-i18n="back_briefing">&larr; 返回简报</a>
         <div class="detail-meta">
             <span class="arxiv-id">arXiv:{{ paper.arxiv_id }}</span>
             <span class="status-badge status-{{ paper.status }}">{{ paper.status }}</span>
@@ -213,7 +215,7 @@
 
     <h1 class="detail-title">{{ paper.title }}</h1>
     <div class="detail-authors">{{ paper.authors }}</div>
-        {% if paper.affiliations %}<div class="detail-affiliation">机构: {{ paper.affiliations[:200] }}</div>{% endif %}
+        {% if paper.affiliations %}<div class="detail-affiliation"><span data-i18n="affil_label">机构:</span> {{ paper.affiliations[:200] }}</div>{% endif %}
 
     {% if paper.one_line_value %}
     <div class="detail-one-liner">{{ paper.one_line_value }}</div>
@@ -221,10 +223,10 @@
 
     <!-- Tags -->
     <div class="detail-tags">
-        <span class="tag tag-btn-intense" onclick="toggleTag({{ paper.id }}, '待精读')" id="tag-待精读-{{ paper.id }}">
+        <span class="tag tag-btn-intense" onclick="toggleTag({{ paper.id }}, '待精读')" id="tag-待精读-{{ paper.id }}" data-i18n="{% if '待精读' in paper.tags %}tag_intense_on{% else %}tag_intense_off{% endif %}">
             {% if '待精读' in paper.tags %}&#9989; 待精读{% else %}&#10060; 待精读{% endif %}
         </span>
-        <span class="tag tag-btn-report" onclick="toggleTag({{ paper.id }}, '组会报告')" id="tag-组会报告-{{ paper.id }}">
+        <span class="tag tag-btn-report" onclick="toggleTag({{ paper.id }}, '组会报告')" id="tag-组会报告-{{ paper.id }}" data-i18n="{% if '组会报告' in paper.tags %}tag_report_on{% else %}tag_report_off{% endif %}">
             {% if '组会报告' in paper.tags %}&#9989; 组会报告{% else %}&#10060; 组会报告{% endif %}
         </span>
         <span class="report-dots" id="detail-dots-{{ paper.id }}" style="margin-left:8px;">
@@ -244,68 +246,68 @@
 
     {% if paper.core_problem or paper.method %}
     <div class="detail-analysis">
-        <div style="display:flex;align-items:center;gap:12px;"><h2 style="margin:0;">AI 分析</h2><button id="btn-detailed-analysis" class="btn btn-outline" style="font-size:0.75em;padding:3px 10px;" onclick="generateDetailedAnalysis()">详细AI分析</button></div>
+        <div style="display:flex;align-items:center;gap:12px;"><h2 style="margin:0;" data-i18n="ai_analysis">AI 分析</h2><button id="btn-detailed-analysis" class="btn btn-outline" style="font-size:0.75em;padding:3px 10px;" onclick="generateDetailedAnalysis()" data-i18n="btn_detailed_ai">详细AI分析</button></div>
 
         {% if paper.value_rating %}
         <div class="analysis-rating">
-            相关度评分：
+            <span data-i18n="rating_label">相关度评分：</span>
             {% for i in range(paper.value_rating) %}&#9733;{% endfor %}{% for i in range(5 - paper.value_rating) %}&#9734;{% endfor %}
             ({{ paper.value_rating }}/5)
         </div>
         {% endif %}
 
         <div class="analysis-section">
-            <h3>核心问题</h3>
+            <h3 data-i18n="h_core">核心问题</h3>
             <p>{{ paper.core_problem }}</p>
         </div>
 
         <div class="analysis-section">
-            <h3>方法</h3>
+            <h3 data-i18n="h_method">方法</h3>
             <p>{{ paper.method }}</p>
         </div>
 
         {% if paper.key_results %}
         <div class="analysis-section">
-            <h3>关键结果</h3>
+            <h3 data-i18n="h_results">关键结果</h3>
             <p>{{ paper.key_results }}</p>
         </div>
         {% endif %}
 
         {% if paper.conclusions %}
         <div class="analysis-section">
-            <h3>结论</h3>
+            <h3 data-i18n="h_conclusion">结论</h3>
             <p>{{ paper.conclusions }}</p>
         </div>
         {% endif %}
 
         {% if paper.limitations %}
         <div class="analysis-section">
-            <h3>局限性</h3>
+            <h3 data-i18n="h_limits">局限性</h3>
             <p>{{ paper.limitations }}</p>
         </div>
         {% endif %}
     </div>
     {% endif %}
 
-    <div id="detailed-analysis-container" style="display:none;" class="detail-analysis"><h2>详细 AI 分析</h2><div id="detailed-analysis-content"></div></div><div class="detail-actions">
+    <div id="detailed-analysis-container" style="display:none;" class="detail-analysis"><h2 data-i18n="detailed_ai">详细 AI 分析</h2><div id="detailed-analysis-content"></div></div><div class="detail-actions">
         {% if paper.status == "unread" %}
-        <button class="btn btn-primary" onclick="updateStatus({{ paper.id }}, 'read')">标记为已读</button>
+        <button class="btn btn-primary" onclick="updateStatus({{ paper.id }}, 'read')" data-i18n="btn_mark_read">标记为已读</button>
         {% else %}
-        <button class="btn btn-secondary" onclick="updateStatus({{ paper.id }}, 'unread')">标记为未读</button>
+        <button class="btn btn-secondary" onclick="updateStatus({{ paper.id }}, 'unread')" data-i18n="btn_mark_unread">标记为未读</button>
         {% endif %}
-        <button class="star-btn" onclick="toggleStar({{ paper.id }})" title="收藏">
+        <button class="star-btn" onclick="toggleStar({{ paper.id }})" data-i18n-title="title_star">
             <svg class="star-icon{% if paper.is_starred %} active{% endif %}" viewBox="0 0 24 24" width="22" height="22">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
         </button>
-        {% if paper.pdf_path %}<a href="/papers/{{ (paper.pdf_path.split('papers\\')[1] if 'papers\\' in paper.pdf_path else paper.pdf_path.split('papers/')[1]).replace('\\', '/') }}" target="_blank" class="btn btn-outline">&#128196; 本地 PDF</a>{% endif %}
-        <a href="https://arxiv.org/abs/{{ paper.arxiv_id }}" target="_blank" class="btn btn-outline">查看 arXiv 原文</a>
+        {% if paper.pdf_path %}<a href="/papers/{{ (paper.pdf_path.split('papers\\')[1] if 'papers\\' in paper.pdf_path else paper.pdf_path.split('papers/')[1]).replace('\\', '/') }}" target="_blank" class="btn btn-outline" data-i18n="btn_local_pdf">&#128196; 本地 PDF</a>{% endif %}
+        <a href="https://arxiv.org/abs/{{ paper.arxiv_id }}" target="_blank" class="btn btn-outline" data-i18n="btn_arxiv">查看 arXiv 原文</a>
     </div>
 
     <!-- Figures with Lightbox -->
     {% if paper.figures %}
     <div class="detail-figures">
-        <h2>图表 (<span id="figure-count">{{ paper.figures|length }}</span> 张)<button id="re-extract-btn" class="btn btn-outline btn-sm" onclick="reExtractFigures()" title="重新读取 PDF 并重新提取所有图片，覆盖原有图片" style="margin-left:10px;">↻ 重新截图</button></h2>
+        <h2><span data-i18n="figures_label">图表</span> (<span id="figure-count">{{ paper.figures|length }}</span> <span data-i18n="figures_unit">张</span>)<button id="re-extract-btn" class="btn btn-outline btn-sm" onclick="reExtractFigures()" data-i18n-title="re_extract_title" data-i18n="re_extract_btn" style="margin-left:10px;">↻ 重新截图</button></h2>
         <div class="figure-grid" id="figure-grid">
             {% for fig in paper.figures %}
             <div class="figure-item" data-fig-idx="{{ loop.index0 }}">
@@ -313,7 +315,7 @@
                      alt="{{ fig.caption }}"
                      class="fig-thumb"
                      onclick="openLightbox({{ loop.index0 }})">
-                <div class="figure-caption" onclick="this.classList.toggle('expanded')" title="点击展开/收起图注">{{ fig.caption }}</div>
+                <div class="figure-caption" onclick="this.classList.toggle('expanded')" data-i18n-title="fig_caption_title">{{ fig.caption }}</div>
             </div>
             {% endfor %}
         </div>
@@ -322,8 +324,8 @@
     <!-- Lightbox overlay -->
     <div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
         <div class="lightbox-toolbar">
-            <button onclick="toggleZoom()">&#128269; 缩放</button>
-            <button onclick="downloadLightbox()">&#11015; 下载</button>
+            <button onclick="toggleZoom()" data-i18n="zoom">&#128269; 缩放</button>
+            <button onclick="downloadLightbox()" data-i18n="download">&#11015; 下载</button>
         </div>
         <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
         <button class="lightbox-prev" onclick="changeFigure(-1)">&#10094;</button>
@@ -346,27 +348,27 @@
         <path d="M12 16v-4"/>
         <path d="M12 8h.01"/>
     </svg>
-    <span>追问 AI</span>
-</button><div class="ask-ai-bubble" id="ask-ai-bubble">有不懂的内容可以问我哦~</div>
+    <span data-i18n="ask_ai">追问 AI</span>
+</button><div class="ask-ai-bubble" id="ask-ai-bubble" data-i18n="ask_bubble">有不懂的内容可以问我哦~</div>
 
 <div id="ask-ai-popup" class="ask-ai-popup">
     <div id="ask-ai-header" class="ask-ai-header">
-        <span>追问 AI - {{ paper.title[:40] }}...</span>
+        <span><span data-i18n="ask_ai">追问 AI</span> - {{ paper.title[:40] }}...</span>
         <button class="ask-ai-close" onclick="toggleAskPopup()">&times;</button>
     </div>
     <div id="ask-ai-body" class="ask-ai-body">
         {% for c in conversations %}
         <div class="qa-item" id="conv-{{ c.id }}">
-            <div class="qa-question">问：{{ c.question }}</div>
-            <div class="qa-answer">答：{{ c.answer }} <button class="btn-delete-conv" onclick="deleteConversation({{ c.id }})" title="删除该对话">✖</button></div>
+            <div class="qa-question"><span data-i18n="q_prefix">问：</span>{{ c.question }}</div>
+            <div class="qa-answer"><span data-i18n="a_prefix">答：</span>{{ c.answer }} <button class="btn-delete-conv" onclick="deleteConversation({{ c.id }})" data-i18n-title="delete_conv_title">✖</button></div>
         </div>
         {% endfor %}
         <div id="ask-ai-messages"></div>
-        <div id="ask-ai-loading" class="qa-loading" style="display:none;">AI 思考中...</div>
+        <div id="ask-ai-loading" class="qa-loading" style="display:none;" data-i18n="ask_loading">AI 思考中...</div>
     </div>
     <div class="ask-ai-input-area">
-        <input type="text" id="ask-ai-input" placeholder="输入你的问题..." onkeydown="if(event.key==='Enter') askQuestion()">
-        <button class="btn btn-primary" onclick="askQuestion()">发送</button>
+        <input type="text" id="ask-ai-input" placeholder="输入你的问题..." data-i18n-ph="ask_ph" onkeydown="if(event.key==='Enter') askQuestion()">
+        <button class="btn btn-primary" onclick="askQuestion()" data-i18n="btn_send">发送</button>
         <button class="btn btn-outline" id="gemini-btn" onclick="askQuestion(true)" style="margin-right:5px;font-size:12px;"> Gemini 3</button>
     </div>
 </div>
@@ -376,7 +378,7 @@
 function reExtractFigures() {
     var btn = document.getElementById("re-extract-btn");
     btn.disabled = true;
-    btn.textContent = "正在重新截图...";
+    btn.textContent = I18N.t("re_extract_ing");
 
     fetch(window.location.pathname + "/re-extract-figures", {
         method: "POST",
@@ -411,21 +413,21 @@ function reExtractFigures() {
             }
             var countEl = document.getElementById("figure-count");
             if (countEl) countEl.textContent = newFigures.length;
-            btn.textContent = "\u2713 完成";
+            btn.textContent = I18N.t("re_extract_done");
             setTimeout(function() {
                 btn.disabled = false;
-                btn.textContent = "\u21bb 重新截图";
+                btn.textContent = I18N.t("re_extract_btn");
             }, 3000);
         } else {
-            showToast("重新截图失败: " + data.message, "error");
+            showToast(I18N.srv(data.message) || data.message, "error");
             btn.disabled = false;
-            btn.textContent = "\u21bb 重新截图";
+            btn.textContent = I18N.t("re_extract_btn");
         }
     })
     .catch(function(err) {
-        showToast("重新截图出错: " + err, "error");
+        showToast(I18N.t("re_extract_err", {a: err}), "error");
         btn.disabled = false;
-        btn.textContent = "\u21bb 重新截图";
+        btn.textContent = I18N.t("re_extract_btn");
     });
 }
 
@@ -480,7 +482,7 @@ function downloadLightbox() {
     document.body.appendChild(a);
     a.click();
     a.remove();
-    showToast("正在下载图片", "info");
+    showToast(I18N.t("download_img"), "info");
 }
 
 document.addEventListener("keydown", function(e) {
@@ -538,7 +540,7 @@ function askQuestion(useGemini) {
     document.getElementById("ask-ai-loading").style.display = "block";
 
     var msgDiv = document.getElementById("ask-ai-messages");
-    msgDiv.innerHTML += '<div class="qa-item"><div class="qa-question">问：' + escapeHtml(q) + '</div></div>';
+    msgDiv.innerHTML += '<div class="qa-item"><div class="qa-question">' + I18N.t("q_prefix") + escapeHtml(q) + '</div></div>';
 
     fetch("/api/paper/{{ paper.id }}/ask", {
         method: "POST",
@@ -549,17 +551,17 @@ function askQuestion(useGemini) {
     .then(d => {
         document.getElementById("ask-ai-loading").style.display = "none";
         if (d.ok) {
-            msgDiv.innerHTML += '<div class="qa-item"><div class="qa-answer">答：' + renderMarkdown(d.answer) + '</div></div>';
+            msgDiv.innerHTML += '<div class="qa-item"><div class="qa-answer">' + I18N.t("a_prefix") + renderMarkdown(d.answer) + '</div></div>';
             var lastQa = msgDiv.lastElementChild;
             if (typeof renderMathInElement === "function" && lastQa) { renderMathInElement(lastQa, {delimiters: [{left: "$$", right: "$$", display: true},{left: "$", right: "$", display: false}]}); }
         } else {
-            msgDiv.innerHTML += '<div class="qa-item"><div class="qa-answer" style="color:#dc2626;">错误：' + escapeHtml(d.error) + '</div></div>';
+            msgDiv.innerHTML += '<div class="qa-item"><div class="qa-answer" style="color:#dc2626;">' + I18N.t("err_prefix") + escapeHtml(d.error) + '</div></div>';
         }
         msgDiv.scrollTop = msgDiv.scrollHeight;
     })
     .catch(e => {
         document.getElementById("ask-ai-loading").style.display = "none";
-        msgDiv.innerHTML += '<div class="qa-item"><div class="qa-answer" style="color:#dc2626;">请求失败</div></div>';
+        msgDiv.innerHTML += '<div class="qa-item"><div class="qa-answer" style="color:#dc2626;">' + I18N.t("request_failed_short") + '</div></div>';
     });
 }
 
@@ -582,8 +584,8 @@ function toggleTag(paperId, tagName) {
     if (isSet) {
         fetch("/api/paper/" + paperId + "/tags/" + encodeURIComponent(tagName), { method: "DELETE" })
             .then(r => r.json()).then(d => {
-                if (d.ok) { el.innerHTML = "&#10060; " + tagName; showToast("已移除标签", "success"); }
-                else { showToast(d.error || "操作失败", "error"); }
+                if (d.ok) { el.innerHTML = "&#10060; " + I18N.t(tagName === "待精读" ? "tag_intense" : "tag_report"); el.setAttribute("data-i18n", tagName === "待精读" ? "tag_intense_off" : "tag_report_off"); showToast(I18N.t("toast_tag_removed"), "success"); }
+                else { showToast(I18N.srv(d.error) || I18N.t("toast_op_failed"), "error"); }
             });
     } else {
         fetch("/api/paper/" + paperId + "/tags", {
@@ -591,8 +593,8 @@ function toggleTag(paperId, tagName) {
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({tag_name: tagName})
         }).then(r => r.json()).then(d => {
-            if (d.ok) { el.innerHTML = "&#9989; " + tagName; showToast("已添加标签", "success"); }
-            else { showToast(d.error || "操作失败", "error"); }
+            if (d.ok) { el.innerHTML = "&#9989; " + I18N.t(tagName === "待精读" ? "tag_intense" : "tag_report"); el.setAttribute("data-i18n", tagName === "待精读" ? "tag_intense_on" : "tag_report_on"); showToast(I18N.t("toast_tag_added"), "success"); }
+            else { showToast(I18N.srv(d.error) || I18N.t("toast_op_failed"), "error"); }
         });
     }
 }
@@ -602,7 +604,7 @@ function generateDetailedAnalysis() {
     var btn = document.getElementById("btn-detailed-analysis");
     if (!btn) return;
     btn.disabled = true;
-    btn.textContent = "正在生成...";
+    btn.textContent = I18N.t("generating");
     fetch("/api/paper/{{ paper.id }}/detailed-analysis", {method: "GET"})
     .then(function(r) { return r.json(); })
     .then(function(d) {
@@ -611,10 +613,10 @@ function generateDetailedAnalysis() {
         .then(function(r) { return r.json(); })
         .then(function(d2) {
             if (d2.ok && d2.analysis) { showDetailedAnalysis(d2.analysis); }
-            else { showToast("生成失败: " + (d2.error || "未知错误"), "error"); btn.disabled = false; btn.textContent = "详细AI分析"; }
+            else { showToast(I18N.t("generate_failed", {a: I18N.srv(d2.error) || I18N.t("unknown_error")}), "error"); btn.disabled = false; btn.textContent = I18N.t("btn_detailed_ai"); }
         });
     })
-    .catch(function(e) { showToast("请求失败: " + e.message, "error"); btn.disabled = false; btn.textContent = "详细AI分析"; });
+    .catch(function(e) { showToast(I18N.t("request_failed", {a: e.message}), "error"); btn.disabled = false; btn.textContent = I18N.t("btn_detailed_ai"); });
 }
 function showDetailedAnalysis(content) {
     var container = document.getElementById("detailed-analysis-container");
@@ -657,17 +659,17 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 // ==== Delete Conversation ====
 function deleteConversation(convId) {
-    if (!confirm("确定删除该对话记录？")) return;
+    if (!confirm(I18N.t("delete_conv_confirm"))) return;
     fetch("/api/conversation/" + convId, {method: "DELETE"})
     .then(function(r) { return r.json(); })
     .then(function(d) {
         if (d.ok) {
             var el = document.getElementById("conv-" + convId);
             if (el) el.remove();
-            showToast("对话已删除", "success");
-        } else { showToast("删除失败", "error"); }
+            showToast(I18N.t("conv_deleted"), "success");
+        } else { showToast(I18N.t("toast_delete_failed"), "error"); }
     })
-    .catch(function(e) { showToast("删除失败", "error"); });
+    .catch(function(e) { showToast(I18N.t("toast_delete_failed"), "error"); });
 }
 // ==== Hide bubble on first click ====
 
@@ -689,17 +691,17 @@ function updateStatus(id, status) {
             if (btn) {
                 if (status === "read") {
                     btn.className = "btn btn-secondary";
-                    btn.textContent = "标记为未读";
+                    btn.textContent = I18N.t("btn_mark_unread");
                     btn.setAttribute("onclick", "updateStatus(" + id + ", 'unread')");
                 } else {
                     btn.className = "btn btn-primary";
-                    btn.textContent = "标记为已读";
+                    btn.textContent = I18N.t("btn_mark_read");
                     btn.setAttribute("onclick", "updateStatus(" + id + ", 'read')");
                 }
             }
-            showToast(status === "read" ? "已标记为已读" : "已标记为未读", "success");
-        } else { showToast(d.error || "操作失败", "error"); }
-    }).catch(e => showToast("网络错误: " + e.message, "error"));
+            showToast(status === "read" ? I18N.t("marked_read") : I18N.t("marked_unread"), "success");
+        } else { showToast(I18N.srv(d.error) || I18N.t("toast_op_failed"), "error"); }
+    }).catch(e => showToast(I18N.t("err_network", {a: e.message}), "error"));
 }
 function toggleStar(id) {
     var icon = document.querySelector(".detail-actions .star-icon");
@@ -712,11 +714,11 @@ function toggleStar(id) {
     }).then(r => r.json()).then(d => {
         if (!d.ok) {
             if (icon) icon.classList.toggle("active");
-            showToast(d.error || "操作失败", "error");
-        } else { showToast(prevActive ? "已取消收藏" : "已收藏", "success"); }
+            showToast(I18N.srv(d.error) || I18N.t("toast_op_failed"), "error");
+        } else { showToast(prevActive ? I18N.t("toast_unstarred") : I18N.t("toast_starred"), "success"); }
     }).catch(e => {
         if (icon) icon.classList.toggle("active");
-        showToast("网络错误: " + e.message, "error");
+        showToast(I18N.t("err_network", {a: e.message}), "error");
     });
 }
 </script>

@@ -1,22 +1,23 @@
 {% extends "base.html" %}
+{% block title_key %}title_my{% endblock %}
 {% block title %}我的 - ArXiv文献助手{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h1>我的</h1>
+    <h1 data-i18n="h_my">我的</h1>
 </div>
 
 <div class="my-tabs">
     <button class="my-tab active" onclick="switchMyTab('starred')" id="tab-starred">
-        &#11088; 收藏 {% if starred|length > 0 %}<span class="tab-count">{{ starred|length }}</span>{% endif %}
+        <span data-i18n="tab_star">&#11088; 收藏</span> {% if starred|length > 0 %}<span class="tab-count">{{ starred|length }}</span>{% endif %}
     </button>
     <button class="my-tab" onclick="switchMyTab('report')" id="tab-report">
-        &#128203; 组会报告 {% if tagged_report|length > 0 %}<span class="tab-count">{{ tagged_report|length }}</span>{% endif %}
+        <span data-i18n="tab_report">&#128203; 组会报告</span> {% if tagged_report|length > 0 %}<span class="tab-count">{{ tagged_report|length }}</span>{% endif %}
     </button>
     <button class="my-tab" onclick="switchMyTab('custom')" id="tab-custom">
-        &#128196; 自行添加 {% if custom|length > 0 %}<span class="tab-count">{{ custom|length }}</span>{% endif %}
+        <span data-i18n="tab_custom">&#128196; 自行添加</span> {% if custom|length > 0 %}<span class="tab-count">{{ custom|length }}</span>{% endif %}
     </button>
     <button class="my-tab" onclick="switchMyTab('history')" id="tab-history">
-        &#128337; 浏览历史 {% if history|length > 0 %}<span class="tab-count">{{ history|length }}</span>{% endif %}
+        <span data-i18n="tab_history">&#128337; 浏览历史</span> {% if history|length > 0 %}<span class="tab-count">{{ history|length }}</span>{% endif %}
     </button>
 </div>
 
@@ -37,11 +38,11 @@
             {% endif %}
             <div class="paper-footer">
                 <span class="status-badge status-{{ p.status }}">{{ p.status }}</span>
-                <a href="/paper/{{ p.id }}" class="btn-detail">查看详情 &#8594;</a>
+                <a href="/paper/{{ p.id }}" class="btn-detail" data-i18n="btn_detail">查看详情 &#8594;</a>
             </div>
         </div>
         {% else %}
-        <div class="empty-state"><p>暂无收藏的论文</p></div>
+        <div class="empty-state"><p data-i18n="empty_star">暂无收藏的论文</p></div>
         {% endfor %}
     </div>
 </div>
@@ -68,11 +69,11 @@
                     <span class="report-dot" style="background:{{ r.color }};" title="{{ r.username }}"></span>
                     {% endfor %}
                 </span>
-                <a href="/paper/{{ p.id }}" class="btn-detail">查看详情 &#8594;</a>
+                <a href="/paper/{{ p.id }}" class="btn-detail" data-i18n="btn_detail">查看详情 &#8594;</a>
             </div>
         </div>
         {% else %}
-        <div class="empty-state"><p>暂无组会报告标签论文</p></div>
+        <div class="empty-state"><p data-i18n="empty_report">暂无组会报告标签论文</p></div>
         {% endfor %}
     </div>
 </div>
@@ -88,11 +89,11 @@
             <div class="paper-authors">{{ p.authors[:180] if p.authors else "" }}</div>
             <div class="paper-footer">
                 <span class="status-badge status-{{ p.status }}">{{ p.status }}</span>
-                <a href="/paper/{{ p.id }}" class="btn-detail">查看详情 &#8594;</a>
+                <a href="/paper/{{ p.id }}" class="btn-detail" data-i18n="btn_detail">查看详情 &#8594;</a>
             </div>
         </div>
         {% else %}
-        <div class="empty-state"><p>暂无自行添加的文献</p></div>
+        <div class="empty-state"><p data-i18n="empty_custom">暂无自行添加的文献</p></div>
         {% endfor %}
     </div>
 </div>
@@ -115,11 +116,11 @@
             <div class="paper-footer">
                 <span class="status-badge status-{{ p.status }}">{{ p.status }}</span>
                 <span class="viewed-time" style="color:#999;font-size:0.8em;">{{ p.viewed_at }}</span>
-                <a href="/paper/{{ p.id }}" class="btn-detail">查看详情 &#8594;</a>
+                <a href="/paper/{{ p.id }}" class="btn-detail" data-i18n="btn_detail">查看详情 &#8594;</a>
             </div>
         </div>
         {% else %}
-        <div class="empty-state"><p>暂无浏览历史</p></div>
+        <div class="empty-state"><p data-i18n="empty_history">暂无浏览历史</p></div>
         {% endfor %}
     </div>
 </div>
